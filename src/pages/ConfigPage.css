@@ -1,0 +1,58 @@
+.primary-field, fieldset {
+    border: 1px solid #FFF;
+    padding: 15px;
+}
+
+.grid-editor-container {
+    display: flex;
+}
+
+.zones-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.zones-row {
+    transition: .3s;
+}
+
+.zones-row p {
+    display: flex;
+    margin-bottom: 0;
+    padding: 5px;
+    justify-content: space-evenly;
+    margin-top: 5px;
+}
+
+.zones-row p span {
+    transition: .3s;
+    cursor: pointer;
+}
+
+.zones-row p span:hover {
+    color: crimson;
+}
+
+.zones-row p button {
+    align-self: center;
+}
+
+.zones-row.zone-selected {
+    border: 1px solid #EEE;
+    background: #EEE;
+    color: #222;
+}
+
+.zones-row.zone-selected p {
+    color: #222;
+}
+
+.table .fa-square {
+    color: white;
+    border: 1px solid #CCC;
+    padding: 0;
+    cursor: pointer;
+}
+
+
