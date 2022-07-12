@@ -135,12 +135,14 @@ export function Map(props) {
     }
 
     function drawZones(context) {
+        let stopRefreshRect = [];
         config.zones.forEach((currentZone) => {
             let targetColor = currentZone.color;
 
             // Paint empty if zone is in zoneGroupe
-            if(props.targetGroupZone !== null &&
-                props.zoneGroup[props.targetGroupZone].indexOf(currentZone.id) === -1) {
+            console.log(props.targetGroupZone)
+            console.log(currentZone.targetGroupZone)
+            if(props.targetGroupZone !== null && currentZone.targetGroupZone !== props.targetGroupZone) {
                 targetColor = 'white';
             }
 

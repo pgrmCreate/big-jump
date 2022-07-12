@@ -32,7 +32,7 @@ export class GameConfig {
         this.setup.roundLeft = this.setup.roundLeftMax;
     }
 
-    createZone(x, y, color) {
+    createZone(x, y, color, targetGroupZone = null) {
         this.setup.zones.push({
             id: GameConfig.indexZone,
             x : x,
@@ -41,6 +41,7 @@ export class GameConfig {
             isVisible: true,
             percentWin: 0.5,
             percentLoose: 0.5,
+            targetGroupZone : targetGroupZone
         });
 
         GameConfig.indexZone++;

@@ -44,19 +44,31 @@ export default function ConfigPage () {
 
 
 
-        const targetGroupZone = [...zoneGroup];
+        const newGroupZone = [...zoneGroup];
 
-        console.log('zoneList', zoneList)
+        console.log('targetGroupZone', newGroupZone)
+        console.log('config.setup.zones', config.setup.zones)
+        console.log('zoneGroup', zoneGroup)
+        /*console.log('zoneList', zoneList)
         console.log('targetRect', targetRect)
         console.log('targetZone', targetZone)
         console.log('targetGroupZone', targetGroupZone)
-        console.log('targetGroupZone[pickedZoneGroup]', targetGroupZone[pickedZoneGroup]);
+        console.log('targetGroupZone[pickedZoneGroup]', targetGroupZone[pickedZoneGroup]);*/
         if(isSelected) {
-            const targetNewZoneId = config.createZone(targetX, targetY, '#FF00CC');
-            targetGroupZone[pickedZoneGroup].push(targetNewZoneId);
+            const targetNewZoneId = config.createZone(targetX, targetY, '#FF00CC', pickedZoneGroup);
+            newGroupZone[pickedZoneGroup].push(targetNewZoneId);
+            setZoneGroup(newGroupZone)
+        } else {
+            console.log(targetX)
+            config.setup.zones = config.setup.zones.filter(item => {
+                console.log(!(item.x === targetX && item.y === targetY))
+                return !(item.x === targetX && item.y === targetY && item.targetGroupZone === pickedZoneGroup)
+            });
+            //setConfig(targetNewConfig);
+            console.log('supprimer', config)
         }
 
-        setZoneGroup(targetGroupZone)
+
     }
 
     function saveStep1() {
