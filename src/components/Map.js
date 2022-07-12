@@ -7,7 +7,7 @@ import {GameConfig} from "../class/GameConfig";
 
 export function Map(props) {
     const canvasRef = useRef(null);
-    const config = props.config.setup;
+    const config = props.config.config.setup;
 
     const params =  {
         sizeGrid: 35,
@@ -44,6 +44,8 @@ export function Map(props) {
     useEffect(() => {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
+
+        console.log(context)
 
         const playerImage = new Image();
         playerImage.onload = () => {
@@ -135,15 +137,30 @@ export function Map(props) {
     }
 
     function drawZones(context) {
-        let stopRefreshRect = [];
+        const rectDrawn = [];
+
+        function isRectAlwaysDrawn(currentZone) {
+            let isDrawn = false;
+
+            rectDrawn.forEach((item) => {
+                if(item.x === currentZone.y && item.y === currentZone.y) {
+                    isDrawn = true;
+                }
+            });
+
+            return isDrawn;
+        }
+
         config.zones.forEach((currentZone) => {
             let targetColor = currentZone.color;
 
             // Paint empty if zone is in zoneGroupe
-            console.log(props.targetGroupZone)
-            console.log(currentZone.targetGroupZone)
-            if(props.targetGroupZone !== null && currentZone.targetGroupZone !== props.targetGroupZone) {
-                targetColor = 'white';
+
+            if(props.targetGroupZone !== null && currentZone.targetGroupZone !== props.targetGroupZone &&
+            !isRectAlwaysDrawn(currentZone)) {
+                targetColor = 'blue';
+            } else {
+                rectDrawn.push({x : currentZone.x, y : currentZone.y});
             }
 
             context.beginPath();
@@ -169,7 +186,7 @@ export function Map(props) {
                 const targetY = Math.floor(item.y / params.sizeGrid);
 
                 if(currentZone.x === targetX && currentZone.y === targetY) {
-                    item.isSelected = targetColor !== 'white';
+                    item.isSelected = targetColor !== 'blue';
                 }
 
                 return item;

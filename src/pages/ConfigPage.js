@@ -6,8 +6,14 @@ import {GameConfig} from "../class/GameConfig";
 export default function ConfigPage () {
     const [configStep, setConfigStep] = useState(1);
     const [zoneGroup, setZoneGroup] = useState([]);
-    const [config, setConfig] = useState(new GameConfig());
+    const [config, setConfig] = useState({'config' : new GameConfig()});
     const [pickedZoneGroup, setPickedZoneGroup] = useState(null);
+
+    console.log(config)
+
+    function updateConfig() {
+        setConfig({config : config.config});
+    }
 
     function addGroupeZone() {
         setZoneGroup([...zoneGroup, []]);
@@ -15,7 +21,8 @@ export default function ConfigPage () {
 
     function setSizeMap(key, value) {
         value = parseInt(value) + 2;
-        setConfig({...config, setup : {...config.setup, [key] : value}});
+        config.config.setup[key] = value;
+        updateConfig();
     }
 
     function selectZone(e) {
@@ -46,26 +53,22 @@ export default function ConfigPage () {
 
         const newGroupZone = [...zoneGroup];
 
-        console.log('targetGroupZone', newGroupZone)
-        console.log('config.setup.zones', config.setup.zones)
-        console.log('zoneGroup', zoneGroup)
         /*console.log('zoneList', zoneList)
         console.log('targetRect', targetRect)
         console.log('targetZone', targetZone)
         console.log('targetGroupZone', targetGroupZone)
         console.log('targetGroupZone[pickedZoneGroup]', targetGroupZone[pickedZoneGroup]);*/
         if(isSelected) {
-            const targetNewZoneId = config.createZone(targetX, targetY, '#FF00CC', pickedZoneGroup);
+            const targetNewZoneId = config.config.createZone(targetX, targetY, '#FF00CC', pickedZoneGroup);
             newGroupZone[pickedZoneGroup].push(targetNewZoneId);
-            setZoneGroup(newGroupZone)
+            setZoneGroup(newGroupZone);
+            updateConfig();
         } else {
-            console.log(targetX)
-            config.setup.zones = config.setup.zones.filter(item => {
+            config.config.setup.zones = config.config.setup.zones.filter(item => {
                 console.log(!(item.x === targetX && item.y === targetY))
                 return !(item.x === targetX && item.y === targetY && item.targetGroupZone === pickedZoneGroup)
             });
-            //setConfig(targetNewConfig);
-            console.log('supprimer', config)
+            updateConfig();
         }
 
 
@@ -116,11 +119,11 @@ export default function ConfigPage () {
 
                                         <input type="number" className="form-control mb-2" placeholder="Width"
                                                onChange={(e) => setSizeMap('width', e.target.value)}
-                                               value={config.setup.width - 2}/>
+                                               value={config.config.setup.width - 2}/>
 
                                         <input type="number" className="form-control" placeholder="Height"
                                                onChange={(e) => setSizeMap('height', e.target.value)}
-                                               value={config.setup.height - 2}/>
+                                               value={config.config.setup.height - 2}/>
                                     </fieldset>
                                 </div>
                             </div>
