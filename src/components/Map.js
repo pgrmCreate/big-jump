@@ -137,6 +137,69 @@ export function Map(props) {
     }
 
     function drawZones(context) {
+        const emptyColor = 'white';
+
+        listRect.map((item) => {
+            const xStart = (params.basePosition + 1 ) + (item.x * params.sizeGrid);
+            const yStart = (params.basePosition + 1) + (item.y * params.sizeGrid);
+
+            const targetRectPoint = {
+                xStart : xStart,
+                yStart : yStart,
+                width : params.sizeGrid - 2,
+                height : params.sizeGrid - 2,
+            }
+
+            context.beginPath();
+            context.rect(
+                targetRectPoint.xStart,
+                targetRectPoint.yStart,
+                targetRectPoint.width,
+                targetRectPoint.height);
+
+            item.isSelected = false;
+            context.fillStyle = emptyColor;
+            context.fill();
+        });
+
+        config.zones.forEach((currentZone) => {
+            const xStart = (params.basePosition + 1 ) + (currentZone.x * params.sizeGrid);
+            const yStart = (params.basePosition + 1) + (currentZone.y * params.sizeGrid);
+            context.fillStyle = currentZone.color;
+
+            if(props.targetGroupZone !== null && currentZone.targetGroupZone !== props.targetGroupZone) {
+                return;
+            }
+
+            const targetRectPoint = {
+                xStart : xStart,
+                yStart : yStart,
+                width : params.sizeGrid - 2,
+                height : params.sizeGrid - 2,
+            };
+
+            context.rect(
+                targetRectPoint.xStart,
+                targetRectPoint.yStart,
+                targetRectPoint.width,
+                targetRectPoint.height);
+
+            context.fill();
+
+            listRect.map((item) => {
+                const targetX = Math.floor(item.x / params.sizeGrid);
+                const targetY = Math.floor(item.y / params.sizeGrid);
+
+                if(currentZone.x === targetX && currentZone.y === targetY) {
+                    item.isSelected = true;
+                }
+
+                return item;
+            });
+        });
+    }
+
+    function drawZones0(context) {
         const rectDrawn = [];
 
         function isRectAlwaysDrawn(currentZone) {
@@ -158,7 +221,7 @@ export function Map(props) {
 
             if(props.targetGroupZone !== null && currentZone.targetGroupZone !== props.targetGroupZone &&
             !isRectAlwaysDrawn(currentZone)) {
-                targetColor = 'blue';
+                targetColor = 'white';
             } else {
                 rectDrawn.push({x : currentZone.x, y : currentZone.y});
             }
@@ -190,7 +253,7 @@ export function Map(props) {
                 }
 
                 return item;
-            })
+            });
 
             if(props.modeEditor) {
                 context.fill();
