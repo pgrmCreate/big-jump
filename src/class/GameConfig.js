@@ -3,29 +3,31 @@ export class GameConfig {
     static indexLot = 0;
 
     setup = {
-        width: 15,
-        height: 14,
+        name: '',
+        width: 12,
+        height: 12,
         zones : [],
         lots : [],
+        gainLevelAmount : 3,
+        threatLevelAmount : 3,
         roundLeft : 10,
         roundLeftMax : 10,
         tryAmount : 5,
         startPoint : 0,
+        finalScore : 24,
+        drawTypeGain : 'sequential',
+        drawTypeThreat : 'sequential',
+        initPositionX: 2,
+        initPositionY: 2,
     }
 
     constructor() {
-        //this.createZone(2, 2, '#FFCC00');
-
         this.setup.lotWinConfig = {
             isSequential : true,
             randomAmount : 0
         };
 
         this.setup.lotLooseConfig = {...this.setup.lotWinConfig}
-
-        this.createLot(true, 1, [14, 25], 3, [0, 1, 2]);
-        this.createLot(true, 1, [14, 25], 3, [0, 1, 2]);
-        this.createLot(false, 1, [14, 25], 3, [0, 1, 2]);
     }
 
     initRound() {
@@ -49,16 +51,22 @@ export class GameConfig {
         return GameConfig.indexZone - 1;
     }
 
-    createLot(isWin, level, earnPoint, maxDraw, applyZones = []) {
-        this.setup.lots.push({
+    createLot(isWin, level, earnPointMin,earnPointMax, maxDraw, applyZones = [], isCopyForExploitation = false) {
+        const baseLotConfig = {
             id: GameConfig.indexLot,
             isWin: isWin,
             level : level,
-            earnPoint : earnPoint,
+            earnPointMin : earnPointMin,
+            earnPointMax : earnPointMax,
             currentDraw : 1,
             maxDraw : maxDraw,
-            applyZones : applyZones
-        });
+            applyZones : []
+        };
+
+        const exploitationCopy = {...baseLotConfig};
+        exploitationCopy.applyZones = [];
+
+        this.setup.lots.push({ exploration : baseLotConfig, exploitation : exploitationCopy});
 
         GameConfig.indexLot++;
     }

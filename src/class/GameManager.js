@@ -25,4 +25,11 @@ export class GameManager {
 
         return GameManager.instance;
     }
+
+    settingConfig(config) {
+        this.gameConfig = config;
+
+        this.player.position.x = GameManager.get().gameConfig.setup.initPositionX;
+        this.player.position.y = GameManager.get().gameConfig.setup.initPositionY;
+    }
 }

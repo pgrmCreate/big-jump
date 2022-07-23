@@ -47,6 +47,21 @@ h3 {
     font-size: 22px;
 }
 
+.btn-primary {
+    background: #334375;
+    border-color: #334375;
+}
+
+.btn-danger {
+    background: #d95273;
+    border-color: #d95273;
+}
+
+.btn-success {
+    background: #669666;
+    border-color: #669666;
+}
+
 @keyframes App-logo-spin {
     from {
         transform: rotate(0deg);

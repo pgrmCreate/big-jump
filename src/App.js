@@ -3,11 +3,25 @@ import './App.css';
 
 import {GamePage} from "./pages/GamePage";
 import ConfigPage from "./pages/ConfigPage";
+import {ConfigContext} from "./utils/ConfigContext";
+import {useState} from "react";
+import {BrowserRouter, Routes, Route} from "react-router-dom";
+import Home from "./pages/Home";
 
 function App() {
+    const currentConfig = useState({list: [], config : null})
     return (
         <div className="app-main">
-            <ConfigPage/>
+            <ConfigContext.Provider value={currentConfig}>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/" index element={<Home/>}/>
+                        <Route path="/game" index element={<GamePage/>}/>
+                        <Route path="/config" index element={<ConfigPage/>}/>
+                    </Routes>
+                </BrowserRouter>
+
+            </ConfigContext.Provider>
         </div>
     );
 }

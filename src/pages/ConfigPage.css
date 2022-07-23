@@ -48,11 +48,63 @@
     color: #222;
 }
 
-.table .fa-square {
-    color: white;
-    border: 1px solid #CCC;
+.table .fa-square, .table .fa-square-check {
+    color: #555;
     padding: 0;
+    cursor: pointer;
+    font-size: 22px;
+}
+
+.config-split-main-container {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #DDD;
+    padding: 40px;
+    margin-top: 10px;
+}
+
+.config-split-main-container .checkbox {
+    font-size: 22px;
+    color: #334375;
     cursor: pointer;
 }
 
+.config-navigation-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.select-setup-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.select-setup-container {
+    margin-bottom: 20px;
+}
+
+.select-setup {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    background: #EEE;
+    text-align: center;
+    font-size: 18px;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: .2s;
+    border-radius: 10px;
+}
+
+.select-setup.draw-active {
+    border: 3px solid #334375;
+    border-radius: 0;
+}
+
+.select-setup p {
+    margin-bottom: 0;
+}
 
