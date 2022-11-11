@@ -1,5 +1,10 @@
 .App {
+    --success-color: greenyellow;
     text-align: center;
+}
+
+.success {
+    color: var(--success-color)
 }
 
 .App-logo {
@@ -60,6 +65,14 @@ h3 {
 .btn-success {
     background: #669666;
     border-color: #669666;
+}
+
+.btn-light {
+    background: #EEE;
+}
+
+.btn-light:hover {
+    border: 1px solid #AAA;
 }
 
 @keyframes App-logo-spin {

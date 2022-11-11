@@ -8,8 +8,21 @@ export default function Home() {
     const navigate = useNavigate();
 
     function pickExperience(targetXp) {
+        targetXp.initRound();
         setGlobalConfig({list : globalConfig.list, config : targetXp});
         navigate('/game');
+    }
+
+    function editExperience(idExperience) {
+        setGlobalConfig({list : globalConfig.list, config : globalConfig.list.find(i => i === idExperience)});
+        navigate('/edit-config/' + idExperience);
+    }
+
+    function handleRemoveExperience(targetId) {
+        const newListConfig = [...globalConfig.list];
+        newListConfig.splice(targetId, 1);
+
+        setGlobalConfig({list: newListConfig, config: globalConfig.config})
     }
 
     return (<div className="container">
@@ -29,8 +42,8 @@ export default function Home() {
                 </div>
 
                 <div className="experiences-container">
-                    { globalConfig.list.map((item) => (
-                        <div className="experience-card">
+                    { globalConfig.list.map((item, index) => (
+                        <div className="experience-card" key={index}>
                             <p>
                                 { item.setup.name}
                             </p>
@@ -41,7 +54,13 @@ export default function Home() {
                                     Play
                                 </button>
 
-                                <button className="btn btn-danger mx-3"  title="No available">
+                                <button className="btn btn-primary mx-2" onClick={() => editExperience(item.id)}>
+                                    <i className="fa-solid fa-pen mx-2"/>
+                                    Edit
+                                </button>
+
+                                <button className="btn btn-danger" onClick={() => handleRemoveExperience(index)}>
+                                    <i className="fa-solid fa-trash mx-2"/>
                                     Delete
                                 </button>
                             </div>

@@ -48,6 +48,8 @@ export function GamePage() {
     function move(direction) {
         const targetObject = {...player};
 
+        console.log({...targetObject})
+
         if (direction === 'up') {
             targetObject.position.y -= 1;
         }
@@ -64,11 +66,9 @@ export function GamePage() {
             targetObject.position.y += 1;
         }
 
-        console.log(targetObject)
-
-        setGameRoundLeft(roundLeft => roundLeft - 1);
         setPlayer(targetObject);
         exploreAction();
+        setGameRoundLeft(roundLeft => roundLeft - 1);
     }
 
     function exploreAction() {
@@ -80,19 +80,24 @@ export function GamePage() {
     }
 
     function exploitAction() {
-        setGameRoundLeft(roundLeft => roundLeft - 1);
-
         GameManager.get().gameConfig.setup.zones.forEach((currentZone) => {
             if (currentZone.x === player.position.x && currentZone.y === player.position.y) {
                 openZone(currentZone, 'exploitation');
             }
         });
+
+        setGameRoundLeft(roundLeft => roundLeft - 1);
     }
 
     function openZone(zone, typeAction = 'exploration') {
         const randomDraw = Math.random();
         const setup = GameManager.get().gameConfig.setup;
         let targetWinLot = null;
+
+        console.log('randomDraw', randomDraw);
+        console.log('target zone', zone);
+        console.log('ALL ZONES', GameManager.get().gameConfig.setup.zones);
+        console.log('ALL LOT', setup.lots);
 
         if (randomDraw <= zone.percentLoose) {
             targetWinLot = false;
@@ -103,21 +108,37 @@ export function GamePage() {
         }
 
         let targetLot = null;
-
         const listLotAvailable = setup.lots.filter((item) => {
             if (item[typeAction].isWin !== targetWinLot) return false;
 
             if (item[typeAction].currentDraw > item[typeAction].maxDraw) return false;
 
+            if(item[typeAction].applyZones.indexOf(zone.id) === -1) return false
+
             return true;
         }, []);
 
         if (listLotAvailable.length === 0) {
-            console.error('not lot available')
+            console.log('DEBUG', 'not lot available')
             return;
         }
 
-        targetLot = listLotAvailable[0];
+        // check type action for get draw type (gain or threat)
+        const targetTypeDraw = targetWinLot ? 'drawTypeGain' : 'drawTypeThreat';
+
+        // TYPE DRAW
+        //      1. SEQUENTIAL
+        //      2. RANDOM
+        //      3. SEMI-RANDOM
+
+        if(GameManager.get().gameConfig.setup[targetTypeDraw] === 'sequential') {
+            targetLot = listLotAvailable[0];
+        } else if(GameManager.get().gameConfig.setup[targetTypeDraw] === 'random') {
+            targetLot = listLotAvailable[Math.getRandom(0, listLotAvailable.length - 1)];
+        } else {
+            console.error('error getting lot')
+        }
+
         targetLot[typeAction].currentDraw++;
 
 

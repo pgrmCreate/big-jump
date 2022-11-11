@@ -1,0 +1,47 @@
+.section-config-container {
+    display: flex;
+    justify-content: center;
+    border-bottom: 2px solid #EEE;
+}
+
+.section-config-aside {
+    margin: 20px;
+    width: 300px;
+}
+
+.section-config {
+    margin: 20px 0;
+    padding: 15px;
+    width: 700px;
+    border: 1px solid #EEE;
+}
+
+.label-definition {
+    flex-direction: column;
+}
+
+.label-definition, .label-definition > * {
+    display: flex;
+    width: 100%;
+}
+
+.label-definition > label {
+    margin-bottom: 15px;
+}
+
+
+.label-definition .label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+}
+
+.text-event-input {
+    width: 200px;
+}
+
+.text-event-input::placeholder {
+    font-style: italic;
+}

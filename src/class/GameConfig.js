@@ -1,8 +1,15 @@
 export class GameConfig {
     static indexZone = 0;
     static indexLot = 0;
+    static idCounter = 0;
+
+    // TYPE DRAW
+    //      1. SEQUENTIAL
+    //      2. RANDOM
+    //      3. SEMI-RANDOM
 
     setup = {
+        id: 0,
         name: '',
         width: 12,
         height: 12,
@@ -27,11 +34,20 @@ export class GameConfig {
             randomAmount : 0
         };
 
+        this.id = GameConfig.idCounter;
+
+        GameConfig.idCounter++;
+
         this.setup.lotLooseConfig = {...this.setup.lotWinConfig}
     }
 
     initRound() {
         this.setup.roundLeft = this.setup.roundLeftMax;
+
+        this.setup.lots.map(i => {
+            i.exploration.currentDraw = 1;
+            i.exploitation.currentDraw = 1 ;
+        });
     }
 
     createZone(x, y, color, targetGroupZone = null) {
@@ -58,7 +74,7 @@ export class GameConfig {
             level : level,
             earnPointMin : earnPointMin,
             earnPointMax : earnPointMax,
-            currentDraw : 1,
+            currentDraw : 0,
             maxDraw : maxDraw,
             applyZones : []
         };
