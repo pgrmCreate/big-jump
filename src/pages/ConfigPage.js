@@ -835,7 +835,7 @@ export default function ConfigPage () {
                                 <button type="button" onClick={saveMap}
                                         className="btn btn-primary">
                                     <i className="fa-solid fa-floppy-disk mx-2"/>
-                                    Save map
+                                    Next config
                                 </button>
                             </div>
                         </div>

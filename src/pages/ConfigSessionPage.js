@@ -1,4 +1,4 @@
-import {Link, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {useContext, useState} from "react";
 import {ConfigContext} from "../utils/ConfigContext";
 
@@ -6,6 +6,7 @@ import './ConfigSessionPage.css';
 
 export default function ConfigSessionPage() {
     const params = useParams();
+    const navigate = useNavigate();
     const [globalConfig, setGlobalConfig] = useContext(ConfigContext);
     const currentConfig = globalConfig.list.find(i => i.id === parseInt(params.id));
 
@@ -17,6 +18,7 @@ export default function ConfigSessionPage() {
         actionPoints : 'Heures',
     });
     const [participantInfo, setParticipantInfo] = useState(['Identifiant', 'Age', 'Sexe', 'Email']);
+    const [textsEvent, setTextsEvent] = useState([]);
 
     function addParticipantInfo(targetLabel = 'new info') {
         setParticipantInfo([...participantInfo, targetLabel])
@@ -37,7 +39,36 @@ export default function ConfigSessionPage() {
     }
 
     function editInterfaceLabel(key, value) {
+        setGameInterfaceLabel({...gameInterfaceLabel, [key] : value});
+    }
 
+    function addTextEventLabel() {
+        setTextsEvent([...textsEvent, {
+            type: 'earn',
+            zone: currentConfig.setup.zones[0].id,
+            lot: currentConfig.setup.lots[0].exploration.id,
+            label: 'custom label',
+        }])
+    }
+
+    function editTextEvent(key, value, index) {
+        const targetArray = [...textsEvent];
+
+        targetArray[index][key] = value;
+
+        setTextsEvent(targetArray);
+    }
+
+    function saveMap() {
+        const targetIndex = globalConfig.list.findIndex(i => i.id === currentConfig.id);
+        const targetArray =  [...globalConfig.list];
+
+        targetArray[targetIndex] = currentConfig;
+
+
+        setGlobalConfig({list : targetArray, config: null});
+
+        navigate('/');
     }
 
     return (
@@ -121,11 +152,11 @@ export default function ConfigSessionPage() {
             <div className="section-config-container">
                 <div className="section-config">
                     <h3>Game Interface Page</h3>
-                    <p className="fst-italic">modifications des labels de l'interface joueur</p>
+                    <p className="fst-italic">changes to player interface labels</p>
 
                     <div className="label-definition">
                         <label className="d-flex">
-                            <span className="label">Points d'actions :</span>
+                            <span className="label">Action points :</span>
                             <input type="text" className="form-control" value={gameInterfaceLabel.actionPoints}
                             onChange={(e) => { editInterfaceLabel('actionPoints', e.target.value)}}/>
                         </label>
@@ -137,13 +168,13 @@ export default function ConfigSessionPage() {
                         </label>
 
                         <label className="d-flex">
-                            <span className="label">Explore :</span>
+                            <span className="label">Exploration :</span>
                             <input type="text" className="form-control" value={gameInterfaceLabel.explore}
                                    onChange={(e) => { editInterfaceLabel('explore', e.target.value)}}/>
                         </label>
 
                         <label className="d-flex">
-                            <span className="label">Exploite :</span>
+                            <span className="label">Exploitation :</span>
                             <input type="text" className="form-control" value={gameInterfaceLabel.exploite}
                                    onChange={(e) => { editInterfaceLabel('exploite', e.target.value)}}/>
                         </label>
@@ -162,31 +193,37 @@ export default function ConfigSessionPage() {
                     <h3>Text event</h3>
                     <p className="fst-italic">proposal of text to display by type of event</p>
 
-                    <div className="d-flex">
-                        <select className="form-select mx-2">
-                            <option value="earn">Earn</option>
-                            <option value="threat">Threat</option>
-                            <option value="empty">Empty</option>
-                        </select>
+                    { textsEvent.map((currentEvent, currentIndex) => (
+                        <div className="d-flex mb-3">
+                            <select className="form-select mx-2" value={currentEvent.type}
+                                    onChange={(e) => {editTextEvent('type', e.target.value, currentIndex)}}>
+                                <option value="earn">Earn</option>
+                                <option value="threat">Threat</option>
+                                <option value="empty">Empty</option>
+                            </select>
 
-                        <select className="form-select mx-2">
-                            { currentConfig.setup.zones.map((currentZone) => (
-                                <option value={currentZone.id}>Zone { currentZone.id }</option>
-                            ))}
-                        </select>
+                            <select className="form-select mx-2" value={currentEvent.zone}
+                                    onChange={(e) => {editTextEvent('zone', e.target.value, currentIndex)}}>
+                                { currentConfig.setup.zones.map((currentZone) => (
+                                    <option value={currentZone.id}>Zone { currentZone.id }</option>
+                                ))}
+                            </select>
 
-                        <select className="form-select mx-2">
-                            { currentConfig.setup.lots.map((currentLot) => (
-                                <option value={currentLot.exploration.id}>Category { currentLot.exploration.id }</option>
-                            ))}
-                        </select>
+                            <select className="form-select mx-2" value={currentEvent.lot}
+                                    onChange={(e) => {editTextEvent('lot', e.target.value, currentIndex)}}>
+                                { currentConfig.setup.lots.map((currentLot) => (
+                                    <option value={currentLot.exploration.id}>Category { currentLot.exploration.id }</option>
+                                ))}
+                            </select>
 
-                        <input className="form-control mx-2 text-event-input" type="text" placeholder="custom text"/>
-                    </div>
+                            <input className="form-control mx-2 text-event-input" type="text" placeholder="custom text"
+                                   value={currentEvent.label} onChange={(e) => {editTextEvent('label', e.target.value, currentIndex)}}/>
+                        </div>
+                    ))}
                 </div>
 
                 <div className="section-config-aside">
-                    <button className="btn btn-primary mb-3">
+                    <button className="btn btn-primary mb-3" onClick={() => addTextEventLabel()}>
                         <i className="fa fa-plus mx-2"></i>
                         Add custom label
                     </button>
@@ -215,6 +252,11 @@ export default function ConfigSessionPage() {
 
                 <div className="section-config-aside"></div>
             </div>
+
+            <button className="btn btn-lg btn-primary save-button" onClick={() => saveMap()}>
+                <i className="fa fa-save mx-2" onClick={() => saveMap()}></i>
+                Save map
+            </button>
         </div>
     );
 }

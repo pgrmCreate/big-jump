@@ -45,3 +45,9 @@
 .text-event-input::placeholder {
     font-style: italic;
 }
+
+.save-button {
+    position: fixed;
+    right: 3vw;
+    bottom: 5vh
+}
