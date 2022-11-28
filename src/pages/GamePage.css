@@ -1,0 +1,38 @@
+.points-earn-container{
+    position: absolute;
+    top: -24px;
+    left: 29vw;
+    font-size: 20px;
+    width: 50px;
+}
+
+.points-earn {
+    position: absolute;
+    left: 20vw;
+    top: 50px;
+    animation: slideUp 2s forwards;
+}
+
+.earn-plus {
+    color: yellowgreen;
+}
+
+.earn-minus {
+    color: orangered;
+}
+
+@keyframes slideUp {
+    0% {
+        top: 50px;
+        opacity: 1;
+    }
+
+    99% {
+        top: 25px;
+    }
+
+    100% {
+        top: 25px;
+        opacity: 0;
+    }
+}

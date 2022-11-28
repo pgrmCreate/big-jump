@@ -5,9 +5,12 @@ import {ConfigContext} from "../utils/ConfigContext";
 import {GameManager} from "../class/GameManager";
 import {Link} from "react-router-dom";
 
+import './GamePage.css';
+
 export function GamePage() {
     const [config, setConfig] = useContext(ConfigContext);
     const [player, setPlayer] = useState(GameManager.get().player);
+    const [earnPoints, setEarnPoints] = useState([]);
 
     const [gameRoundLeft, setGameRoundLeft] = useState(0);
 
@@ -30,6 +33,8 @@ export function GamePage() {
         GameManager.get().settingConfig(config.config);
 
         setGameRoundLeft(GameManager.get().gameConfig.setup.roundLeft);
+
+        console.log(config);
     }, []);
 
     useEffect(() => {
@@ -47,8 +52,6 @@ export function GamePage() {
 
     function move(direction) {
         const targetObject = {...player};
-
-        console.log({...targetObject})
 
         if (direction === 'up') {
             targetObject.position.y -= 1;
@@ -94,10 +97,10 @@ export function GamePage() {
         const setup = GameManager.get().gameConfig.setup;
         let targetWinLot = null;
 
-        console.log('randomDraw', randomDraw);
+        /*console.log('randomDraw', randomDraw);
         console.log('target zone', zone);
         console.log('ALL ZONES', GameManager.get().gameConfig.setup.zones);
-        console.log('ALL LOT', setup.lots);
+        console.log('ALL LOT', setup.lots);*/
 
         if (randomDraw <= zone.percentLoose) {
             targetWinLot = false;
@@ -148,16 +151,32 @@ export function GamePage() {
 
         const targetNewPlayer = {...player};
         targetNewPlayer.score += targetPoint;
+        addEarn(targetPoint);
         setPlayer(targetNewPlayer);
+    }
+
+    function addEarn(targetPoints) {
+        const targetNewId = earnPoints.length === 0 ? 0 : earnPoints[earnPoints.length - 1].id + 1;
+
+        setEarnPoints([...earnPoints, {id: targetNewId, points: targetPoints}]);
     }
 
     return (
         <div className="container">
             <div className="row d-flex align-items-center vh-100">
                 <div className="col-12 d-flex justify-content-center align-items-center">
-                    <h1 className="text-center">Score : {player.score}</h1>
+                    <h1 className="text-center">{ config.config.setup.gameInterfacePage.score} : {player.score}</h1>
 
-                    <h2 className="text-center mx-5">Heures restantes : {gameRoundLeft}</h2>
+                    <h2 className="text-center mx-5">{ config.config.setup.gameInterfacePage.actionPoints} : {gameRoundLeft}</h2>
+                </div>
+
+                <div className="points-earn-container">
+                    { earnPoints.map((currentEarn) => (
+                        <div className={'points-earn ' + (currentEarn.points > 0 ? 'earn-plus' : 'earn-minus')}>
+                            { currentEarn.points > 0 ? '+' : ''}
+                            { currentEarn.points}
+                        </div>
+                    ))}
                 </div>
 
                 {gameRoundLeft > 0 && (
@@ -205,7 +224,7 @@ export function GamePage() {
                                     <button className="btn btn-primary mx-2" onClick={exploitAction}
                                             data-direction="left">
                                         <i className="fa-solid fa-person-digging mx-2"/>
-                                        Exploitation
+                                        { config.config.setup.gameInterfacePage.exploite}
                                     </button>
 
                                     <button className="btn btn-primary mx-2" onClick={handleButtonMove}

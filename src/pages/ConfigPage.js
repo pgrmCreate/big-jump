@@ -1,19 +1,46 @@
 import './ConfigPage.css';
 import {Map} from "../components/Map";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {GameConfig} from "../class/GameConfig";
 import {ConfigContext} from "../utils/ConfigContext";
-import {Link, useNavigate} from 'react-router-dom';
+import {Link, useNavigate, useParams} from 'react-router-dom';
 
 export default function ConfigPage () {
-    const [configStep, setConfigStep] = useState(1);
+    const params = useParams();
+    const [configStep, setConfigStep] = useState(null);
     const [zoneGroup, setZoneGroup] = useState([]);
-    const [config, setConfig] = useState({'config' : new GameConfig()});
+    const [config, setConfig] = useState(null);
     const [pickedZoneGroup, setPickedZoneGroup] = useState(null);
     const [targetLevelConfig, setTargetLevelConfig] = useState(null);
     const [globalConfig, setGlobalConfig] = useContext(ConfigContext);
     const navigate = useNavigate();
     const [colorSelect, setColorSelect] = useState('#ee9c08');
+    const [isLevelNeedEdit, setIsLevelNeedEdit] = useState(true);
+
+    useEffect(() => {
+        if(params.id) {
+            const currentConfig = globalConfig.list.find(i => i.id === parseInt(params.id));
+            const zoneGroupeBuilder = {};
+            const targetNewGroupe = [];
+            setConfig({config : currentConfig});
+
+            currentConfig.setup.zones.map((currentZone) => {
+                if(!Object.hasOwnProperty(currentZone.targetGroupZone)) {
+                    zoneGroupeBuilder[currentZone.targetGroupZone] = [];
+                }
+
+                zoneGroupeBuilder[currentZone.targetGroupZone].push(currentZone.id);
+            })
+            Object.keys(zoneGroupeBuilder).forEach(k => targetNewGroupe.push(zoneGroupeBuilder[k]))
+            setZoneGroup(targetNewGroupe);
+
+            setIsLevelNeedEdit(false);
+            setConfigStep(1)
+        } else {
+            setConfig({'config' : new GameConfig()});
+            setConfigStep(1)
+        }
+    }, [])
 
     function updateConfig() {
         setConfig({config : config.config});
@@ -76,17 +103,21 @@ export default function ConfigPage () {
         }
 
         if(targetNav === 3) {
-            config.config.setup.lots = [];
+            //config.config.setup.lots = [];
             setTargetLevelConfig(null);
         }
 
         if(targetNav === 4) {
-            for(let i = 0 ; i < config.config.setup.gainLevelAmount ; i++) {
-                config.config.createLot(true, i+1, 14, 25, 3, []);
-            }
+            if(isLevelNeedEdit) {
+                for(let i = 0 ; i < config.config.setup.gainLevelAmount ; i++) {
+                    config.config.createLot(true, i+1, 14, 25, 3, []);
+                }
 
-            for(let i = 0 ; i < config.config.setup.threatLevelAmount ; i++) {
-                config.config.createLot(false, i+1, 14, 25, 3, []);
+                for(let i = 0 ; i < config.config.setup.threatLevelAmount ; i++) {
+                    config.config.createLot(false, i+1, 14, 25, 3, []);
+                }
+
+                setIsLevelNeedEdit(false)
             }
         }
 
@@ -128,6 +159,10 @@ export default function ConfigPage () {
     }
 
     function changeZoneConfig(targetZoneGroup, key, value) {
+        if(key === 'gainLevelAmount' || key === 'threatLevelAmount') {
+            setIsLevelNeedEdit(true);
+        }
+
         function checkingAjustingPercent(keyAjust, valueAjust, itemAjust) {
             if((itemAjust.percentWin + itemAjust.percentLoose) > 1) {
                 if(key === 'percentWin') {
@@ -212,7 +247,9 @@ export default function ConfigPage () {
     function saveMap() {
         const targetId = config.config.id;
 
-        setGlobalConfig({list : [...globalConfig.list, config.config], config: null});
+        if(!params.id) {
+            setGlobalConfig({list : [...globalConfig.list, config.config], config: null});
+        }
 
         navigate('/edit-session/' + targetId);
     }

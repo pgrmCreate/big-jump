@@ -20,7 +20,7 @@ function App() {
                         <Route path="/" index element={<Home/>}/>
                         <Route path="/game" element={<GamePage/>}/>
                         <Route path="/config" element={<ConfigPage/>}/>
-                        <Route path="/edit-config/:id" element={<ConfigEditHomePage/>}/>
+                        <Route path="/edit-config/:id" element={<ConfigPage/>}/>
                         <Route path="/edit-session/:id" element={<ConfigSessionPage/>}/>
                     </Routes>
                 </BrowserRouter>

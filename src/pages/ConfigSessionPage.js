@@ -19,6 +19,8 @@ export default function ConfigSessionPage() {
     });
     const [participantInfo, setParticipantInfo] = useState(['Identifiant', 'Age', 'Sexe', 'Email']);
     const [textsEvent, setTextsEvent] = useState([]);
+    const [instructionPage, setInstructionPage] = useState('');
+    const [endPage, setEndPage] = useState('');
 
     function addParticipantInfo(targetLabel = 'new info') {
         setParticipantInfo([...participantInfo, targetLabel])
@@ -60,11 +62,20 @@ export default function ConfigSessionPage() {
     }
 
     function saveMap() {
+        currentConfig.setup.participantInfo = participantInfo;
+        currentConfig.setup.instructionPage = instructionPage;
+        currentConfig.setup.textsEvent = textsEvent;
+        currentConfig.setup.gameInterfacePage = {
+            actionPoints : gameInterfaceLabel.actionPoints,
+            score : gameInterfaceLabel.score,
+            exploite : gameInterfaceLabel.exploite,
+            explore : gameInterfaceLabel.explore,
+        };
+
         const targetIndex = globalConfig.list.findIndex(i => i.id === currentConfig.id);
         const targetArray =  [...globalConfig.list];
 
         targetArray[targetIndex] = currentConfig;
-
 
         setGlobalConfig({list : targetArray, config: null});
 
@@ -97,7 +108,7 @@ export default function ConfigSessionPage() {
 
                     <ul>
                         { participantInfo.map((info, index) => (
-                            <li className="mb-2 d-flex">
+                            <li className="mb-2 d-flex" key={index}>
                                 <input className="form-control" type="text" value={info}
                                     onChange={(e) => editParticipantInfo(e, index)}/>
 
@@ -116,7 +127,7 @@ export default function ConfigSessionPage() {
                     <div className="d-flex mb-5">
                         <select className="form-select" value={participantInfoPredifined}
                         onChange={(e) => {setParticipantInfoPredifined(e.target.value)}}>
-                            <option value="Identifiant">Identifiant</option>
+                            <option value="Login">Login</option>
                             <option value="Age">Age</option>
                             <option value="Sexe">Sexe</option>
                             <option value="Email">Email</option>
@@ -143,7 +154,8 @@ export default function ConfigSessionPage() {
                     <h3>Instructions page</h3>
                     <p className="fst-italic">Indicate the instructions to be given to the player before playing</p>
 
-                    <textarea className="form-control" cols="30" rows="10"></textarea>
+                    <textarea className="form-control" cols="30" rows="10" value={instructionPage}
+                        onChange={(e) => setInstructionPage(e.target.value)}></textarea>
                 </div>
 
                 <div className="section-config-aside"></div>
@@ -194,7 +206,7 @@ export default function ConfigSessionPage() {
                     <p className="fst-italic">proposal of text to display by type of event</p>
 
                     { textsEvent.map((currentEvent, currentIndex) => (
-                        <div className="d-flex mb-3">
+                        <div className="d-flex mb-3" key={currentIndex}>
                             <select className="form-select mx-2" value={currentEvent.type}
                                     onChange={(e) => {editTextEvent('type', e.target.value, currentIndex)}}>
                                 <option value="earn">Earn</option>
@@ -247,7 +259,8 @@ export default function ConfigSessionPage() {
                     <h3>End page</h3>
                     <p className="fst-italic">Message or link sent to the player at the end of the game</p>
 
-                    <textarea className="form-control" cols="30" rows="10"></textarea>
+                    <textarea className="form-control" cols="30" rows="10" value={endPage}
+                    onChange={(e) => setEndPage(e.target.value)}></textarea>
                 </div>
 
                 <div className="section-config-aside"></div>
