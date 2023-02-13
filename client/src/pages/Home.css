@@ -1,0 +1,38 @@
+.experiences-container {
+    display: flex;
+    flex-wrap: wrap;
+    text-align: left;
+}
+
+.experience-card {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    padding: 10px;
+    border: 1px solid #EEE;
+    margin: 5px;
+}
+
+.experience-head {
+    display: flex;
+    width: 100%;
+    padding: 0 15px;
+}
+
+.experience-title {
+    flex: 1;
+    font-weight: bolder;
+}
+
+.experience-date {
+    flex: 1;
+    text-align: right;
+    color: #666;
+    font-size: 14px;
+}
+
+.link-target-xp {
+    font-size: 19px;
+    color: #334375;
+    font-weight: bolder;
+}
