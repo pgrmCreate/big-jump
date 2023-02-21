@@ -3,6 +3,5 @@ const GameConfigSchema = require('./models/GameConfigSchema');
 
 
 exports.LoadDb = async function () {
-    // await mongoose.connect('mongodb://127.0.0.1:27017/explo2');
-    await mongoose.connect('mongodb://127.0.0.1:27017/explo2', { useNewUrlParser: true, useUnifiedTopology: true });
+    await mongoose.connect(`mongodb+srv://luccionijbaptiste:${process.env.DB_PASSWORD}@cluster0.zji75nl.mongodb.net/?retryWrites=true&w=majority`);
 }

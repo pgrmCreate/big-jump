@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require('express');
 const app = express();
 const port = 3001;
@@ -31,3 +33,5 @@ app.use('/api/history', historyGameRoutes);
 app.listen(port, () => {
     console.log(`Launch app to port ${port}`)
 })
+
+
