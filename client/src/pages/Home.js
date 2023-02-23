@@ -49,11 +49,9 @@ export default function Home() {
 
                     newGameConfig.setup = newObject;
                     newGameConfig._id = newObject._id;
-                    console.log(newGameConfig)
                     listConfig.push(newGameConfig);
                 })
 
-                console.log(listConfig)
                 setGlobalConfig({list: listConfig, config: null});
             })
     }
