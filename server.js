@@ -13,6 +13,10 @@ const cookieParser = require("cookie-parser");
 
 //db.LoadDb().catch(err => console.log(err));
 
+app.get('/', (req, res) => {
+    res.send('Hello World!')
+})
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
