@@ -3,7 +3,6 @@ const GameConfigSchema = require('./models/GameConfigSchema');
 
 
 exports.LoadDb = async function () {
-    console.log('try connect with ' + process.env.DB_PASSWORD);
     await mongoose.connect(`mongodb+srv://luccionijbaptiste:${process.env.DB_PASSWORD}@cluster0.zji75nl.mongodb.net/?retryWrites=true&w=majority`);
     console.log('db connected');
 }
