@@ -11,7 +11,7 @@ const bodyParser =  require('body-parser');
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
-//db.LoadDb().catch(err => console.log(err));
+db.LoadDb().catch(err => console.log(err));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
