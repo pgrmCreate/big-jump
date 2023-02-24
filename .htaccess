@@ -4,7 +4,7 @@ RewriteCond %{HTTPS} !=on
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # Rediriger toutes les requêtes vers le serveur Node.js
- //RewriteRule ^(.*)$ http://127.0.0.1:3000/$1 [P,L]
+ #RewriteRule ^(.*)$ http://127.0.0.1:3000/$1 [P,L]
 
 # Règles pour le dossier client
 RewriteCond %{REQUEST_URI} ^/client/build [NC]
