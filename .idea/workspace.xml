@@ -6,13 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="df89ccb8-fdbc-4a54-823c-7ccd03a98237" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/build/asset-manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/build/asset-manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/build/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/client/build/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/build/static/js/main.6ac31d46.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/build/static/js/main.6ac31d46.js.LICENSE.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/build/static/js/main.6ac31d46.js.map" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/class/Requester.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/class/Requester.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,7 +76,7 @@
       <workItem from="1674625977435" duration="45214000" />
       <workItem from="1674986732859" duration="5849000" />
       <workItem from="1675676862001" duration="27521000" />
-      <workItem from="1676828990097" duration="26651000" />
+      <workItem from="1676828990097" duration="27100000" />
     </task>
     <servers />
   </component>
