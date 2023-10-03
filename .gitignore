@@ -4,6 +4,7 @@
 /node_modules
 /client/node_modules
 /client/src
+/client/.env
 /.pnp
 .pnp.js
 .env
