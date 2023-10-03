@@ -31,6 +31,11 @@ app.use('/api/user', userRoutes);
 app.use('/api/gameconfig', gameConfigRoutes);
 app.use('/api/history', historyGameRoutes);
 
+app.get('/config/apiurl', (req, res) => {
+    const apiUrl = process.env.APP_REACT_APP_TARGET_API;
+    res.json({ apiUrl });
+});
+
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'client/build/index.html'));
 });

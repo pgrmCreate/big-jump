@@ -22,21 +22,31 @@ function App() {
     Modal.setAppElement('#root');
 
     useEffect(() => {
-        if(cookies.user && cookies.user.token) {
-            Requester.get('/api/user/reconnect', true)
-                .then(res => res.json())
-                .then(data => {
-                    if(data.error) {
-                        removeCookies('user')
-                        return;
-                    }
+        function reconnect () {
+            if(cookies.user && cookies.user.token) {
+                Requester.get('/api/user/reconnect', true)
+                    .then(res => res.json())
+                    .then(data => {
+                        if(data.error) {
+                            removeCookies('user')
+                            return;
+                        }
 
-                    userConfig[1](cookies.user);
-                    Requester.token = cookies.user.token;
-                }).catch((error) => {
-                removeCookies('user')
-            });
+                        userConfig[1](cookies.user);
+                        Requester.token = cookies.user.token;
+                    }).catch((error) => {
+                    removeCookies('user')
+                });
+            }
         }
+
+        fetch('/config/apiurl')
+            .then(res => res.json())
+            .then(data => {
+                Requester.localUrl = data.apiUrl;
+                reconnect()
+            });
+
     }, [])
 
     return (

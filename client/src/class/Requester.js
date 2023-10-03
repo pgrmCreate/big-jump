@@ -1,5 +1,5 @@
 export class Requester {
-    static localUrl = process.env.REACT_APP_TARGET_API;
+    static localUrl = '';
     //static localUrl = 'https://big-jump.osc-fr1.scalingo.io';
 
     static token = null;
