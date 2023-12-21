@@ -11,8 +11,8 @@ export function Map(props) {
     const setupConfig = props.config.config.setup;
 
     const params = {
-        sizeGrid: 35,
-        basePosition: 10,
+        sizeGrid: GameConfig.sizeCellGrid,
+        basePosition: GameConfig.basePosition,
         screen: {
             h: window.innerHeight,
             w: window.innerWidth,
@@ -33,12 +33,12 @@ export function Map(props) {
             context.beginPath();
             context.rect(rect.x, rect.y, rect.w, rect.h);
             if (context.isPointInPath(e.offsetX, e.offsetY) && props.targetGroupZone !== null
-                && rect.x > params.basePosition && rect.y > params.basePosition) {
+                && rect.x > params.basePosition && rect.y > params.basePosition && props.isClickOnGridZone(listRect,index )) {
                 context.fillStyle = rect.isSelected ? 'white' : 'red';
                 rect.isSelected = !rect.isSelected;
                 context.fill();
 
-                props.handleZonePicked(listRect, index, params, rect.isSelected);
+                props.handleZonePicked(listRect, index, params, rect.isSelected)
             }
 
             context.closePath();

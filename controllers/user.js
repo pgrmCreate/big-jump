@@ -32,6 +32,8 @@ exports.login = (req, res, next) => {
 };
 
 exports.reconnect = (req, res, next) => {
+    let targetCookieUser = req.cookies.user;
+
     if (targetCookieUser === '') {
         res.status(400).json({ error: 'no token' });
     }

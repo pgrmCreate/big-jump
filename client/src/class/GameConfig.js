@@ -2,6 +2,8 @@ export class GameConfig {
     static indexZone = 0;
     static indexLot = 0;
     static idCounter = 0;
+    static sizeCellGrid = 35;
+    static basePosition = 10;
 
     // TYPE DRAW
     //      1. SEQUENTIAL

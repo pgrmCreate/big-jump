@@ -40,7 +40,7 @@ function App() {
             }
         }
 
-        fetch('/config/apiurl')
+        fetch(Requester.localUrl + '/config/apiurl')
             .then(res => res.json())
             .then(data => {
                 Requester.localUrl = data.apiUrl;

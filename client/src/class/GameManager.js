@@ -29,6 +29,8 @@ export class GameManager {
     settingConfig(config) {
         this.gameConfig = config;
 
+        this.player.score = GameManager.get().gameConfig.setup.startPoint;
+
         this.player.position.x = GameManager.get().gameConfig.setup.initPositionX;
         this.player.position.y = GameManager.get().gameConfig.setup.initPositionY;
     }

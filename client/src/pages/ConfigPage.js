@@ -45,6 +45,14 @@ export default function ConfigPage() {
         }
     }, [])
 
+    function getValidConfigStep1() {
+        if(!config.config.setup.height || !config.config.setup.width)
+            return true;
+
+        return (config.config.setup.name === '' || zoneGroup.length === 0
+            || config.config.setup.width < 3 || config.config.setup.height < 3);
+    }
+
     function updateConfig() {
         setConfig({config: config.config});
     }
@@ -78,8 +86,9 @@ export default function ConfigPage() {
 
     function handleZonePicked(zoneList, targetZone, params, isSelected) {
         const targetRect = zoneList[targetZone];
-        const targetX = Math.floor(targetRect.x / params.sizeGrid);
-        const targetY = Math.floor(targetRect.y / params.sizeGrid);
+        const targetX = Math.floor(targetRect.x / GameConfig.sizeCellGrid);
+        const targetY = Math.floor(targetRect.y / GameConfig.sizeCellGrid);
+
 
         const newGroupZone = [...zoneGroup];
 
@@ -95,6 +104,24 @@ export default function ConfigPage() {
 
             updateConfig();
         }
+    }
+
+    function isClickOnGridZone(zoneList, targetZone) {
+        const targetRect = zoneList[targetZone];
+        const maxTargetX = (config.config.setup.width - 2) * GameConfig.sizeCellGrid + GameConfig.basePosition + 1;
+        const maxTargetY = (config.config.setup.height - 2) * GameConfig.sizeCellGrid + GameConfig.basePosition + 1;
+        const minTargetX = (1) * GameConfig.sizeCellGrid + GameConfig.basePosition + 1;
+        const minTargetY = (1) * GameConfig.sizeCellGrid + GameConfig.basePosition + 1;
+
+        console.log('minTargetX', minTargetX)
+        console.log('targetRect.x', targetRect.x)
+
+
+        if(targetRect.x > maxTargetX || targetRect.y > maxTargetY
+            || targetRect.x < minTargetY || targetRect.y < minTargetY)
+            return false;
+
+        return true;
     }
 
 
@@ -162,6 +189,9 @@ export default function ConfigPage() {
     }
 
     function changeZoneConfig(targetZoneGroup, key, value) {
+        if(value < 0)
+            return;
+
         if (key === 'gainLevelAmount' || key === 'threatLevelAmount') {
             setIsLevelNeedEdit(true);
         }
@@ -464,12 +494,12 @@ export default function ConfigPage() {
                             <div className="col-8">
                                 <div className="grid-editor-container">
                                     <Map modeEditor={true} config={config} handleZonePicked={handleZonePicked}
-                                         targetGroupZone={pickedZoneGroup} zoneGroup={zoneGroup}/>
+                                         targetGroupZone={pickedZoneGroup} zoneGroup={zoneGroup} isClickOnGridZone={isClickOnGridZone}/>
                                 </div>
 
                                 <div className="d-flex justify-content-end">
                                     <button type="button" onClick={saveStep} data-target-nav={2}
-                                            disabled={config.config.setup.name === '' || zoneGroup.length === 0}
+                                            disabled={getValidConfigStep1()}
                                             className="btn btn-primary">
                                         <i className="fa-solid fa-arrow-right mx-2" data-target-nav={2}/>Save map / Next
                                     </button>
