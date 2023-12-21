@@ -211,7 +211,7 @@ export function Map(props) {
             context.beginPath();
             const xStart = (params.basePosition + 1) + (currentZone.x * params.sizeGrid);
             const yStart = (params.basePosition + 1) + (currentZone.y * params.sizeGrid);
-            context.fillStyle = currentZone.color;
+            context.fillStyle = (currentZone.isVisible || props.modeEditor) ? currentZone.color : 'white';
 
             const targetRectPoint = {
                 xStart: xStart,
@@ -228,8 +228,6 @@ export function Map(props) {
 
             context.fill();
         });
-
-        console.log(setupConfig.zones)
     }
 
     return (

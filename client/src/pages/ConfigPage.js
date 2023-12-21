@@ -113,9 +113,6 @@ export default function ConfigPage() {
         const minTargetX = (1) * GameConfig.sizeCellGrid + GameConfig.basePosition + 1;
         const minTargetY = (1) * GameConfig.sizeCellGrid + GameConfig.basePosition + 1;
 
-        console.log('minTargetX', minTargetX)
-        console.log('targetRect.x', targetRect.x)
-
 
         if(targetRect.x > maxTargetX || targetRect.y > maxTargetY
             || targetRect.x < minTargetY || targetRect.y < minTargetY)
@@ -189,6 +186,7 @@ export default function ConfigPage() {
     }
 
     function changeZoneConfig(targetZoneGroup, key, value) {
+        const targetIdZoneGroup = config.config.setup.zones.find(i => i.id === targetZoneGroup[0]).targetGroupZone;
         if(value < 0)
             return;
 
@@ -207,6 +205,17 @@ export default function ConfigPage() {
         }
 
         config.config.setup.zones.map((item) => {
+            if(item.targetGroupZone === targetIdZoneGroup) {
+                if (key === 'percentWin' || key === 'percentLoose') {
+                    item[key] = around2Decimales(value / 100);
+                    checkingAjustingPercent(key, value, item);
+                    return;
+                }
+
+                item[key] = value;
+            }
+        })
+        /*config.config.setup.zones.map((item) => {
             targetZoneGroup.forEach((elementZone) => {
                 if (elementZone === item.id) {
                     // Decimal property
@@ -219,7 +228,7 @@ export default function ConfigPage() {
                     item[key] = value;
                 }
             })
-        });
+        });*/
 
         updateConfig();
     }
@@ -270,8 +279,6 @@ export default function ConfigPage() {
                 config.config.setup.lotLooseConfig.randomAmount.exploration.push(0);
                 config.config.setup.lotLooseConfig.randomAmount.exploitation.push(0);
             }
-
-            console.log('random', config.config.setup.lotLooseConfig);
         }
     }
 
@@ -282,11 +289,9 @@ export default function ConfigPage() {
         const targetTypeLot = [type === 'gain' ? 'lotWinConfig' : 'lotLooseConfig']
         const targetRefArray = config.config.setup[targetTypeLot].randomAmount[action];
 
-        console.log('change random draw to ', targetDrawIndex);
         targetRefArray[targetDrawIndex] = targetValue;
 
         // Check if total is >100
-        console.log(targetValue)
         let total = targetRefArray.reduce((c, i) => c += i, 0);
 
         if(total > 100) {
@@ -347,7 +352,6 @@ export default function ConfigPage() {
             const newConfig = new GameConfig();
             newConfig.setup = data;
             newConfig._id = data._id;
-            console.log(newConfig)
             setGlobalConfig({list: [...globalConfig.list, config.config], config: newConfig});
             navigate('/edit-session/' + data._id);
         }).catch((error) => console.error(error));
@@ -537,12 +541,12 @@ export default function ConfigPage() {
                                                 <td>
                                                     {!getZoneAttributFromGroup(currentZoneGroup, 'isVisible') && (
                                                         <i className="fa-solid fa-square"
-                                                           onClick={() => changeZoneConfig(currentZoneGroup, 'isVisible', false)}/>
+                                                           onClick={() => changeZoneConfig(currentZoneGroup, 'isVisible', true)}/>
                                                     )}
 
                                                     {getZoneAttributFromGroup(currentZoneGroup, 'isVisible') && (
                                                         <i className="fa-solid fa-square-check"
-                                                           onClick={() => changeZoneConfig(currentZoneGroup, 'isVisible', true)}/>
+                                                           onClick={() => changeZoneConfig(currentZoneGroup, 'isVisible', false)}/>
                                                     )}
                                                 </td>
                                                 <td>{getZoneAttributFromGroup(currentZoneGroup, 'empty')}%</td>

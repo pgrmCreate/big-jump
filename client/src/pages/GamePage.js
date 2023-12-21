@@ -138,8 +138,6 @@ export function GamePage() {
 
         newEnteringInfo[getIndexEnteringInfo(label)].value = value;
 
-        console.log(enteringParticipantInfo)
-
         setEnteringParticipantInfo(newEnteringInfo);
     }
 
@@ -152,18 +150,26 @@ export function GamePage() {
         const targetObject = {...player};
 
         if (direction === 'up') {
+            if(targetObject.position.y < 2)
+                return
             targetObject.position.y -= 1;
         }
 
         if (direction === 'left') {
+            if(targetObject.position.x < 2)
+                return
             targetObject.position.x -= 1;
         }
 
         if (direction === 'right') {
+            if(targetObject.position.x + 3 > config.config.setup.width)
+                return
             targetObject.position.x += 1;
         }
 
         if (direction === 'down') {
+            if(targetObject.position.y + 3 > config.config.setup.height)
+                return
             targetObject.position.y += 1;
         }
 
