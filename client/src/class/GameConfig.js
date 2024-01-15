@@ -104,4 +104,8 @@ export class GameConfig {
 
         GameConfig.indexLot++;
     }
+
+    cleanAllLot() {
+        this.setup.lots = [];
+    }
 }

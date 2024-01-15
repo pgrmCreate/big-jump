@@ -218,10 +218,6 @@ export function GamePage() {
             direction : null
         };
 
-        /*console.log('randomDraw', randomDraw);
-        console.log('target zone', zone);
-        console.log('ALL ZONES', GameManager.get().gameConfig.setup.zones);
-        console.log('ALL LOT', setup.lots);*/
 
         if (randomDraw <= zone.percentLoose) {
             targetWinLot = false;
@@ -335,11 +331,18 @@ export function GamePage() {
                     </div>
 
                     {gameRoundLeft > 0 && (
-                        <div className="col-12">
-                            <div className="d-flex justify-content-center">
-                                <Map modeEditor={false} config={config} player={player}/>
+                        <div className="row">
+                            <div className="col-3 col-xl-2 game-messages-container">
+
+                            </div>
+
+                            <div className="col-9 col-xl-10">
+                                <div className="d-flex justify-content-center">
+                                    <Map modeEditor={false} config={config} player={player}/>
+                                </div>
                             </div>
                         </div>
+
                     )}
 
                     {gameRoundLeft === 0 && (
@@ -372,7 +375,7 @@ export function GamePage() {
                     )}
 
                     {gameRoundLeft > 0 && (
-                        <div className="col-12">
+                        <div className="col-9 offset-3 col-xl-10 offset-xl-2">
                             <div className="d-flex justify-content-center mb-4">
                                 <div>
                                     <div className="d-flex justify-content-center">

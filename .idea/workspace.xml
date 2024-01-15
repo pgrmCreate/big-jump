@@ -6,8 +6,18 @@
   <component name="ChangeListManager">
     <list default="true" id="df89ccb8-fdbc-4a54-823c-7ccd03a98237" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/components/Map.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/components/Map.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/build/asset-manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/build/asset-manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/build/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/client/build/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/build/static/css/main.c459e0d5.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/build/static/css/main.c459e0d5.css.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/build/static/js/main.a7078bd2.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/build/static/js/main.a7078bd2.js.LICENSE.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/build/static/js/main.a7078bd2.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/class/GameConfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/class/GameConfig.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/class/Requester.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/class/Requester.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/pages/ConfigPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/ConfigPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/pages/ConfigSessionPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/ConfigSessionPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/pages/GamePage.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/GamePage.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/pages/GamePage.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/GamePage.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -54,7 +64,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/projects/big-jump&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/formations/Html &amp; Css &amp; Bootstrap &amp; Jquery/22 decembre 2023/TD/TD 2 - Adventure&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -115,7 +125,10 @@
       <workItem from="1701937270363" duration="591000" />
       <workItem from="1702034140866" duration="22000" />
       <workItem from="1702464851412" duration="1151000" />
-      <workItem from="1703157121933" duration="8220000" />
+      <workItem from="1703157121933" duration="10723000" />
+      <workItem from="1704710438317" duration="8028000" />
+      <workItem from="1705067196082" duration="1256000" />
+      <workItem from="1705242309502" duration="8076000" />
     </task>
     <servers />
   </component>

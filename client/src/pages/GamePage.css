@@ -21,6 +21,12 @@
     color: orangered;
 }
 
+.game-messages-container {
+    max-height: 60vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
 @keyframes slideUp {
     0% {
         top: 50px;

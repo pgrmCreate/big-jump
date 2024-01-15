@@ -23,34 +23,54 @@ export default function ConfigPage() {
         if (params.id) {
             const currentConfig = globalConfig.list.find(i => i.setup._id === params.id);
 
-            const zoneGroupeBuilder = {};
-            const targetNewGroupe = [];
+            makeZoneGroup(currentConfig);
+
             setConfig({config: currentConfig});
-
-            currentConfig.setup.zones.map((currentZone) => {
-                if (!Object.hasOwnProperty(currentZone.targetGroupZone)) {
-                    zoneGroupeBuilder[currentZone.targetGroupZone] = [];
-                }
-
-                zoneGroupeBuilder[currentZone.targetGroupZone].push(currentZone.id);
-            })
-            Object.keys(zoneGroupeBuilder).forEach(k => targetNewGroupe.push(zoneGroupeBuilder[k]))
-            setZoneGroup(targetNewGroupe);
 
             setIsLevelNeedEdit(false);
             setConfigStep(1)
         } else {
-            setConfig({'config': new GameConfig()});
+            const newConfig = new GameConfig();
+            makeZoneGroup(newConfig);
+            setConfig({'config': newConfig});
             setConfigStep(1)
         }
-    }, [])
+    }, []);
+
+    function makeZoneGroup(targetSpecificConfig = null) {
+        let targetConfig = null;
+        const zoneGroupeBuilder = {};
+        const targetNewGroupe = [];
+
+        if(targetSpecificConfig) {
+            targetConfig = targetSpecificConfig;
+        } else {
+            targetConfig = config.config;
+        }
+
+        const newKeyGroupZone = [];
+
+        targetConfig.setup.zones.map((currentZone) => {
+            if(newKeyGroupZone.indexOf(currentZone.targetGroupZone) === -1) {
+                zoneGroupeBuilder[currentZone.targetGroupZone] = [];
+                newKeyGroupZone.push(currentZone.targetGroupZone);
+            }
+
+            zoneGroupeBuilder[currentZone.targetGroupZone].push(currentZone.id);
+        });
+
+        Object.keys(zoneGroupeBuilder).forEach(k => targetNewGroupe.push(zoneGroupeBuilder[k]))
+        setZoneGroup(targetNewGroupe);
+    }
 
     function getValidConfigStep1() {
-        if(!config.config.setup.height || !config.config.setup.width)
+        if(!config.config.setup.height || !config.config.setup.width ||
+            config.config.setup.zones.length === 0)
             return true;
 
         return (config.config.setup.name === '' || zoneGroup.length === 0
-            || config.config.setup.width < 3 || config.config.setup.height < 3);
+            || config.config.setup.width < 4 || config.config.setup.height < 4 || config.config.setup.height > 102
+            || config.config.setup.width > 102);
     }
 
     function updateConfig() {
@@ -77,10 +97,9 @@ export default function ConfigPage() {
         const targetZone = parseInt(e.target.dataset.targetZoneD);
 
         setPickedZoneGroup(null);
-        zoneGroup.map((item) => {
-            config.config.setup.zones.filter(i => i.id === item)
-        })
-        setZoneGroup(zoneGroup.filter((e, i) => i !== targetZone));
+        config.config.setup.zones = config.config.setup.zones.filter(i => i.targetGroupZone !== targetZone)
+        makeZoneGroup();
+        console.log('zoneGroup', zoneGroup);
         updateConfig();
     }
 
@@ -136,6 +155,8 @@ export default function ConfigPage() {
 
         if (targetNav === 4) {
             if (isLevelNeedEdit) {
+                config.config.cleanAllLot();
+
                 for (let i = 0; i < config.config.setup.gainLevelAmount; i++) {
                     config.config.createLot(true, i + 1, 14, 25, 3, []);
                 }
@@ -234,6 +255,10 @@ export default function ConfigPage() {
     }
 
     function changeGlobalConfig(key, value, isNumber = false) {
+        if (key === 'gainLevelAmount' || key === 'threatLevelAmount') {
+            setIsLevelNeedEdit(true);
+        }
+
         if (isNumber) {
             if (isNaN(value)) {
                 console.error('Input value is not a number for', key);
@@ -412,11 +437,11 @@ export default function ConfigPage() {
 
                                         <div className="d-flex">
                                             <input type="number" className="form-control mx-2" placeholder="Width"
-                                                   onChange={(e) => setSizeMap('width', e.target.value, true)}
+                                                   onChange={(e) => setSizeMap('width', e.target.value)}
                                                    value={config.config.setup.width - 2}/>
 
                                             <input type="number" className="form-control mx-2" placeholder="Height"
-                                                   onChange={(e) => setSizeMap('height', e.target.value, true)}
+                                                   onChange={(e) => setSizeMap('height', e.target.value)}
                                                    value={config.config.setup.height - 2}/>
                                         </div>
                                     </fieldset>

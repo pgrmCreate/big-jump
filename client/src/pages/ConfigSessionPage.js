@@ -11,7 +11,6 @@ export default function ConfigSessionPage() {
     const navigate = useNavigate();
     const [globalConfig, setGlobalConfig] = useContext(ConfigContext);
     const [currentConfig, setCurrentConfig] = useState(null);
-    console.log(globalConfig)
 
     const [participantInfoPredifined, setParticipantInfoPredifined] = useState('Identifiant');
     const [gameInterfaceLabel, setGameInterfaceLabel] = useState({
@@ -24,6 +23,7 @@ export default function ConfigSessionPage() {
     const [textsEvent, setTextsEvent] = useState([]);
     const [instructionPage, setInstructionPage] = useState('');
     const [endPage, setEndPage] = useState('');
+    const [zoneGroup, setZoneGroup] = useState([]);
 
     useEffect(() => {
         loadConfig();
@@ -41,6 +41,23 @@ export default function ConfigSessionPage() {
         }
     }, [currentConfig])
 
+    function createGroupZone() {
+        const zoneGroupeBuilder = {};
+        const targetNewGroupe = [];
+
+        const newKeyGroupZone = [];
+        currentConfig.setup.zones.map((currentZone) => {
+            if(newKeyGroupZone.indexOf(currentZone.targetGroupZone) === -1) {
+                zoneGroupeBuilder[currentZone.targetGroupZone] = [];
+                newKeyGroupZone.push(currentZone.targetGroupZone);
+            }
+
+            zoneGroupeBuilder[currentZone.targetGroupZone].push(currentZone.id);
+        });
+
+        Object.keys(zoneGroupeBuilder).forEach(k => targetNewGroupe.push(zoneGroupeBuilder[k]))
+        setZoneGroup(targetNewGroupe);
+    }
     function initConfig() {
         if (params.id) {
             setParticipantInfo(currentConfig.setup.participantInfo);
@@ -48,6 +65,8 @@ export default function ConfigSessionPage() {
             setEndPage(currentConfig.setup.endPage);
             setTextsEvent(currentConfig.setup.textsEvent);
             setGameInterfaceLabel(currentConfig.setup.gameInterfacePage);
+
+            createGroupZone();
         }
     }
 
@@ -93,6 +112,7 @@ export default function ConfigSessionPage() {
     }
 
     function editTextEvent(key, value, index) {
+        console.log(currentConfig);
         const targetArray = [...textsEvent];
 
         targetArray[index][key] = value;
@@ -288,8 +308,8 @@ export default function ConfigSessionPage() {
                                             onChange={(e) => {
                                                 editTextEvent('zone', e.target.value, currentIndex)
                                             }}>
-                                        {currentConfig.setup.zones.map((currentZone) => (
-                                            <option value={currentZone.id}>Zone {currentZone.id}</option>
+                                        {zoneGroup.map((currentZone, indexZone) => (
+                                            <option value={indexZone} key={indexZone}>Zone {currentIndex}</option>
                                         ))}
                                     </select>
 
