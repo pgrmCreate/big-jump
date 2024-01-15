@@ -1,7 +1,7 @@
 export class Requester {
-    static localUrl = 'https://big-jump.osc-fr1.scalingo.io';
+    //static localUrl = 'https://big-jump.osc-fr1.scalingo.io';
     //static localUrl = 'http://localhost:3001';
-    //static localUrl = '';
+    static localUrl = '';
 
     static token = null;
 

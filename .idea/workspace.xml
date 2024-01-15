@@ -6,19 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="df89ccb8-fdbc-4a54-823c-7ccd03a98237" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/build/asset-manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/build/asset-manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/build/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/client/build/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/build/static/css/main.c459e0d5.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/build/static/css/main.c459e0d5.css.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/build/static/js/main.a7078bd2.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/build/static/js/main.a7078bd2.js.LICENSE.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/build/static/js/main.a7078bd2.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/class/GameConfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/class/GameConfig.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/class/Requester.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/class/Requester.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/pages/ConfigPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/ConfigPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/pages/ConfigSessionPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/ConfigSessionPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/pages/GamePage.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/GamePage.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/pages/GamePage.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/GamePage.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,7 +116,7 @@
       <workItem from="1703157121933" duration="10723000" />
       <workItem from="1704710438317" duration="8028000" />
       <workItem from="1705067196082" duration="1256000" />
-      <workItem from="1705242309502" duration="8076000" />
+      <workItem from="1705242309502" duration="8569000" />
     </task>
     <servers />
   </component>
