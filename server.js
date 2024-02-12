@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 const corsOptions = {
-    origin: 'http://localhost:3000',
+    origin: 'https://bigjump.osc-fr1.scalingo.io/',
     credentials: true
 };
 app.use(cors(corsOptions));
