@@ -17,8 +17,10 @@ db.LoadDb().catch(err => console.log(err));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+const targetLinkCors = 'https://bigjump.osc-fr1.scalingo.io';
+//const targetLinkCors = 'http://localhost:3000';
 const corsOptions = {
-    origin: 'https://bigjump.osc-fr1.scalingo.io/',
+    origin: targetLinkCors,
     credentials: true
 };
 app.use(cors(corsOptions));

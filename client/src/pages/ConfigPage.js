@@ -549,10 +549,6 @@ export default function ConfigPage() {
                                                         onChange={(e) =>
                                                             handleChangeNameGroupZone(currentIndex, e.target.value, item)}/>
 
-                                                        {(pickedZoneGroup === currentIndex) && (
-                                                            <>current picked zone</>
-                                                        )}
-
                                                     </div>
 
                                                     <div>
