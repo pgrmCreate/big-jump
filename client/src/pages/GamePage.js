@@ -302,7 +302,7 @@ export function GamePage() {
             { (!isStart && !isGettingParticipantInfo) && (
             <div className="row vh-100 align-items-center">
                 <div className="col-12 ">
-                    <p>
+                    <p style={{whiteSpace: 'pre-line'}}>
                         { config.config.setup.instructionPage }
                     </p>
 
@@ -353,7 +353,7 @@ export function GamePage() {
                                         <b>{player.score}</b> points !
                                     </p>
 
-                                    <p>
+                                    <p style={{whiteSpace: 'pre-line'}}>
                                         { config.config.setup.endPage }
                                     </p>
 

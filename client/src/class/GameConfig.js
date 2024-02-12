@@ -68,7 +68,7 @@ export class GameConfig {
         });
     }
 
-    createZone(x, y, color, targetGroupZone = null) {
+    createZone(x, y, color, name, targetGroupZone = null) {
         this.setup.zones.push({
             id: GameConfig.indexZone,
             x : x,

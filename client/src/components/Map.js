@@ -1,12 +1,17 @@
-import React, {useCallback, useContext, useEffect, useRef, useState} from "react";
-import {GameManager} from "../class/GameManager";
+import React, {useCallback, useContext, useEffect, useRef, useState, forwardRef, useImperativeHandle,} from "react";
 import playerPicture from '../assets/images/character-svgrepo-com.svg'
 import {GameConfig} from "../class/GameConfig";
-import {ConfigContext} from "../utils/ConfigContext";
 
 // context.arc(50, 100, 20, 0, 2*Math.PI)
 
-export function Map(props) {
+
+export const Map = forwardRef((props, ref) => {
+    useImperativeHandle(ref, () => ({
+        generateMap() {
+            updateGenerateMap();
+        }
+    }));
+
     const canvasRef = useRef(null);
     const setupConfig = props.config.config.setup;
 
@@ -47,8 +52,18 @@ export function Map(props) {
 
 
     useEffect(() => {
+        updateGenerateMap();
+
+        return () => {
+            //canvasRef.current.removeEventListener("click", handleMouseClick);
+        }
+    }, [props.player, props.targetGroupZone, props.zoneGroup, listRect]);
+
+    function updateGenerateMap() {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
+
+        console.log(props)
 
         const playerImage = new Image();
         playerImage.onload = () => {
@@ -66,11 +81,7 @@ export function Map(props) {
         } else {
             drawAllZones(context);
         }
-
-        return () => {
-            //canvasRef.current.removeEventListener("click", handleMouseClick);
-        }
-    }, [props.player, props.config, props.targetGroupZone, props.zoneGroup, listRect]);
+    }
 
     function drawPlayer(context, targetImage) {
         const xStart = (params.basePosition + 1) + (props.player.position.x * params.sizeGrid);
@@ -236,4 +247,5 @@ export function Map(props) {
                     width={(setupConfig.width * params.sizeGrid)}/>
         </div>
     );
-}
+
+})

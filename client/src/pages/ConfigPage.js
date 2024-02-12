@@ -1,6 +1,6 @@
 import './ConfigPage.css';
 import {Map} from "../components/Map";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import {GameConfig} from "../class/GameConfig";
 import {ConfigContext} from "../utils/ConfigContext";
 import {Link, useNavigate, useParams} from 'react-router-dom';
@@ -10,14 +10,18 @@ export default function ConfigPage() {
     const params = useParams();
     const [configStep, setConfigStep] = useState(null);
     const [zoneGroup, setZoneGroup] = useState([]);
+    const [zoneGroupName, setZoneGroupName] = useState({});
+    const [zoneGroupColor, setZoneGroupColor] = useState({});
     const [config, setConfig] = useState(null);
     const [pickedZoneGroup, setPickedZoneGroup] = useState(null);
     const [targetLevelConfig, setTargetLevelConfig] = useState(null);
     const [simpleIndexLevelPicked, setSimpleIndexLevelPicked] = useState(0);
     const [globalConfig, setGlobalConfig] = useContext(ConfigContext);
+    const [pageZoneConfigError, setPageZoneConfigError] = useState(false);
     const navigate = useNavigate();
     const [colorSelect, setColorSelect] = useState('#ee9c08');
     const [isLevelNeedEdit, setIsLevelNeedEdit] = useState(true);
+    const mapRef = useRef(null);
 
     useEffect(() => {
         if (params.id) {
@@ -36,6 +40,10 @@ export default function ConfigPage() {
             setConfigStep(1)
         }
     }, []);
+
+    function generateMap() {
+        mapRef.current.generateMap();
+    }
 
     function makeZoneGroup(targetSpecificConfig = null) {
         let targetConfig = null;
@@ -78,6 +86,11 @@ export default function ConfigPage() {
     }
 
     function addGroupeZone() {
+        if(config.config.setup.zones.length > 30)
+            return;
+
+        setZoneGroupName({...zoneGroupName, [zoneGroup.length] : 'zone #' + zoneGroup.length});
+        setZoneGroupColor({...zoneGroupColor, [zoneGroup.length] : '#FFCC00'});
         setZoneGroup([...zoneGroup, []]);
     }
 
@@ -95,12 +108,32 @@ export default function ConfigPage() {
 
     function deleteZone(e) {
         const targetZone = parseInt(e.target.dataset.targetZoneD);
+        const newZoneGroup = [...zoneGroup];
+
+        console.log('targetZone', targetZone);
+        console.log('zoneGroup', zoneGroup);
+        console.log('config.config.setup.zones', config.config.setup.zones);
 
         setPickedZoneGroup(null);
-        config.config.setup.zones = config.config.setup.zones.filter(i => i.targetGroupZone !== targetZone)
-        makeZoneGroup();
-        console.log('zoneGroup', zoneGroup);
+
+        config.config.setup.zones = config.config.setup.zones.filter(i => i.targetGroupZone !== targetZone);
+        newZoneGroup.splice(targetZone, 1);
+        //makeZoneGroup();
+        setZoneGroup(newZoneGroup);
         updateConfig();
+    }
+
+    function handleChangeNameGroupZone(targetIndex, newNameZone, targetGroupZone) {
+        setZoneGroupName({...zoneGroupName, [targetIndex] : newNameZone});
+        changeZoneConfig(targetGroupZone, 'color', newNameZone);
+    }
+
+    function handleChangeColorGroupZone(targetIndex, newColorZone, targetGroupZone) {
+        console.log('targetIndex', targetIndex)
+        console.log('new zone', config.config.setup.zones);
+        setZoneGroupColor({...zoneGroupColor, [targetIndex] : newColorZone})
+        changeZoneConfig(targetGroupZone, 'color', newColorZone);
+        generateMap();
     }
 
     function handleZonePicked(zoneList, targetZone, params, isSelected) {
@@ -112,7 +145,7 @@ export default function ConfigPage() {
         const newGroupZone = [...zoneGroup];
 
         if (isSelected) {
-            const targetNewZoneId = config.config.createZone(targetX, targetY, colorSelect, pickedZoneGroup);
+            const targetNewZoneId = config.config.createZone(targetX, targetY, zoneGroupColor[pickedZoneGroup], zoneGroupName[pickedZoneGroup], pickedZoneGroup);
             newGroupZone[pickedZoneGroup].push(targetNewZoneId);
             setZoneGroup(newGroupZone);
             updateConfig();
@@ -225,17 +258,21 @@ export default function ConfigPage() {
             }
         }
 
+        let isBadConfigZone = false;
         config.config.setup.zones.map((item) => {
             if(item.targetGroupZone === targetIdZoneGroup) {
                 if (key === 'percentWin' || key === 'percentLoose') {
                     item[key] = around2Decimales(value / 100);
-                    checkingAjustingPercent(key, value, item);
-                    return;
+                    //checkingAjustingPercent(key, value, item);
+                    if (item.percentWin + item.percentLoose > 1) {
+                        isBadConfigZone = true;
+                    }
                 }
 
                 item[key] = value;
             }
-        })
+        });
+        setPageZoneConfigError(isBadConfigZone);
         /*config.config.setup.zones.map((item) => {
             targetZoneGroup.forEach((elementZone) => {
                 if (elementZone === item.id) {
@@ -478,16 +515,16 @@ export default function ConfigPage() {
 
                                     <div className="d-flex align-items-center">
                                         <button className="btn btn-sm btn-success mx-2 my-2" onClick={addGroupeZone}>
-                                            <i className="fa-solid fa-plus"/> Ajouter
+                                            <i className="fa-solid fa-plus"/> Create
                                         </button>
 
-                                        <label className="d-flex align-items-center">
+                                        {/*<label className="d-flex align-items-center">
                                             select color zone
                                             <input className="mx-2" type="color" value={colorSelect}
                                                    onChange={(e) => {
                                                        setColorSelect(e.target.value)
                                                    }}/>
-                                        </label>
+                                        </label>*/}
                                     </div>
 
                                     {zoneGroup.length === 0 && (
@@ -501,19 +538,37 @@ export default function ConfigPage() {
                                             <div
                                                 className={"zones-row " + ((pickedZoneGroup === currentIndex) ? 'zone-selected' : '')}
                                                 key={currentIndex}>
-                                                <p>
-                                                    <span data-target-zone={currentIndex} onClick={selectZone}>
-                                                        Zone #{currentIndex}
-                                                    </span>
+                                                <div className="d-flex align-items-center my-2">
+                                                    <div>
+                                                        <i onClick={selectZone} data-target-zone={currentIndex}
+                                                           className="fa-solid fa-hand-pointer mx-2"></i>
+                                                    </div>
 
-                                                    {(pickedZoneGroup === currentIndex) && (
-                                                        <button className="btn-sm btn-danger"
+                                                    <div>
+                                                        <input className="form-control" type="text" value={zoneGroupName[currentIndex]}
+                                                        onChange={(e) =>
+                                                            handleChangeNameGroupZone(currentIndex, e.target.value, item)}/>
+
+                                                        {(pickedZoneGroup === currentIndex) && (
+                                                            <>current picked zone</>
+                                                        )}
+
+                                                    </div>
+
+                                                    <div>
+                                                        <input className="mx-2" type="color" value={zoneGroupColor[currentIndex]}
+                                                               onChange={(e) =>
+                                                                   handleChangeColorGroupZone(currentIndex, e.target.value, item)}/>
+                                                    </div>
+
+                                                    <div>
+                                                        <button className="btn-sm btn-danger mx-2"
                                                                 onClick={deleteZone} data-target-zone-d={currentIndex}>
-                                                            <i className="fa-solid fa-trash mx-2"/>
+                                                            <i className="fa-solid fa-trash mx-1"/>
                                                             delete
                                                         </button>
-                                                    )}
-                                                </p>
+                                                    </div>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
@@ -521,9 +576,15 @@ export default function ConfigPage() {
                             </div>
 
                             <div className="col-8">
+                                <div className="d-flex justify-content-start">
+                                    <button className="btn btn-primary" onClick={generateMap}>
+                                        <i className="fa-solid fa-recycle mx-2"></i> Generate map
+                                    </button>
+                                </div>
                                 <div className="grid-editor-container">
                                     <Map modeEditor={true} config={config} handleZonePicked={handleZonePicked}
-                                         targetGroupZone={pickedZoneGroup} zoneGroup={zoneGroup} isClickOnGridZone={isClickOnGridZone}/>
+                                         targetGroupZone={pickedZoneGroup} zoneGroup={zoneGroup} isClickOnGridZone={isClickOnGridZone}
+                                         ref={mapRef}/>
                                 </div>
 
                                 <div className="d-flex justify-content-end">
@@ -589,6 +650,15 @@ export default function ConfigPage() {
                                         ))}
                                     </tbody>
                                 </table>
+
+                                {
+                                    pageZoneConfigError && (
+                                        <p className="alert alert-danger">
+                                            La configuration des zones est mauvaise.
+                                        </p>
+                                    )
+                                }
+
                             </div>
 
                             <div className="col-12 config-navigation-container">
@@ -600,7 +670,7 @@ export default function ConfigPage() {
                                 </div>
 
                                 <div className="d-flex justify-content-end">
-                                    <button type="button" onClick={saveStep} data-target-nav={3}
+                                    <button type="button" onClick={saveStep} data-target-nav={3} disabled={pageZoneConfigError}
                                             className="btn btn-primary">
                                         <i className="fa-solid fa-arrow-right mx-2" data-target-nav={3}/>Save map / Next
                                     </button>
