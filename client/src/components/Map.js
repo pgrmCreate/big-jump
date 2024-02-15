@@ -48,7 +48,8 @@ export const Map = forwardRef((props, ref) => {
 
             context.closePath();
         });
-    }, [props.config, listRect, props.targetGroupZone, props.zoneGroup]);
+    });
+    // [props.config, listRect, props.targetGroupZone, props.zoneGroup]
 
 
     useEffect(() => {
@@ -57,13 +58,11 @@ export const Map = forwardRef((props, ref) => {
         return () => {
             //canvasRef.current.removeEventListener("click", handleMouseClick);
         }
-    }, [props.player, props.targetGroupZone, props.zoneGroup, listRect]);
+    }, [props.config, props.player, props.targetGroupZone, props.zoneGroup, listRect]);
 
     function updateGenerateMap() {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
-
-        console.log(props)
 
         const playerImage = new Image();
         playerImage.onload = () => {
@@ -77,7 +76,8 @@ export const Map = forwardRef((props, ref) => {
         drawGrid(context);
 
         if (props.modeEditor) {
-            drawZones(context);
+            drawAllZones(context);
+            //drawZones(context);
         } else {
             drawAllZones(context);
         }

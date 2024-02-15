@@ -309,7 +309,7 @@ export default function ConfigSessionPage() {
                                                 editTextEvent('zone', e.target.value, currentIndex)
                                             }}>
                                         {zoneGroup.map((currentZone, indexZone) => (
-                                            <option value={indexZone} key={indexZone}>Zone {currentIndex}</option>
+                                            <option value={indexZone} key={indexZone}>Zone {indexZone}</option>
                                         ))}
                                     </select>
 

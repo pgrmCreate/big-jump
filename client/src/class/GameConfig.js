@@ -74,6 +74,7 @@ export class GameConfig {
             x : x,
             y : y,
             color: color,
+            name: name,
             isVisible: true,
             percentWin: 0.5,
             percentLoose: 0.5,

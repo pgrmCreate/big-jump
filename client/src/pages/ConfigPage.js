@@ -22,12 +22,28 @@ export default function ConfigPage() {
     const [colorSelect, setColorSelect] = useState('#ee9c08');
     const [isLevelNeedEdit, setIsLevelNeedEdit] = useState(true);
     const mapRef = useRef(null);
+    const [errorMapGenerate, setErrorMapGenerate] = useState(false);
+    const [isMapDisplay, setIsMapDisplay] = useState(false);
+    const [sameConfigExploit, setSameConfigExploit] = useState(true);
+    const [lastColorAdded, setLastColorAdded] = useState('#FFCC00');
 
     useEffect(() => {
         if (params.id) {
             const currentConfig = globalConfig.list.find(i => i.setup._id === params.id);
 
-            makeZoneGroup(currentConfig);
+            const newGroupMade = makeZoneGroup(currentConfig);
+
+            const colorBuilder = {};
+            newGroupMade.forEach((group, index) => {
+                colorBuilder[index] = currentConfig.setup.zones.find(i => i.id === group[0]).color;
+            });
+            setZoneGroupColor(colorBuilder);
+
+            const nameBuilder = {};
+            newGroupMade.forEach((group, index) => {
+                nameBuilder[index] = currentConfig.setup.zones.find(i => i.id === group[0]).name;
+            });
+            setZoneGroupName(nameBuilder);
 
             setConfig({config: currentConfig});
 
@@ -41,8 +57,24 @@ export default function ConfigPage() {
         }
     }, []);
 
+    // Effet pour réagir aux changements de isMapDisplay
+    useEffect(() => {
+        // Vérifiez si isMapDisplay est true et si mapRef.current est défini
+        if (isMapDisplay && mapRef.current) {
+            mapRef.current.generateMap();
+        }
+    }, [isMapDisplay]);
+
     function generateMap() {
-        mapRef.current.generateMap();
+        if(config.config.setup.width < 4 || config.config.setup.height < 4 || config.config.setup.height > 102
+            || config.config.setup.width > 102) {
+            setErrorMapGenerate(true);
+            setIsMapDisplay(false);
+            return;
+        }
+
+        setIsMapDisplay(true);
+        setErrorMapGenerate(false);
     }
 
     function makeZoneGroup(targetSpecificConfig = null) {
@@ -67,8 +99,10 @@ export default function ConfigPage() {
             zoneGroupeBuilder[currentZone.targetGroupZone].push(currentZone.id);
         });
 
-        Object.keys(zoneGroupeBuilder).forEach(k => targetNewGroupe.push(zoneGroupeBuilder[k]))
+        Object.keys(zoneGroupeBuilder).forEach(k => targetNewGroupe.push(zoneGroupeBuilder[k]));
+
         setZoneGroup(targetNewGroupe);
+        return targetNewGroupe;
     }
 
     function getValidConfigStep1() {
@@ -95,6 +129,8 @@ export default function ConfigPage() {
     }
 
     function setSizeMap(key, value) {
+        if(value < 0 || '-')
+            return;
         value = parseInt(value) + 2;
         config.config.setup[key] = value;
         updateConfig();
@@ -110,29 +146,78 @@ export default function ConfigPage() {
         const targetZone = parseInt(e.target.dataset.targetZoneD);
         const newZoneGroup = [...zoneGroup];
 
-        console.log('targetZone', targetZone);
-        console.log('zoneGroup', zoneGroup);
-        console.log('config.config.setup.zones', config.config.setup.zones);
-
         setPickedZoneGroup(null);
 
-        config.config.setup.zones = config.config.setup.zones.filter(i => i.targetGroupZone !== targetZone);
+        config.config.setup.zones = config.config.setup.zones.filter(i => {
+            if(i.targetGroupZone !== targetZone) {
+                return true;
+            }
+        });
+
+        config.config.setup.zones.map((zone) => {
+            if(zone.targetGroupZone > targetZone) {
+                zone.targetGroupZone--;
+            }
+        })
+
         newZoneGroup.splice(targetZone, 1);
-        //makeZoneGroup();
         setZoneGroup(newZoneGroup);
+
+        //makeZoneGroup();
+
+        ajustArrayColorAndName(targetZone);
         updateConfig();
+    }
+
+    function ajustArrayColorAndName(targetZone) {
+        const newZoneGroupColor = {};
+        const newZoneGroupName= {};
+
+        delete newZoneGroupName[targetZone];
+        delete newZoneGroupColor[newZoneGroupColor];
+
+
+        Object.keys(zoneGroupColor).map((groupColor) => {
+            const colorId = parseInt(groupColor);
+            if(targetZone !== colorId) {
+                if(colorId < targetZone) {
+                    newZoneGroupColor[colorId] = zoneGroupColor[colorId];
+                } else {
+                    newZoneGroupColor[colorId - 1] = zoneGroupColor[colorId];
+                }
+            }
+        });
+
+        Object.keys(zoneGroupName).map((groupName) => {
+            const nameId = parseInt(groupName);
+            if(targetZone !== nameId) {
+                if(nameId < targetZone) {
+                    newZoneGroupName[nameId] = zoneGroupName[nameId];
+                } else {
+                    newZoneGroupName[nameId - 1] = zoneGroupName[nameId];
+                }
+            }
+        });
+
+        setZoneGroupColor(newZoneGroupColor);
+        setZoneGroupName(newZoneGroupName);
     }
 
     function handleChangeNameGroupZone(targetIndex, newNameZone, targetGroupZone) {
         setZoneGroupName({...zoneGroupName, [targetIndex] : newNameZone});
-        changeZoneConfig(targetGroupZone, 'color', newNameZone);
+
+        if(targetGroupZone.length !== 0) {
+            changeZoneConfig(targetGroupZone, 'name', newNameZone);
+        }
     }
 
     function handleChangeColorGroupZone(targetIndex, newColorZone, targetGroupZone) {
-        console.log('targetIndex', targetIndex)
-        console.log('new zone', config.config.setup.zones);
-        setZoneGroupColor({...zoneGroupColor, [targetIndex] : newColorZone})
-        changeZoneConfig(targetGroupZone, 'color', newColorZone);
+        setZoneGroupColor({...zoneGroupColor, [targetIndex] : newColorZone});
+        setLastColorAdded(newColorZone);
+
+        if(targetGroupZone.length !== 0) {
+            changeZoneConfig(targetGroupZone, 'color', newColorZone);
+        }
         generateMap();
     }
 
@@ -145,7 +230,9 @@ export default function ConfigPage() {
         const newGroupZone = [...zoneGroup];
 
         if (isSelected) {
-            const targetNewZoneId = config.config.createZone(targetX, targetY, zoneGroupColor[pickedZoneGroup], zoneGroupName[pickedZoneGroup], pickedZoneGroup);
+            const targetColor = zoneGroupColor[pickedZoneGroup];
+            
+            const targetNewZoneId = config.config.createZone(targetX, targetY, targetColor, zoneGroupName[pickedZoneGroup], pickedZoneGroup);
             newGroupZone[pickedZoneGroup].push(targetNewZoneId);
             setZoneGroup(newGroupZone);
             updateConfig();
@@ -267,6 +354,7 @@ export default function ConfigPage() {
                     if (item.percentWin + item.percentLoose > 1) {
                         isBadConfigZone = true;
                     }
+                    return;
                 }
 
                 item[key] = value;
@@ -380,6 +468,10 @@ export default function ConfigPage() {
 
         config.config.setup.lots[targetLotIndex][typeAction][key] = value;
 
+        if(sameConfigExploit && typeAction === 'exploration') {
+            changeLotConfig(key, value, 'exploitation');
+        }
+
         updateConfig();
     }
 
@@ -405,6 +497,11 @@ export default function ConfigPage() {
         }
 
         config.config.setup.lots.find(i => i[typeAction].id === targetLevelConfig)[typeAction].applyZones = targetLotApplyZone;
+
+        if(sameConfigExploit && typeAction === 'exploration') {
+            zoneApplyChange(targetGroupeZoneIndex, 'exploitation');
+        }
+
         updateConfig();
     }
 
@@ -538,11 +635,14 @@ export default function ConfigPage() {
                                             <div
                                                 className={"zones-row " + ((pickedZoneGroup === currentIndex) ? 'zone-selected' : '')}
                                                 key={currentIndex}>
-                                                <div className="d-flex align-items-center my-2">
-                                                    <div>
-                                                        <i onClick={selectZone} data-target-zone={currentIndex}
-                                                           className="fa-solid fa-hand-pointer mx-2"></i>
-                                                    </div>
+                                                <div className="d-flex align-items-center my-2 position-relative">
+                                                    {
+                                                        currentIndex !== pickedZoneGroup && (
+                                                            <div className="select-zone-overlay" onClick={selectZone} data-target-zone={currentIndex}>
+                                                            </div>
+                                                        )
+                                                    }
+
 
                                                     <div>
                                                         <input className="form-control" type="text" value={zoneGroupName[currentIndex]}
@@ -573,14 +673,28 @@ export default function ConfigPage() {
 
                             <div className="col-8">
                                 <div className="d-flex justify-content-start">
-                                    <button className="btn btn-primary" onClick={generateMap}>
-                                        <i className="fa-solid fa-recycle mx-2"></i> Generate map
-                                    </button>
+                                    <div>
+                                        <button className="btn btn-primary" onClick={generateMap}>
+                                            <i className="fa-solid fa-recycle mx-2"></i> Generate map
+                                        </button>
+                                    </div>
+
+                                    {
+                                        errorMapGenerate && (
+                                            <div>
+                                                <p className="alert alert-danger mx-2">Impossible de générer la map avec la configuration actuelle</p>
+                                            </div>
+                                        )
+                                    }
                                 </div>
                                 <div className="grid-editor-container">
-                                    <Map modeEditor={true} config={config} handleZonePicked={handleZonePicked}
-                                         targetGroupZone={pickedZoneGroup} zoneGroup={zoneGroup} isClickOnGridZone={isClickOnGridZone}
-                                         ref={mapRef}/>
+                                    {
+                                        isMapDisplay && (
+                                            <Map modeEditor={true} config={config} handleZonePicked={handleZonePicked}
+                                                 targetGroupZone={pickedZoneGroup} zoneGroup={zoneGroup} isClickOnGridZone={isClickOnGridZone}
+                                                 ref={mapRef}/>
+                                        )
+                                    }
                                 </div>
 
                                 <div className="d-flex justify-content-end">
@@ -928,6 +1042,11 @@ export default function ConfigPage() {
                             <div className="col-4 config-split-main-container">
                                 <h3 className="text-center mt-2 mb-5">Exploitation</h3>
 
+                                <label onClick={() => { setSameConfigExploit(!sameConfigExploit)}}>
+                                    Même configuration pour l'exploitation
+                                    <i className={'fa-solid mx-2 checkbox fa-' + (sameConfigExploit ? 'square-check' : 'square')}></i>
+                                </label>
+
                                 <div>
                                     <label className="d-flex my-2 align-content-center align-items-center">
                                         Points interval
@@ -1100,6 +1219,11 @@ export default function ConfigPage() {
                         {targetLevelConfig !== null && (
                             <div className="col-4 config-split-main-container">
                                 <h3 className="text-center mt-2 mb-5">Exploitation</h3>
+
+                                <label onClick={() => { setSameConfigExploit(!sameConfigExploit)}}>
+                                    Même configuration pour l'exploitation
+                                    <i className={'fa-solid mx-2 checkbox fa-' + (sameConfigExploit ? 'square-check' : 'square')}></i>
+                                </label>
 
                                 <div>
                                     <label className="d-flex my-2 align-content-center align-items-center">

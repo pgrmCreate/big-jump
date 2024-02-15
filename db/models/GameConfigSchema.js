@@ -28,6 +28,7 @@ const gameConfigSchema = new mongoose.Schema({
     zones :  [{
         id: { type : Number},
         color: { type : String},
+        name: { type : String},
         isVisible: { type : Boolean},
         percentLoose: { type : Number},
         percentWin: { type : Number},

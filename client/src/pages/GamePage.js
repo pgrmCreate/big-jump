@@ -25,6 +25,7 @@ export function GamePage() {
     const [gameRoundLeft, setGameRoundLeft] = useState(0);
     const [gameSessionLeft, setGameSessionLeft] = useState(0);
     const [enteringParticipantInfo, setEnteringParticipantInfo] = useState([]);
+    const [textsEvent, setTextsEvent] = useState([]);
 
     const handleKeyUp = useCallback((e) => {
         if(gameRoundLeft === 0) {
@@ -93,7 +94,9 @@ export function GamePage() {
 
     function initGame(newSession = false) {
         config.config.initRound();
+        setTextsEvent([]);
         GameManager.get().settingConfig(config.config);
+        player.score = config.config.setup.startPoint;
 
         setGameRoundLeft(GameManager.get().gameConfig.setup.roundLeft);
 
@@ -258,6 +261,8 @@ export function GamePage() {
             console.error('error getting lot')
         }
 
+
+
         targetLot[typeAction].currentDraw++;
 
 
@@ -271,7 +276,40 @@ export function GamePage() {
         setPlayer(targetNewPlayer);
 
         targetHistory.amountValue = targetPoint;
+
+        const finalDisplayEvents = [...textsEvent];
+        setup.textsEvent
+            .filter((currentEvent) => haveTextEvent(currentEvent, targetLot[typeAction].isWin, targetLot[typeAction], zone.targetGroupZone))
+            .forEach((currentEvent) => {
+                finalDisplayEvents.push({
+                    id: 0,
+                    label : currentEvent.label
+                })
+            })
+        setTextsEvent(finalDisplayEvents);
+
         return targetHistory;
+    }
+
+    function haveTextEvent(event, isWin, targetLot, targetGroupZone) {
+        if(isWin && event.type === 'threat')
+            return false
+
+        if(!isWin && event.type === 'earn')
+            return false
+
+        if(targetGroupZone !== event.zone)
+            return false;
+
+        if(parseInt(event.lot) !== targetLot.id)
+            return false
+
+        console.log('event', event);
+        console.log('isWin', isWin);
+        console.log('targetLot', targetLot);
+        console.log('targetGroupZone', targetGroupZone);
+        return true;
+
     }
 
     function addEarn(targetPoints) {
@@ -333,7 +371,13 @@ export function GamePage() {
                     {gameRoundLeft > 0 && (
                         <div className="row">
                             <div className="col-3 col-xl-2 game-messages-container">
-
+                                {
+                                    textsEvent.map((messageGame) => (
+                                        <div>
+                                            <p>{messageGame.label}</p>
+                                        </div>
+                                    ))
+                                }
                             </div>
 
                             <div className="col-9 col-xl-10">
