@@ -129,7 +129,7 @@ export default function ConfigPage() {
     }
 
     function setSizeMap(key, value) {
-        if(value < 0 || '-')
+        if(value < 0 || value === '')
             return;
         value = parseInt(value) + 2;
         config.config.setup[key] = value;
