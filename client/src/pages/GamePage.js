@@ -230,11 +230,15 @@ export function GamePage() {
             return targetHistory;
         }
 
+        // check type action for get draw type (gain or threat)
+        const targetTypeDraw = targetWinLot ? 'drawTypeGain' : 'drawTypeThreat';
+        const typeGameDraw = GameManager.get().gameConfig.setup[targetTypeDraw];
+
         let targetLot = null;
         const listLotAvailable = setup.lots.filter((item) => {
             if (item[typeAction].isWin !== targetWinLot) return false;
 
-            if (item[typeAction].currentDraw > item[typeAction].maxDraw) return false;
+            if (item[typeAction].currentDraw > item[typeAction].maxDraw && typeGameDraw === 'random') return false;
 
             if(item[typeAction].applyZones.indexOf(zone.id) === -1) return false
 
@@ -245,9 +249,6 @@ export function GamePage() {
             return targetHistory;
         }
 
-        // check type action for get draw type (gain or threat)
-        const targetTypeDraw = targetWinLot ? 'drawTypeGain' : 'drawTypeThreat';
-
         // TYPE DRAW
         //      1. SEQUENTIAL
         //      2. RANDOM
@@ -257,6 +258,22 @@ export function GamePage() {
             targetLot = listLotAvailable[0];
         } else if(GameManager.get().gameConfig.setup[targetTypeDraw] === 'random') {
             targetLot = listLotAvailable[Math.getRandom(0, listLotAvailable.length - 1)];
+        }else if(GameManager.get().gameConfig.setup[targetTypeDraw] === 'semi-random') {
+
+            const randomDraw = Math.floor(Math.random() * 100);
+            let currentRowDraw = 0;
+            const targetDrawConfig = config.config.setup[targetWinLot ? 'lotWinConfig' : 'lotLooseConfig'].randomAmount[typeAction];
+
+            listLotAvailable.every((lots, index) => {
+                currentRowDraw += targetDrawConfig[index];
+
+                if(randomDraw < currentRowDraw) {
+                    targetLot = lots;
+                    return false;
+                }
+                return true;
+            });
+            //targetLot = listLotAvailable[Math.getRandom(0, listLotAvailable.length - 1)];
         } else {
             console.error('error getting lot')
         }
@@ -292,22 +309,23 @@ export function GamePage() {
     }
 
     function haveTextEvent(event, isWin, targetLot, targetGroupZone) {
+/*        console.log('event', event);
+        console.log('isWin', isWin);
+        console.log('targetLot', targetLot);
+        console.log('targetGroupZone', targetGroupZone);*/
+
         if(isWin && event.type === 'threat')
             return false
 
         if(!isWin && event.type === 'earn')
             return false
 
-        if(targetGroupZone !== event.zone)
+        if(targetGroupZone !== parseInt(event.zone))
             return false;
 
         if(parseInt(event.lot) !== targetLot.id)
             return false
 
-        console.log('event', event);
-        console.log('isWin', isWin);
-        console.log('targetLot', targetLot);
-        console.log('targetGroupZone', targetGroupZone);
         return true;
 
     }
@@ -372,8 +390,8 @@ export function GamePage() {
                         <div className="row">
                             <div className="col-3 col-xl-2 game-messages-container">
                                 {
-                                    textsEvent.map((messageGame) => (
-                                        <div>
+                                    textsEvent.map((messageGame, index) => (
+                                        <div key={index}>
                                             <p>{messageGame.label}</p>
                                         </div>
                                     ))

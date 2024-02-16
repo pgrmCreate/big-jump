@@ -129,6 +129,7 @@ export default function ConfigPage() {
     }
 
     function setSizeMap(key, value) {
+        setIsMapDisplay(false);
         if(value < 0 || value === '')
             return;
         value = parseInt(value) + 2;
@@ -445,7 +446,7 @@ export default function ConfigPage() {
         let total = targetRefArray.reduce((c, i) => c += i, 0);
 
         if(total > 100) {
-            return;
+            //return;
         }
 
         updateConfig();
@@ -747,12 +748,12 @@ export default function ConfigPage() {
                                                 </td>
                                                 <td>{getZoneAttributFromGroup(currentZoneGroup, 'empty')}%</td>
                                                 <td>
-                                                    <input type="number" className="form-control"
+                                                    <input type="text" className="form-control"
                                                            onChange={(e) => changeZoneConfig(currentZoneGroup, 'percentWin', e.target.value, true)}
                                                            value={around2Decimales(getZoneAttributFromGroup(currentZoneGroup, 'win') * 100)}/>
                                                 </td>
                                                 <td>
-                                                    <input type="number" className="form-control"
+                                                    <input type="text" className="form-control"
                                                            onChange={(e) => changeZoneConfig(currentZoneGroup, 'percentLoose', e.target.value, true)}
                                                            value={around2Decimales(getZoneAttributFromGroup(currentZoneGroup, 'loose') * 100)}/>
                                                 </td>

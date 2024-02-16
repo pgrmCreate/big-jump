@@ -1,8 +1,5 @@
 export class Requester {
-    //static localUrl = 'https://big-jump.osc-fr1.scalingo.io';
-
-    //static localUrl = 'http://localhost:3001';
-    static localUrl = '';
+    static localUrl = process.env.REACT_APP_API_URL || '';
 
     static token = null;
 

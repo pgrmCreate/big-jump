@@ -22,32 +22,26 @@ function App() {
     Modal.setAppElement('#root');
 
     useEffect(() => {
-        function reconnect () {
-            if(cookies.user && cookies.user.token) {
-                Requester.get('/api/user/reconnect', true)
-                    .then(res => res.json())
-                    .then(data => {
-                        if(data.error) {
-                            removeCookies('user')
-                            return;
-                        }
-
-                        userConfig[1](cookies.user);
-                        Requester.token = cookies.user.token;
-                    }).catch((error) => {
-                    removeCookies('user')
-                });
-            }
-        }
-
-        fetch(Requester.localUrl + '/config/apiurl')
-            .then(res => res.json())
-            .then(data => {
-                Requester.localUrl = data.apiUrl;
-                reconnect()
-            });
-
+        reconnect();
     }, [])
+
+    function reconnect () {
+        if(cookies.user && cookies.user.token) {
+            Requester.get('/api/user/reconnect', true)
+                .then(res => res.json())
+                .then(data => {
+                    if(data.error) {
+                        removeCookies('user')
+                        return;
+                    }
+
+                    userConfig[1](cookies.user);
+                    Requester.token = cookies.user.token;
+                }).catch((error) => {
+                removeCookies('user')
+            });
+        }
+    }
 
     return (
         <div className="app-main App">
