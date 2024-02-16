@@ -238,7 +238,7 @@ export function GamePage() {
         const listLotAvailable = setup.lots.filter((item) => {
             if (item[typeAction].isWin !== targetWinLot) return false;
 
-            if (item[typeAction].currentDraw > item[typeAction].maxDraw && typeGameDraw === 'random') return false;
+            if (item[typeAction].currentDraw > item[typeAction].maxDraw && typeGameDraw === 'sequential') return false;
 
             if(item[typeAction].applyZones.indexOf(zone.id) === -1) return false
 
