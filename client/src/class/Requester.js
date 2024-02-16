@@ -1,5 +1,6 @@
 export class Requester {
-    static localUrl = process.env.REACT_APP_API_URL || '';
+    //static localUrl = process.env.REACT_APP_API_URL || '';
+    static localUrl = '';
 
     static token = null;
 
