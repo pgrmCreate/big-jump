@@ -58,6 +58,10 @@ export default function ConfigSessionPage() {
         Object.keys(zoneGroupeBuilder).forEach(k => targetNewGroupe.push(zoneGroupeBuilder[k]))
         setZoneGroup(targetNewGroupe);
     }
+
+    function getZoneFromId(id) {
+        return currentConfig.setup.zones.find(i => i.id === id);
+    }
     function initConfig() {
         if (params.id) {
             setParticipantInfo(currentConfig.setup.participantInfo);
@@ -108,11 +112,11 @@ export default function ConfigSessionPage() {
             zone: currentConfig.setup.zones[0].id,
             lot: currentConfig.setup.lots[0].exploration.id,
             label: 'custom label',
+            actionType: 'both',
         }])
     }
 
     function editTextEvent(key, value, index) {
-        console.log(currentConfig);
         const targetArray = [...textsEvent];
 
         targetArray[index][key] = value;
@@ -309,7 +313,7 @@ export default function ConfigSessionPage() {
                                                 editTextEvent('zone', e.target.value, currentIndex)
                                             }}>
                                         {zoneGroup.map((currentZone, indexZone) => (
-                                            <option value={indexZone} key={indexZone}>Zone {indexZone}</option>
+                                            <option value={indexZone} key={indexZone}>{getZoneFromId(currentZone[0]).name}</option>
                                         ))}
                                     </select>
 
@@ -318,8 +322,24 @@ export default function ConfigSessionPage() {
                                                 editTextEvent('lot', e.target.value, currentIndex)
                                             }}>
                                         {currentConfig.setup.lots.map((currentLot) => (
-                                            <option
-                                                value={currentLot.exploration.id}>Category {currentLot.exploration.id}</option>
+                                            <option value={currentLot.exploration.id}>
+                                                #{currentLot.exploration.id} :
+                                                {currentEvent.type === 'earn' && (<> Gain </>)}
+                                                {currentEvent.type === 'threat' && (<> Threat </>)}
+                                                {currentEvent.type === 'empty' && (<> Empty </>)}
+                                                (level {currentLot.exploration.level})
+                                            </option>
+                                        ))}
+                                    </select>
+
+                                    <select className="form-select mx-2" value={currentEvent.actionType}
+                                            onChange={(e) => {
+                                                editTextEvent('actionType', e.target.value, currentIndex)
+                                            }}>
+                                        {['exploration', 'exploitation', 'both'].map((currentAction) => (
+                                            <option value={currentAction}>
+                                                { currentAction }
+                                            </option>
                                         ))}
                                     </select>
 

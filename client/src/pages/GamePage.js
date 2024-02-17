@@ -296,7 +296,7 @@ export function GamePage() {
 
         const finalDisplayEvents = [...textsEvent];
         setup.textsEvent
-            .filter((currentEvent) => haveTextEvent(currentEvent, targetLot[typeAction].isWin, targetLot[typeAction], zone.targetGroupZone))
+            .filter((currentEvent) => haveTextEvent(currentEvent, targetLot[typeAction].isWin, targetLot[typeAction], zone.targetGroupZone, typeAction))
             .forEach((currentEvent) => {
                 finalDisplayEvents.push({
                     id: 0,
@@ -308,11 +308,11 @@ export function GamePage() {
         return targetHistory;
     }
 
-    function haveTextEvent(event, isWin, targetLot, targetGroupZone) {
-/*        console.log('event', event);
-        console.log('isWin', isWin);
-        console.log('targetLot', targetLot);
-        console.log('targetGroupZone', targetGroupZone);*/
+    function haveTextEvent(event, isWin, targetLot, targetGroupZone, actionType) {
+        if(event.actionType !== 'both') {
+            if(actionType !== event.actionType)
+                return false;
+        }
 
         if(isWin && event.type === 'threat')
             return false
@@ -390,7 +390,7 @@ export function GamePage() {
                         <div className="row">
                             <div className="col-3 col-xl-2 game-messages-container">
                                 {
-                                    textsEvent.map((messageGame, index) => (
+                                    textsEvent.reverse().map((messageGame, index) => (
                                         <div key={index}>
                                             <p>{messageGame.label}</p>
                                         </div>

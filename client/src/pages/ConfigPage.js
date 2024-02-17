@@ -439,8 +439,8 @@ export default function ConfigPage() {
 
         const targetTypeLot = [type === 'gain' ? 'lotWinConfig' : 'lotLooseConfig']
         const targetRefArray = config.config.setup[targetTypeLot].randomAmount[action];
-
         targetRefArray[targetDrawIndex] = targetValue;
+
 
         // Check if total is >100
         let total = targetRefArray.reduce((c, i) => c += i, 0);
@@ -448,6 +448,13 @@ export default function ConfigPage() {
         if(total > 100) {
             //return;
         }
+
+        if(sameConfigExploit && action === 'exploration') {
+            const exploitConfig = config.config.setup[targetTypeLot].randomAmount['exploitation'];
+            exploitConfig[targetDrawIndex] = targetValue;
+        }
+
+
 
         updateConfig();
     }
@@ -1044,7 +1051,7 @@ export default function ConfigPage() {
                                 <h3 className="text-center mt-2 mb-5">Exploitation</h3>
 
                                 <label onClick={() => { setSameConfigExploit(!sameConfigExploit)}}>
-                                    Même configuration pour l'exploitation
+                                    Same config for exploitation
                                     <i className={'fa-solid mx-2 checkbox fa-' + (sameConfigExploit ? 'square-check' : 'square')}></i>
                                 </label>
 
