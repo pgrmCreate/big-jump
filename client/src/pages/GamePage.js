@@ -309,6 +309,12 @@ export function GamePage() {
     }
 
     function haveTextEvent(event, isWin, targetLot, targetGroupZone, actionType) {
+        console.log('event', event);
+        console.log('isWin', isWin);
+        console.log('targetLot', targetLot);
+        console.log('targetGroupZone', targetGroupZone);
+        console.log('actionType', actionType);
+
         if(event.actionType !== 'both') {
             if(actionType !== event.actionType)
                 return false;

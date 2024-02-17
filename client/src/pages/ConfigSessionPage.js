@@ -109,7 +109,7 @@ export default function ConfigSessionPage() {
     function addTextEventLabel() {
         setTextsEvent([...textsEvent, {
             type: 'earn',
-            zone: currentConfig.setup.zones[0].id,
+            zone: 0,
             lot: currentConfig.setup.lots[0].exploration.id,
             label: 'custom label',
             actionType: 'both',
@@ -299,15 +299,6 @@ export default function ConfigSessionPage() {
 
                             {textsEvent.map((currentEvent, currentIndex) => (
                                 <div className="d-flex mb-3" key={currentIndex}>
-                                    <select className="form-select mx-2" value={currentEvent.type}
-                                            onChange={(e) => {
-                                                editTextEvent('type', e.target.value, currentIndex)
-                                            }}>
-                                        <option value="earn">Earn</option>
-                                        <option value="threat">Threat</option>
-                                        <option value="empty">Empty</option>
-                                    </select>
-
                                     <select className="form-select mx-2" value={currentEvent.zone}
                                             onChange={(e) => {
                                                 editTextEvent('zone', e.target.value, currentIndex)
@@ -315,6 +306,15 @@ export default function ConfigSessionPage() {
                                         {zoneGroup.map((currentZone, indexZone) => (
                                             <option value={indexZone} key={indexZone}>{getZoneFromId(currentZone[0]).name}</option>
                                         ))}
+                                    </select>
+
+                                    <select className="form-select mx-2" value={currentEvent.type}
+                                            onChange={(e) => {
+                                                editTextEvent('type', e.target.value, currentIndex)
+                                            }}>
+                                        <option value="earn">Earn</option>
+                                        <option value="threat">Threat</option>
+                                        <option value="empty">Empty</option>
                                     </select>
 
                                     <select className="form-select mx-2" value={currentEvent.lot}
