@@ -26,6 +26,7 @@ export default function ConfigPage() {
     const [isMapDisplay, setIsMapDisplay] = useState(false);
     const [sameConfigExploit, setSameConfigExploit] = useState(true);
     const [lastColorAdded, setLastColorAdded] = useState('#FFCC00');
+    const [isErrorDrawAmount, setIsErrorDrawAmount] = useState(false);
 
     useEffect(() => {
         if (params.id) {
@@ -321,6 +322,10 @@ export default function ConfigPage() {
         if (targetKey === 'isVisible') {
             return firstZoneType.isVisible
         }
+
+        if (targetKey === 'name') {
+            return firstZoneType.name
+        }
     }
 
     function around2Decimales(value) {
@@ -445,8 +450,11 @@ export default function ConfigPage() {
         // Check if total is >100
         let total = targetRefArray.reduce((c, i) => c += i, 0);
 
-        if(total > 100) {
-            //return;
+        const typeCurrentDraw = type = 'gain' ? config.config.setup.drawTypeGain : config.config.setup.drawTypeThreat;
+        if(total !== 100 && typeCurrentDraw === 'semi-random') {
+            setIsErrorDrawAmount(true);
+        } else {
+            setIsErrorDrawAmount(false)
         }
 
         if(sameConfigExploit && action === 'exploration') {
@@ -741,7 +749,7 @@ export default function ConfigPage() {
                                     <tbody>
                                         {zoneGroup.map((currentZoneGroup, currentIndex) => (
                                             <tr key={currentIndex}>
-                                                <th>Zone n°{currentIndex}</th>
+                                                <th>{ getZoneAttributFromGroup(currentZoneGroup, 'name') }</th>
                                                 <td>
                                                     {!getZoneAttributFromGroup(currentZoneGroup, 'isVisible') && (
                                                         <i className="fa-solid fa-square"
@@ -980,6 +988,16 @@ export default function ConfigPage() {
                                     </div>
                                 ))}
                             </div>
+
+                            {
+                                isErrorDrawAmount && (
+                                    <div className="col-12">
+                                        <p className="alert alert-danger">
+                                            Config Error : Drawamount is not equal to 100
+                                        </p>
+                                    </div>
+                                )
+                            }
                         </div>
 
                         {targetLevelConfig !== null && (
@@ -1029,7 +1047,7 @@ export default function ConfigPage() {
                                                 <p>
                                                     <i className="fa-solid fa-square mx-2 checkbox"
                                                        onClick={() => zoneApplyChange(index, 'exploration')}/>
-                                                    Zone {index}
+                                                    {getZoneAttributFromGroup(item, 'name')}
                                                 </p>
                                             )}
 
@@ -1037,7 +1055,7 @@ export default function ConfigPage() {
                                                 <p>
                                                     <i className="fa-solid fa-square-check mx-2 checkbox"
                                                        onClick={() => zoneApplyChange(index, 'exploration')}/>
-                                                    Zone {index}
+                                                    {getZoneAttributFromGroup(item, 'name')}
                                                 </p>
                                             )}
                                         </div>
@@ -1097,7 +1115,7 @@ export default function ConfigPage() {
                                                 <p>
                                                     <i className="fa-solid fa-square mx-2 checkbox"
                                                        onClick={() => zoneApplyChange(index, 'exploitation')}/>
-                                                    Zone {index}
+                                                    {getZoneAttributFromGroup(item, 'name')}
                                                 </p>
                                             )}
 
@@ -1105,7 +1123,7 @@ export default function ConfigPage() {
                                                 <p>
                                                     <i className="fa-solid fa-square-check mx-2 checkbox"
                                                        onClick={() => zoneApplyChange(index, 'exploitation')}/>
-                                                    Zone {index}
+                                                    {getZoneAttributFromGroup(item, 'name')}
                                                 </p>
                                             )}
                                         </div>
@@ -1113,7 +1131,6 @@ export default function ConfigPage() {
                                 </label>
                             </div>
                         )}
-
 
                         <div className="col-12 config-navigation-container">
                             <div className="d-flex justify-content-start">
@@ -1124,7 +1141,7 @@ export default function ConfigPage() {
                             </div>
 
                             <div className="d-flex justify-content-end">
-                                <button type="button" onClick={saveStep} data-target-nav={5}
+                                <button type="button" onClick={saveStep} data-target-nav={5} disabled={isErrorDrawAmount}
                                         className="btn btn-primary">
                                     <i className="fa-solid fa-arrow-right mx-2" data-target-nav={5}/>
                                     Save map / Next
@@ -1157,6 +1174,16 @@ export default function ConfigPage() {
                                     </div>
                                 ))}
                             </div>
+
+                            {
+                                isErrorDrawAmount && (
+                                    <div className="col-12">
+                                        <p className="alert alert-danger">
+                                            Config Error : Drawamount is not equal to 100
+                                        </p>
+                                    </div>
+                                )
+                            }
                         </div>
 
                         {targetLevelConfig !== null && (
@@ -1207,7 +1234,7 @@ export default function ConfigPage() {
                                                 <p>
                                                     <i className="fa-solid fa-square mx-2 checkbox"
                                                        onClick={() => zoneApplyChange(index, 'exploration')}/>
-                                                    Zone {index}
+                                                    {getZoneAttributFromGroup(item, 'name')}
                                                 </p>
                                             )}
 
@@ -1215,7 +1242,7 @@ export default function ConfigPage() {
                                                 <p>
                                                     <i className="fa-solid fa-square-check mx-2 checkbox"
                                                        onClick={() => zoneApplyChange(index, 'exploration')}/>
-                                                    Zone {index}
+                                                    {getZoneAttributFromGroup(item, 'name')}
                                                 </p>
                                             )}
                                         </div>
@@ -1275,7 +1302,7 @@ export default function ConfigPage() {
                                                 <p>
                                                     <i className="fa-solid fa-square mx-2 checkbox"
                                                        onClick={() => zoneApplyChange(index, 'exploitation')}/>
-                                                    Zone {index}
+                                                    {getZoneAttributFromGroup(item, 'name')}
                                                 </p>
                                             )}
 
@@ -1283,7 +1310,7 @@ export default function ConfigPage() {
                                                 <p>
                                                     <i className="fa-solid fa-square-check mx-2 checkbox"
                                                        onClick={() => zoneApplyChange(index, 'exploitation')}/>
-                                                    Zone {index}
+                                                    {getZoneAttributFromGroup(item, 'name')}
                                                 </p>
                                             )}
                                         </div>
@@ -1302,7 +1329,7 @@ export default function ConfigPage() {
                             </div>
 
                             <div className="d-flex justify-content-end">
-                                <button type="button" onClick={saveMap}
+                                <button type="button" onClick={saveMap} disabled={isErrorDrawAmount}
                                         className="btn btn-primary">
                                     <i className="fa-solid fa-floppy-disk mx-2"/>
                                     Next config
