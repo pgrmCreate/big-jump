@@ -4,6 +4,7 @@ const {Schema} = require("mongoose");
 const historyGame = new mongoose.Schema({
     userId : String,
     extraInfo : [mongoose.Schema.Types.Mixed],
+    configId : String,
     sessions: [{
         stats: {
             score : Number,
@@ -13,9 +14,12 @@ const historyGame = new mongoose.Schema({
             positionX : Number,
             positionY: Number,
             typeAction: String,
+            eventType: String,
+            actionPointsLeft: String,
             amountValue : Number,
+            score : Number,
         }]
     }]
 });
 
-module.exports = module.exports = mongoose.model('HistoryGame', historyGame);
+module.exports = mongoose.model('HistoryGame', historyGame);

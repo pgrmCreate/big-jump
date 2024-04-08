@@ -7,6 +7,14 @@ exports.getAll = (req, res, next) => {
     })
 }
 
+exports.get = (req, res, next) => {
+    const targetId = req.params.id;
+
+    HistoryGame.findOne({_id: targetId}).then((data) => {
+        res.status(201).json(data)
+    })
+}
+
 exports.create = (req, res, next) => {
     const newHistory = new HistoryGame(req.body);
 

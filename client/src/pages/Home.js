@@ -7,6 +7,7 @@ import User from "../components/User";
 import {UserContext} from "../utils/UserContext";
 import {Requester} from "../class/Requester";
 import {GameConfig} from "../class/GameConfig";
+import {CSVCreator} from "../class/CSVCreator";
 
 export default function Home() {
     const [globalConfig, setGlobalConfig] = useContext(ConfigContext);
@@ -67,8 +68,11 @@ export default function Home() {
         navigate('/edit-config/' + idExperience);
     }
 
-    function handleRemoveExperience(targetId) {
-        Requester.delete(`/api/gameconfig/${targetId}`).then(res => res.json())
+    function handleRemoveExperience(targetSetup) {
+        targetSetup.loading = true;
+        setGlobalConfig({list : globalConfig.list, config : globalConfig.list.find(i => i.setup._id === targetSetup._id)});
+
+        Requester.delete(`/api/gameconfig/${targetSetup._id}`).then(res => res.json())
             .then(() => {
                 loadConfigs();
             }).catch((error) => console.error({error}))
@@ -96,7 +100,7 @@ export default function Home() {
         document.body.removeChild(link);
     }
 
-    function exportDataToCSV(data) {
+    function exportDataConfigToCSV(data) {
         // Préparation du contenu CSV pour les zones
         let csvContent = "data:text/csv;charset=utf-8,";
         csvContent += "Section: Zones\r\n";
@@ -134,6 +138,32 @@ export default function Home() {
         document.body.removeChild(link);
     }
 
+    function exportDataHistoryToCSV(item) {
+        Requester.get('/api/history')
+            .then(res => res.json())
+            .then((data) => {
+                const targetHistory = [...data].filter(currentHistory => {
+                    return currentHistory.configId === item._id;
+                });
+
+                const csvCreator = new CSVCreator(targetHistory);
+
+                // Créer un Blob avec le contenu CSV
+                const blob = new Blob([csvCreator.generateCSV()], { type: 'text/csv;charset=utf-8;' });
+                const href = URL.createObjectURL(blob);
+
+                // Créer un lien pour le téléchargement
+                const link = document.createElement('a');
+                link.href = href;
+                link.download = "export.csv"; // Nom du fichier CSV
+                document.body.appendChild(link);
+                link.click();
+
+                // Nettoyage en supprimant le lien du DOM
+                document.body.removeChild(link);
+            });
+    }
+
     return (<div className="container">
         <div className="row">
             <div className="col-12">
@@ -162,47 +192,57 @@ export default function Home() {
                     <div className="experiences-container">
                         { globalConfig.list.map((item, index) => (
                             <div className="experience-card" key={index}>
-                                <div className="experience-head">
-                                    <p className="experience-title">
-                                        { item.setup.name}
-                                    </p>
-
-                                    <p className="experience-date">
-                                        {displayDate(item.setup.createdAt)}
-                                    </p>
-                                </div>
-
-                                <div className="d-flex flex-column">
-                                    <div className="d-flex mb-3">
-                                        <button className="btn btn-success" onClick={() => handleGetLink(item)}>
-                                            <i className="fa-regular fa-circle-right mx-2"></i>
-                                            Get link
-                                        </button>
-
-
-                                        <button className="btn btn-primary mx-2" onClick={() => editExperience(item.setup._id)}>
-                                            <i className="fa-solid fa-pen mx-2"/>
-                                            Edit
-                                        </button>
-
-                                        <button className="btn btn-primary" onClick={() => exportDataToCSV(item)}>
-                                            <i className="fa-solid fa-file-export mx-2"/>
-                                            Export data
-                                        </button>
+                                { (item.setup.loading) && (
+                                    <div className="d-flex w-100 justify-content-center">
+                                        <span className="loader"></span>
                                     </div>
+                                )}
 
-                                    <div className="experience-extra-actions justify-content-end w-100 d-flex">
-                                        <button className="btn btn-sm btn-primary mx-2" onClick={() => pickExperience(item)}>
-                                            <i className="fa-solid fa-play mx-2"/>
-                                            Run test
-                                        </button>
+                                { !item.setup.loading && (
+                                    <>
+                                        <div className="experience-head">
+                                            <p className="experience-title">
+                                                { item.setup.name}
+                                            </p>
 
-                                        <button className="btn btn-sm btn-danger" onClick={() => handleRemoveExperience(item.setup._id)}>
-                                            <i className="fa-solid fa-trash mx-2"/>
-                                            Delete
-                                        </button>
-                                    </div>
-                                </div>
+                                            <p className="experience-date">
+                                                {displayDate(item.setup.createdAt)}
+                                            </p>
+                                        </div>
+
+                                        <div className="d-flex flex-column">
+                                            <div className="d-flex mb-3">
+                                                <button className="btn btn-success" onClick={() => handleGetLink(item)}>
+                                                    <i className="fa-regular fa-circle-right mx-2"></i>
+                                                    Get link
+                                                </button>
+
+
+                                                <button className="btn btn-primary mx-2" onClick={() => editExperience(item.setup._id)}>
+                                                    <i className="fa-solid fa-pen mx-2"/>
+                                                    Edit
+                                                </button>
+
+                                                <button className="btn btn-primary" onClick={() => exportDataHistoryToCSV(item)}>
+                                                    <i className="fa-solid fa-file-export mx-2"/>
+                                                    Export data
+                                                </button>
+                                            </div>
+
+                                            <div className="experience-extra-actions justify-content-end w-100 d-flex">
+                                                <button className="btn btn-sm btn-primary mx-2" onClick={() => pickExperience(item)}>
+                                                    <i className="fa-solid fa-play mx-2"/>
+                                                    Run test
+                                                </button>
+
+                                                <button className="btn btn-sm btn-danger" onClick={() => handleRemoveExperience(item.setup)}>
+                                                    <i className="fa-solid fa-trash mx-2"/>
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         ))}
                     </div>

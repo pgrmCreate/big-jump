@@ -27,6 +27,7 @@ export default function ConfigPage() {
     const [sameConfigExploit, setSameConfigExploit] = useState(true);
     const [lastColorAdded, setLastColorAdded] = useState('#FFCC00');
     const [isErrorDrawAmount, setIsErrorDrawAmount] = useState(false);
+    const [isConfirmGenerateMap, setIsConfirmGenerateMap] = useState(false);
 
     useEffect(() => {
         if (params.id) {
@@ -66,8 +67,13 @@ export default function ConfigPage() {
         }
     }, [isMapDisplay]);
 
-    function generateMap() {
-        if(config.config.setup.width < 4 || config.config.setup.height < 4 || config.config.setup.height > 102
+    function generateMap(withConfirm = false) {
+        if (withConfirm) {
+            setZoneGroup([]);
+        }
+
+        setIsConfirmGenerateMap(false);
+        if (config.config.setup.width < 4 || config.config.setup.height < 4 || config.config.setup.height > 102
             || config.config.setup.width > 102) {
             setErrorMapGenerate(true);
             setIsMapDisplay(false);
@@ -83,7 +89,7 @@ export default function ConfigPage() {
         const zoneGroupeBuilder = {};
         const targetNewGroupe = [];
 
-        if(targetSpecificConfig) {
+        if (targetSpecificConfig) {
             targetConfig = targetSpecificConfig;
         } else {
             targetConfig = config.config;
@@ -92,7 +98,7 @@ export default function ConfigPage() {
         const newKeyGroupZone = [];
 
         targetConfig.setup.zones.map((currentZone) => {
-            if(newKeyGroupZone.indexOf(currentZone.targetGroupZone) === -1) {
+            if (newKeyGroupZone.indexOf(currentZone.targetGroupZone) === -1) {
                 zoneGroupeBuilder[currentZone.targetGroupZone] = [];
                 newKeyGroupZone.push(currentZone.targetGroupZone);
             }
@@ -107,7 +113,7 @@ export default function ConfigPage() {
     }
 
     function getValidConfigStep1() {
-        if(!config.config.setup.height || !config.config.setup.width ||
+        if (!config.config.setup.height || !config.config.setup.width ||
             config.config.setup.zones.length === 0)
             return true;
 
@@ -121,17 +127,17 @@ export default function ConfigPage() {
     }
 
     function addGroupeZone() {
-        if(config.config.setup.zones.length > 30)
+        if (config.config.setup.zones.length > 30)
             return;
 
-        setZoneGroupName({...zoneGroupName, [zoneGroup.length] : 'zone #' + zoneGroup.length});
-        setZoneGroupColor({...zoneGroupColor, [zoneGroup.length] : '#FFCC00'});
+        setZoneGroupName({...zoneGroupName, [zoneGroup.length]: 'zone #' + zoneGroup.length});
+        setZoneGroupColor({...zoneGroupColor, [zoneGroup.length]: '#FFCC00'});
         setZoneGroup([...zoneGroup, []]);
     }
 
     function setSizeMap(key, value) {
         setIsMapDisplay(false);
-        if(value < 0 || value === '')
+        if (value < 0 || value === '')
             return;
         value = parseInt(value) + 2;
         config.config.setup[key] = value;
@@ -144,20 +150,19 @@ export default function ConfigPage() {
         setPickedZoneGroup(parseInt(targetZone));
     }
 
-    function deleteZone(e) {
-        const targetZone = parseInt(e.target.dataset.targetZoneD);
+    function deleteZone(targetZone) {
         const newZoneGroup = [...zoneGroup];
 
         setPickedZoneGroup(null);
 
         config.config.setup.zones = config.config.setup.zones.filter(i => {
-            if(i.targetGroupZone !== targetZone) {
+            if (i.targetGroupZone !== targetZone) {
                 return true;
             }
         });
 
         config.config.setup.zones.map((zone) => {
-            if(zone.targetGroupZone > targetZone) {
+            if (zone.targetGroupZone > targetZone) {
                 zone.targetGroupZone--;
             }
         })
@@ -171,9 +176,15 @@ export default function ConfigPage() {
         updateConfig();
     }
 
+    function handleDeleteZone(e) {
+        const targetZone = parseInt(e.target.dataset.targetZoneD);
+
+        deleteZone(targetZone)
+    }
+
     function ajustArrayColorAndName(targetZone) {
         const newZoneGroupColor = {};
-        const newZoneGroupName= {};
+        const newZoneGroupName = {};
 
         delete newZoneGroupName[targetZone];
         delete newZoneGroupColor[newZoneGroupColor];
@@ -181,8 +192,8 @@ export default function ConfigPage() {
 
         Object.keys(zoneGroupColor).map((groupColor) => {
             const colorId = parseInt(groupColor);
-            if(targetZone !== colorId) {
-                if(colorId < targetZone) {
+            if (targetZone !== colorId) {
+                if (colorId < targetZone) {
                     newZoneGroupColor[colorId] = zoneGroupColor[colorId];
                 } else {
                     newZoneGroupColor[colorId - 1] = zoneGroupColor[colorId];
@@ -192,8 +203,8 @@ export default function ConfigPage() {
 
         Object.keys(zoneGroupName).map((groupName) => {
             const nameId = parseInt(groupName);
-            if(targetZone !== nameId) {
-                if(nameId < targetZone) {
+            if (targetZone !== nameId) {
+                if (nameId < targetZone) {
                     newZoneGroupName[nameId] = zoneGroupName[nameId];
                 } else {
                     newZoneGroupName[nameId - 1] = zoneGroupName[nameId];
@@ -206,18 +217,18 @@ export default function ConfigPage() {
     }
 
     function handleChangeNameGroupZone(targetIndex, newNameZone, targetGroupZone) {
-        setZoneGroupName({...zoneGroupName, [targetIndex] : newNameZone});
+        setZoneGroupName({...zoneGroupName, [targetIndex]: newNameZone});
 
-        if(targetGroupZone.length !== 0) {
+        if (targetGroupZone.length !== 0) {
             changeZoneConfig(targetGroupZone, 'name', newNameZone);
         }
     }
 
     function handleChangeColorGroupZone(targetIndex, newColorZone, targetGroupZone) {
-        setZoneGroupColor({...zoneGroupColor, [targetIndex] : newColorZone});
+        setZoneGroupColor({...zoneGroupColor, [targetIndex]: newColorZone});
         setLastColorAdded(newColorZone);
 
-        if(targetGroupZone.length !== 0) {
+        if (targetGroupZone.length !== 0) {
             changeZoneConfig(targetGroupZone, 'color', newColorZone);
         }
         generateMap();
@@ -233,7 +244,7 @@ export default function ConfigPage() {
 
         if (isSelected) {
             const targetColor = zoneGroupColor[pickedZoneGroup];
-            
+
             const targetNewZoneId = config.config.createZone(targetX, targetY, targetColor, zoneGroupName[pickedZoneGroup], pickedZoneGroup);
             newGroupZone[pickedZoneGroup].push(targetNewZoneId);
             setZoneGroup(newGroupZone);
@@ -255,7 +266,7 @@ export default function ConfigPage() {
         const minTargetY = (1) * GameConfig.sizeCellGrid + GameConfig.basePosition + 1;
 
 
-        if(targetRect.x > maxTargetX || targetRect.y > maxTargetY
+        if (targetRect.x > maxTargetX || targetRect.y > maxTargetY
             || targetRect.x < minTargetY || targetRect.y < minTargetY)
             return false;
 
@@ -334,7 +345,7 @@ export default function ConfigPage() {
 
     function changeZoneConfig(targetZoneGroup, key, value) {
         const targetIdZoneGroup = config.config.setup.zones.find(i => i.id === targetZoneGroup[0]).targetGroupZone;
-        if(value < 0)
+        if (value < 0)
             return;
 
         if (key === 'gainLevelAmount' || key === 'threatLevelAmount') {
@@ -353,7 +364,7 @@ export default function ConfigPage() {
 
         let isBadConfigZone = false;
         config.config.setup.zones.map((item) => {
-            if(item.targetGroupZone === targetIdZoneGroup) {
+            if (item.targetGroupZone === targetIdZoneGroup) {
                 if (key === 'percentWin' || key === 'percentLoose') {
                     item[key] = around2Decimales(value / 100);
                     //checkingAjustingPercent(key, value, item);
@@ -438,7 +449,7 @@ export default function ConfigPage() {
         }
     }
 
-    function changeRandomDrawAmount(type = 'gain', event, action = 'exploration' ) {
+    function changeRandomDrawAmount(type = 'gain', event, action = 'exploration') {
         const targetDrawIndex = parseInt(event.target.dataset.drawIndex);
         let targetValue = isNaN(parseInt(event.target.value)) ? 0 : parseInt(event.target.value);
 
@@ -451,17 +462,16 @@ export default function ConfigPage() {
         let total = targetRefArray.reduce((c, i) => c += i, 0);
 
         const typeCurrentDraw = type = 'gain' ? config.config.setup.drawTypeGain : config.config.setup.drawTypeThreat;
-        if(total !== 100 && typeCurrentDraw === 'semi-random') {
+        if (total !== 100 && typeCurrentDraw === 'semi-random') {
             setIsErrorDrawAmount(true);
         } else {
             setIsErrorDrawAmount(false)
         }
 
-        if(sameConfigExploit && action === 'exploration') {
+        if (sameConfigExploit && action === 'exploration') {
             const exploitConfig = config.config.setup[targetTypeLot].randomAmount['exploitation'];
             exploitConfig[targetDrawIndex] = targetValue;
         }
-
 
 
         updateConfig();
@@ -471,6 +481,7 @@ export default function ConfigPage() {
         setTargetLevelConfig(targetIdExplo);
         setSimpleIndexLevelPicked(simpleIndex);
     }
+
     function changeLotConfig(key, value, typeAction = 'exploration') {
         const targetLotIndex = config.config.setup.lots.findIndex(i => i[typeAction].id === targetLevelConfig);
 
@@ -484,7 +495,7 @@ export default function ConfigPage() {
 
         config.config.setup.lots[targetLotIndex][typeAction][key] = value;
 
-        if(sameConfigExploit && typeAction === 'exploration') {
+        if (sameConfigExploit && typeAction === 'exploration') {
             changeLotConfig(key, value, 'exploitation');
         }
 
@@ -514,7 +525,7 @@ export default function ConfigPage() {
 
         config.config.setup.lots.find(i => i[typeAction].id === targetLevelConfig)[typeAction].applyZones = targetLotApplyZone;
 
-        if(sameConfigExploit && typeAction === 'exploration') {
+        if (sameConfigExploit && typeAction === 'exploration') {
             zoneApplyChange(targetGroupeZoneIndex, 'exploitation');
         }
 
@@ -536,7 +547,7 @@ export default function ConfigPage() {
         const dataConfig = {...config.config.setup};
         delete dataConfig.id;
 
-        if(isUpdate) {
+        if (isUpdate) {
             return Requester.post('/api/gameconfig/' + dataConfig._id, dataConfig);
         } else {
             return Requester.post('/api/gameconfig/', dataConfig);
@@ -560,6 +571,46 @@ export default function ConfigPage() {
             <div>
                 {configStep === 1 && (
                     <div className="container">
+
+                        {isConfirmGenerateMap && (
+                            <div className="row">
+                                <div className="col-12">
+                                    <div className="popin-container">
+                                        <div className="popin-content">
+                                            <span className="popin-close"
+                                                  onClick={() => setIsConfirmGenerateMap(false)}>
+                                                <i className="fa-solid fa-xmark"></i>
+                                            </span>
+
+                                            <div className="d-flex flex-column">
+                                                <p>Do you want generate map ?</p>
+
+                                                <div className="d-flex justify-content-end">
+                                                    <button className="btn btn-sm btn-primary mx-4"
+                                                            onClick={() => generateMap(true)}>
+                                                        <i className="fa-solid fa-check mx-2"></i>
+                                                        OK
+                                                    </button>
+
+                                                    <button className="btn btn-sm btn-danger"
+                                                            onClick={() => setIsConfirmGenerateMap(false)}>
+                                                        <i className="fa-solid fa-xmark mx-2"></i>
+                                                        Cancel
+                                                    </button>
+                                                </div>
+
+                                                <div>
+                                                    <p className="alert alert-warning my-3">
+                                                        Regenerate map delete all current zones </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        )}
+
                         <div className="row">
                             <div className="col-4 my-2">
                                 <h2 className="text-center">Map configuration</h2>
@@ -570,33 +621,33 @@ export default function ConfigPage() {
                                     <fieldset className="d-flex flex-column mb-2">
                                         <div className="">
                                             <input type="text" className="form-control" placeholder="Experience name"
-                                                   value={config.config.setup.name}
-                                                   onChange={(e) => {
-                                                       changeGlobalConfig('name', e.target.value)
-                                                   }}
-                                            />
+                                                   value={config.config.setup.name} onChange={(e) => {
+                                                changeGlobalConfig('name', e.target.value)
+                                            }}/>
                                         </div>
                                     </fieldset>
                                 </div>
                             </div>
 
-                            <div className="col-4">
-                                <div className="">
-                                    <fieldset className="mb-2">
-                                        <h3>Map size</h3>
+                            {isMapDisplay && (
+                                <div className="col-4">
+                                    <div className="">
+                                        <fieldset className="mb-2">
+                                            <h3>Map size</h3>
 
-                                        <div className="d-flex">
-                                            <input type="number" className="form-control mx-2" placeholder="Width"
-                                                   onChange={(e) => setSizeMap('width', e.target.value)}
-                                                   value={config.config.setup.width - 2}/>
+                                            <div className="d-flex">
+                                                <input type="number" className="form-control mx-2" placeholder="Width"
+                                                       onChange={(e) => setSizeMap('width', e.target.value)}
+                                                       value={config.config.setup.width - 2}/>
 
-                                            <input type="number" className="form-control mx-2" placeholder="Height"
-                                                   onChange={(e) => setSizeMap('height', e.target.value)}
-                                                   value={config.config.setup.height - 2}/>
-                                        </div>
-                                    </fieldset>
+                                                <input type="number" className="form-control mx-2" placeholder="Height"
+                                                       onChange={(e) => setSizeMap('height', e.target.value)}
+                                                       value={config.config.setup.height - 2}/>
+                                            </div>
+                                        </fieldset>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             <div className="col-8">
                                 <div className="">
@@ -605,16 +656,14 @@ export default function ConfigPage() {
 
                                         <div className="d-flex">
                                             <input type="number" className="form-control mx-2" placeholder="x"
-                                                   value={config.config.setup.initPositionX}
-                                                   onChange={(e) => {
-                                                       changeGlobalConfig('initPositionX', e.target.value, true)
-                                                   }}/>
+                                                   value={config.config.setup.initPositionX} onChange={(e) => {
+                                                changeGlobalConfig('initPositionX', e.target.value, true)
+                                            }}/>
 
                                             <input type="number" className="form-control mx-2" placeholder="y"
-                                                   value={config.config.setup.initPositionY}
-                                                   onChange={(e) => {
-                                                       changeGlobalConfig('initPositionY', e.target.value, true)
-                                                   }}/>
+                                                   value={config.config.setup.initPositionY} onChange={(e) => {
+                                                changeGlobalConfig('initPositionY', e.target.value, true)
+                                            }}/>
                                         </div>
                                     </fieldset>
                                 </div>
@@ -641,9 +690,8 @@ export default function ConfigPage() {
                                     </div>
 
                                     {zoneGroup.length === 0 && (
-                                        <p className="alert alert-warning">
-                                            Need 1 zone minimum
-                                        </p>
+                                        <p className="alert alert-warning position-static">
+                                            Need 1 zone minimum </p>
                                     )}
 
                                     <div className="zones-container">
@@ -654,28 +702,29 @@ export default function ConfigPage() {
                                                 <div className="d-flex align-items-center my-2 position-relative">
                                                     {
                                                         currentIndex !== pickedZoneGroup && (
-                                                            <div className="select-zone-overlay" onClick={selectZone} data-target-zone={currentIndex}>
-                                                            </div>
+                                                            <div className="select-zone-overlay" onClick={selectZone}
+                                                                 data-target-zone={currentIndex}></div>
                                                         )
                                                     }
 
 
                                                     <div>
-                                                        <input className="form-control" type="text" value={zoneGroupName[currentIndex]}
-                                                        onChange={(e) =>
+                                                        <input className="form-control" type="text"
+                                                               value={zoneGroupName[currentIndex]} onChange={(e) =>
                                                             handleChangeNameGroupZone(currentIndex, e.target.value, item)}/>
 
                                                     </div>
 
                                                     <div>
-                                                        <input className="mx-2" type="color" value={zoneGroupColor[currentIndex]}
-                                                               onChange={(e) =>
-                                                                   handleChangeColorGroupZone(currentIndex, e.target.value, item)}/>
+                                                        <input className="mx-2" type="color"
+                                                               value={zoneGroupColor[currentIndex]} onChange={(e) =>
+                                                            handleChangeColorGroupZone(currentIndex, e.target.value, item)}/>
                                                     </div>
 
                                                     <div>
                                                         <button className="btn-sm btn-danger mx-2"
-                                                                onClick={deleteZone} data-target-zone-d={currentIndex}>
+                                                                onClick={handleDeleteZone}
+                                                                data-target-zone-d={currentIndex}>
                                                             <i className="fa-solid fa-trash mx-1"/>
                                                             delete
                                                         </button>
@@ -688,9 +737,10 @@ export default function ConfigPage() {
                             </div>
 
                             <div className="col-8">
-                                <div className="d-flex justify-content-start">
+                                <div className="d-flex justify-content-center">
                                     <div>
-                                        <button className="btn btn-primary" onClick={generateMap}>
+                                        <button className="btn btn-success"
+                                                onClick={() => setIsConfirmGenerateMap(true)}>
                                             <i className="fa-solid fa-recycle mx-2"></i> Generate map
                                         </button>
                                     </div>
@@ -698,7 +748,8 @@ export default function ConfigPage() {
                                     {
                                         errorMapGenerate && (
                                             <div>
-                                                <p className="alert alert-danger mx-2">Impossible de générer la map avec la configuration actuelle</p>
+                                                <p className="alert alert-danger mx-2">Impossible de générer la map avec la
+                                                    configuration actuelle</p>
                                             </div>
                                         )
                                     }
@@ -707,19 +758,21 @@ export default function ConfigPage() {
                                     {
                                         isMapDisplay && (
                                             <Map modeEditor={true} config={config} handleZonePicked={handleZonePicked}
-                                                 targetGroupZone={pickedZoneGroup} zoneGroup={zoneGroup} isClickOnGridZone={isClickOnGridZone}
-                                                 ref={mapRef}/>
+                                                 targetGroupZone={pickedZoneGroup} zoneGroup={zoneGroup}
+                                                 isClickOnGridZone={isClickOnGridZone} ref={mapRef}/>
                                         )
                                     }
                                 </div>
 
-                                <div className="d-flex justify-content-end">
-                                    <button type="button" onClick={saveStep} data-target-nav={2}
-                                            disabled={getValidConfigStep1()}
-                                            className="btn btn-primary">
-                                        <i className="fa-solid fa-arrow-right mx-2" data-target-nav={2}/>Save map / Next
-                                    </button>
-                                </div>
+                                {!isConfirmGenerateMap && (
+                                    <div className="d-flex justify-content-end">
+                                        <button type="button" onClick={saveStep} data-target-nav={2}
+                                                disabled={getValidConfigStep1()} className="btn btn-primary">
+                                            <i className="fa-solid fa-arrow-right mx-2" data-target-nav={2}/>Save map /
+                                            Next
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -749,7 +802,7 @@ export default function ConfigPage() {
                                     <tbody>
                                         {zoneGroup.map((currentZoneGroup, currentIndex) => (
                                             <tr key={currentIndex}>
-                                                <th>{ getZoneAttributFromGroup(currentZoneGroup, 'name') }</th>
+                                                <th>{getZoneAttributFromGroup(currentZoneGroup, 'name')}</th>
                                                 <td>
                                                     {!getZoneAttributFromGroup(currentZoneGroup, 'isVisible') && (
                                                         <i className="fa-solid fa-square"
@@ -780,8 +833,7 @@ export default function ConfigPage() {
                                 {
                                     pageZoneConfigError && (
                                         <p className="alert alert-danger">
-                                            La configuration des zones est mauvaise.
-                                        </p>
+                                            La configuration des zones est mauvaise. </p>
                                     )
                                 }
 
@@ -796,8 +848,8 @@ export default function ConfigPage() {
                                 </div>
 
                                 <div className="d-flex justify-content-end">
-                                    <button type="button" onClick={saveStep} data-target-nav={3} disabled={pageZoneConfigError}
-                                            className="btn btn-primary">
+                                    <button type="button" onClick={saveStep} data-target-nav={3}
+                                            disabled={pageZoneConfigError} className="btn btn-primary">
                                         <i className="fa-solid fa-arrow-right mx-2" data-target-nav={3}/>Save map / Next
                                     </button>
                                 </div>
@@ -820,10 +872,10 @@ export default function ConfigPage() {
                             <div>
                                 <label className="my-2">
                                     Total player actions
-                                    <input className="form-control" type="number" value={config.config.setup.roundLeftMax}
-                                           onChange={(e) => {
-                                               changeGlobalConfig('roundLeftMax', e.target.value, true)
-                                           }}/>
+                                    <input className="form-control" type="number"
+                                           value={config.config.setup.roundLeftMax} onChange={(e) => {
+                                        changeGlobalConfig('roundLeftMax', e.target.value, true)
+                                    }}/>
                                 </label>
 
                                 <label className="my-2">
@@ -837,25 +889,22 @@ export default function ConfigPage() {
                                 <label className="my-2">
                                     Amount of gain level
                                     <input className="form-control" type="number"
-                                           value={config.config.setup.gainLevelAmount}
-                                           onChange={(e) => {
-                                               changeGlobalConfig('gainLevelAmount', e.target.value, true)
-                                           }}/>
+                                           value={config.config.setup.gainLevelAmount} onChange={(e) => {
+                                        changeGlobalConfig('gainLevelAmount', e.target.value, true)
+                                    }}/>
                                 </label>
 
                                 <label className="my-2">
                                     Amount of threat level
                                     <input className="form-control" type="number"
-                                           value={config.config.setup.threatLevelAmount}
-                                           onChange={(e) => {
-                                               changeGlobalConfig('threatLevelAmount', e.target.value, true)
-                                           }}/>
+                                           value={config.config.setup.threatLevelAmount} onChange={(e) => {
+                                        changeGlobalConfig('threatLevelAmount', e.target.value, true)
+                                    }}/>
                                 </label>
 
                                 <label className="my-2">
                                     Try amount by session
-                                    <input className="form-control" type="number"
-                                           value={config.config.setup.tryAmount}
+                                    <input className="form-control" type="number" value={config.config.setup.tryAmount}
                                            onChange={(e) => {
                                                changeGlobalConfig('tryAmount', e.target.value, true)
                                            }}/>
@@ -874,8 +923,7 @@ export default function ConfigPage() {
                                     <p>
                                         <i className={"fa-solid fa-check mx-2 checked-style" +
                                             (config.config.setup.drawTypeGain !== 'sequential' ? ' d-none' : '')}/>
-                                        Sequential draw
-                                    </p>
+                                        Sequential draw </p>
                                 </div>
 
                                 <div
@@ -886,8 +934,7 @@ export default function ConfigPage() {
                                     <p>
                                         <i className={"fa-solid fa-check mx-2 checked-style" +
                                             (config.config.setup.drawTypeGain !== 'random' ? ' d-none' : '')}/>
-                                        Random draw
-                                    </p>
+                                        Random draw </p>
                                 </div>
 
                                 <div
@@ -898,8 +945,7 @@ export default function ConfigPage() {
                                     <p>
                                         <i className={"fa-solid fa-check mx-2 checked-style" +
                                             (config.config.setup.drawTypeGain !== 'semi-random' ? ' d-none' : '')}/>
-                                        Semi-random draw
-                                    </p>
+                                        Semi-random draw </p>
                                 </div>
                             </div>
                         </div>
@@ -916,8 +962,7 @@ export default function ConfigPage() {
                                     <p>
                                         <i className={"fa-solid fa-check mx-2 checked-style" +
                                             (config.config.setup.drawTypeThreat !== 'sequential' ? ' d-none' : '')}/>
-                                        Sequential draw
-                                    </p>
+                                        Sequential draw </p>
                                 </div>
 
                                 <div
@@ -928,8 +973,7 @@ export default function ConfigPage() {
                                     <p>
                                         <i className={"fa-solid fa-check mx-2 checked-style" +
                                             (config.config.setup.drawTypeThreat !== 'random' ? ' d-none' : '')}/>
-                                        Random draw
-                                    </p>
+                                        Random draw </p>
                                 </div>
 
                                 <div
@@ -940,8 +984,7 @@ export default function ConfigPage() {
                                     <p>
                                         <i className={"fa-solid fa-check mx-2 checked-style" +
                                             (config.config.setup.drawTypeThreat !== 'semi-random' ? ' d-none' : '')}/>
-                                        Semi-random draw
-                                    </p>
+                                        Semi-random draw </p>
                                 </div>
                             </div>
                         </div>
@@ -993,8 +1036,7 @@ export default function ConfigPage() {
                                 isErrorDrawAmount && (
                                     <div className="col-12">
                                         <p className="alert alert-danger">
-                                            Config Error : Drawamount is not equal to 100
-                                        </p>
+                                            Config Error : Drawamount is not equal to 100 </p>
                                     </div>
                                 )
                             }
@@ -1013,22 +1055,20 @@ export default function ConfigPage() {
                                         <span className="mx-1">to</span>
                                         <input className="form-control mx-1" type="number" placeholder="to"
                                                value={config.config.setup.lots.find(i => i.exploration.id === targetLevelConfig).exploration.earnPointMax}
-                                               onChange={(e) => changeLotConfig('earnPointMax', e.target.value, 'exploration')}
-                                        />
+                                               onChange={(e) => changeLotConfig('earnPointMax', e.target.value, 'exploration')}/>
                                     </label>
                                 </div>
 
-                                { config.config.setup.drawTypeGain === 'sequential' && (
+                                {config.config.setup.drawTypeGain === 'sequential' && (
                                     <label className="my-2">
                                         Max draw
                                         <input className="form-control mx-1" type="number" placeholder="Max draw"
                                                value={config.config.setup.lots.find(i => i.exploration.id === targetLevelConfig).exploration.maxDraw}
-                                               onChange={(e) => changeLotConfig('maxDraw', e.target.value, 'exploration')}
-                                        />
+                                               onChange={(e) => changeLotConfig('maxDraw', e.target.value, 'exploration')}/>
                                     </label>
                                 )}
 
-                                { config.config.setup.drawTypeGain === 'semi-random' && (
+                                {config.config.setup.drawTypeGain === 'semi-random' && (
                                     <label className="my-2">
                                         Draw amount %
                                         <input type="number" className="form-control"
@@ -1068,7 +1108,9 @@ export default function ConfigPage() {
                             <div className="col-4 config-split-main-container">
                                 <h3 className="text-center mt-2 mb-5">Exploitation</h3>
 
-                                <label onClick={() => { setSameConfigExploit(!sameConfigExploit)}}>
+                                <label onClick={() => {
+                                    setSameConfigExploit(!sameConfigExploit)
+                                }}>
                                     Same config for exploitation
                                     <i className={'fa-solid mx-2 checkbox fa-' + (sameConfigExploit ? 'square-check' : 'square')}></i>
                                 </label>
@@ -1083,22 +1125,20 @@ export default function ConfigPage() {
                                         <input className="form-control mx-1" type="number" placeholder="to"
                                             /*value={config.config.setup.lots.[targetLevelConfig].exploitation.earnPointMax}*/
                                                value={config.config.setup.lots.find(i => i.exploitation.id === targetLevelConfig).exploitation.earnPointMax}
-                                               onChange={(e) => changeLotConfig('earnPointMax', e.target.value, 'exploitation')}
-                                        />
+                                               onChange={(e) => changeLotConfig('earnPointMax', e.target.value, 'exploitation')}/>
                                     </label>
                                 </div>
 
-                                { config.config.setup.drawTypeGain === 'sequential' && (
+                                {config.config.setup.drawTypeGain === 'sequential' && (
                                     <label className="my-2">
                                         Max draw
                                         <input className="form-control mx-1" type="number" placeholder="Max draw"
                                                value={config.config.setup.lots.find(i => i.exploitation.id === targetLevelConfig).exploitation.maxDraw}
-                                               onChange={(e) => changeLotConfig('maxDraw', e.target.value, 'exploitation')}
-                                        />
+                                               onChange={(e) => changeLotConfig('maxDraw', e.target.value, 'exploitation')}/>
                                     </label>
                                 )}
 
-                                { config.config.setup.drawTypeGain === 'semi-random' && (
+                                {config.config.setup.drawTypeGain === 'semi-random' && (
                                     <label className="my-2">
                                         Draw amount %
                                         <input type="number" className="form-control"
@@ -1141,8 +1181,8 @@ export default function ConfigPage() {
                             </div>
 
                             <div className="d-flex justify-content-end">
-                                <button type="button" onClick={saveStep} data-target-nav={5} disabled={isErrorDrawAmount}
-                                        className="btn btn-primary">
+                                <button type="button" onClick={saveStep} data-target-nav={5}
+                                        disabled={isErrorDrawAmount} className="btn btn-primary">
                                     <i className="fa-solid fa-arrow-right mx-2" data-target-nav={5}/>
                                     Save map / Next
                                 </button>
@@ -1179,8 +1219,7 @@ export default function ConfigPage() {
                                 isErrorDrawAmount && (
                                     <div className="col-12">
                                         <p className="alert alert-danger">
-                                            Config Error : Drawamount is not equal to 100
-                                        </p>
+                                            Config Error : Drawamount is not equal to 100 </p>
                                     </div>
                                 )
                             }
@@ -1199,22 +1238,20 @@ export default function ConfigPage() {
                                         <span className="mx-1">to</span>
                                         <input className="form-control mx-1" type="number" placeholder="to"
                                                value={config.config.setup.lots.find(i => i.exploration.id === targetLevelConfig).exploration.earnPointMax}
-                                               onChange={(e) => changeLotConfig('earnPointMax', e.target.value, 'exploration')}
-                                        />
+                                               onChange={(e) => changeLotConfig('earnPointMax', e.target.value, 'exploration')}/>
                                     </label>
                                 </div>
 
-                                { config.config.setup.drawTypeThreat === 'sequential' && (
+                                {config.config.setup.drawTypeThreat === 'sequential' && (
                                     <label className="my-2">
                                         Max draw
                                         <input className="form-control mx-1" type="number" placeholder="Max draw"
                                                value={config.config.setup.lots.find(i => i.exploration.id === targetLevelConfig).exploration.maxDraw}
-                                               onChange={(e) => changeLotConfig('maxDraw', e.target.value, 'exploration')}
-                                        />
+                                               onChange={(e) => changeLotConfig('maxDraw', e.target.value, 'exploration')}/>
                                     </label>
                                 )}
 
-                                { config.config.setup.drawTypeThreat === 'semi-random' && (
+                                {config.config.setup.drawTypeThreat === 'semi-random' && (
                                     <label className="my-2">
                                         Draw amount %
                                         <input type="number" className="form-control"
@@ -1223,7 +1260,6 @@ export default function ConfigPage() {
                                                onChange={(e) => changeRandomDrawAmount('threat', e, 'exploration')}/>
                                     </label>
                                 )}
-
 
 
                                 <label className="my-2">
@@ -1255,7 +1291,9 @@ export default function ConfigPage() {
                             <div className="col-4 config-split-main-container">
                                 <h3 className="text-center mt-2 mb-5">Exploitation</h3>
 
-                                <label onClick={() => { setSameConfigExploit(!sameConfigExploit)}}>
+                                <label onClick={() => {
+                                    setSameConfigExploit(!sameConfigExploit)
+                                }}>
                                     Même configuration pour l'exploitation
                                     <i className={'fa-solid mx-2 checkbox fa-' + (sameConfigExploit ? 'square-check' : 'square')}></i>
                                 </label>
@@ -1269,22 +1307,20 @@ export default function ConfigPage() {
                                         <span className="mx-1">to</span>
                                         <input className="form-control mx-1" type="number" placeholder="to"
                                                value={config.config.setup.lots.find(i => i.exploitation.id === targetLevelConfig).exploitation.earnPointMax}
-                                               onChange={(e) => changeLotConfig('earnPointMax', e.target.value, 'exploitation')}
-                                        />
+                                               onChange={(e) => changeLotConfig('earnPointMax', e.target.value, 'exploitation')}/>
                                     </label>
                                 </div>
 
-                                { config.config.setup.drawTypeThreat === 'sequential' && (
+                                {config.config.setup.drawTypeThreat === 'sequential' && (
                                     <label className="my-2">
                                         Max draw
                                         <input className="form-control mx-1" type="number" placeholder="Max draw"
                                                value={config.config.setup.lots.find(i => i.exploitation.id === targetLevelConfig).exploitation.maxDraw}
-                                               onChange={(e) => changeLotConfig('maxDraw', e.target.value, 'exploitation')}
-                                        />
+                                               onChange={(e) => changeLotConfig('maxDraw', e.target.value, 'exploitation')}/>
                                     </label>
                                 )}
 
-                                { config.config.setup.drawTypeThreat === 'semi-random' && (
+                                {config.config.setup.drawTypeThreat === 'semi-random' && (
                                     <label className="my-2">
                                         Draw amount %
                                         <input type="number" className="form-control"

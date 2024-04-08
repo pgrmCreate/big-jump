@@ -123,12 +123,12 @@ export function GamePage() {
         const targetNewHistory = {
             userId : cookies.user.userId,
             sessions : historySession,
-            extraInfo : enteringParticipantInfo
+            extraInfo : enteringParticipantInfo,
+            configId: config.config.setup._id
         };
 
         Requester.post('/api/history', targetNewHistory).then(res => res.json())
             .then((result) => {
-                console.log(result);
             }).catch((error) => console.log(error));
     }
 
@@ -195,7 +195,10 @@ export function GamePage() {
                 typeAction : 'exploration',
                 positionX : player.position.x,
                 positionY : player.position.y,
-                direction : direction
+                direction : direction,
+                score: GameManager.get().player.score,
+                eventType: 'null',
+                actionPointsLeft: gameRoundLeft
             }]);
         }
     }
@@ -218,7 +221,10 @@ export function GamePage() {
             typeAction : typeAction,
             positionX : zone.x,
             positionY : zone.y,
-            direction : null
+            direction : direction,
+            score: GameManager.get().player.score,
+            eventType: 'null',
+            actionPointsLeft: gameRoundLeft
         };
 
 
@@ -293,6 +299,8 @@ export function GamePage() {
         setPlayer(targetNewPlayer);
 
         targetHistory.amountValue = targetPoint;
+        targetHistory.eventType = targetLot[typeAction].isWin ? 'Gain' : 'Threat';
+        targetHistory.score = targetNewPlayer.score;
 
         const finalDisplayEvents = [...textsEvent];
         setup.textsEvent
@@ -309,12 +317,6 @@ export function GamePage() {
     }
 
     function haveTextEvent(event, isWin, targetLot, targetGroupZone, actionType) {
-        console.log('event', event);
-        console.log('isWin', isWin);
-        console.log('targetLot', targetLot);
-        console.log('targetGroupZone', targetGroupZone);
-        console.log('actionType', actionType);
-
         if(event.actionType !== 'both') {
             if(actionType !== event.actionType)
                 return false;
