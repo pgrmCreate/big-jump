@@ -68,7 +68,10 @@ export const Map = forwardRef((props, ref) => {
         playerImage.onload = () => {
             if (!props.modeEditor) {
                 drawPlayer(context, playerImage);
+            } else {
+                drawPlayer(context, playerImage, true);
             }
+
         }
         playerImage.src = playerPicture;
 
@@ -83,9 +86,17 @@ export const Map = forwardRef((props, ref) => {
         }
     }
 
-    function drawPlayer(context, targetImage) {
-        const xStart = (params.basePosition + 1) + (props.player.position.x * params.sizeGrid);
-        const yStart = (params.basePosition + 1) + (props.player.position.y * params.sizeGrid);
+    function drawPlayer(context, targetImage, isModeEditor = false) {
+        let xStart;
+        let yStart;
+
+        if(isModeEditor) {
+            xStart = (params.basePosition + 1) + (props.config.config.setup.initPositionX * params.sizeGrid);
+            yStart = (params.basePosition + 1) + (props.config.config.setup.initPositionY * params.sizeGrid);
+        } else {
+            xStart = (params.basePosition + 1) + (props.player.position.x * params.sizeGrid);
+            yStart = (params.basePosition + 1) + (props.player.position.y * params.sizeGrid);
+        }
 
         context.drawImage(targetImage, xStart + 2, yStart + 2, params.sizeGrid - 6, params.sizeGrid - 6)
     }

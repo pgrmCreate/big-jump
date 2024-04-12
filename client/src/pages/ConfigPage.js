@@ -5,6 +5,7 @@ import {GameConfig} from "../class/GameConfig";
 import {ConfigContext} from "../utils/ConfigContext";
 import {Link, useNavigate, useParams} from 'react-router-dom';
 import {Requester} from "../class/Requester";
+import {ControllerConfigPanel} from "../components/ControllerConfigPanel";
 
 export default function ConfigPage() {
     const params = useParams();
@@ -273,9 +274,8 @@ export default function ConfigPage() {
         return true;
     }
 
-
-    function saveStep(e) {
-        const targetNav = parseInt(e.target.dataset.targetNav);
+    function saveStep(e, isManual = false) {
+        const targetNav = isManual ? e : parseInt(e.target.dataset.targetNav);
 
         if (targetNav === 5 || targetNav === 4 || targetNav === 3) {
             setTargetLevelConfig(null);
@@ -302,11 +302,11 @@ export default function ConfigPage() {
             }
         }
 
-        setConfigStep(targetNav);
-
         if (targetNav === 5) {
             setTargetLevelConfig(null);
         }
+
+        setConfigStep(targetNav);
     }
 
     function getZoneFromId(zoneList) {
@@ -566,6 +566,11 @@ export default function ConfigPage() {
 
                     <h1 className="text-center mx-4">New experience (step <b>{configStep}</b>)</h1>
                 </div>
+
+                {configStep && (
+                    <ControllerConfigPanel isEditConfig={!!params.id} configPart={1} configStep={configStep} currentConfig={config}
+                                       saveStep={saveStep} saveMap={saveMap}/>
+                )}
             </div>
 
             <div>
@@ -599,10 +604,15 @@ export default function ConfigPage() {
                                                     </button>
                                                 </div>
 
-                                                <div>
-                                                    <p className="alert alert-warning my-3">
-                                                        Regenerate map delete all current zones </p>
-                                                </div>
+                                                {
+                                                    (isMapDisplay || params.id) && (
+                                                        <div>
+                                                            <p className="alert alert-warning mt-2">
+                                                                Regenerate map delete all current zones </p>
+                                                        </div>
+                                                    )
+                                                }
+
                                             </div>
                                         </div>
                                     </div>
@@ -629,37 +639,41 @@ export default function ConfigPage() {
                                 </div>
                             </div>
 
-                            {isMapDisplay && (
-                                <div className="col-4">
-                                    <div className="">
-                                        <fieldset className="mb-2">
-                                            <h3>Map size</h3>
 
-                                            <div className="d-flex">
-                                                <input type="number" className="form-control mx-2" placeholder="Width"
-                                                       onChange={(e) => setSizeMap('width', e.target.value)}
-                                                       value={config.config.setup.width - 2}/>
+                            <div className="col-4">
+                                <div className="">
+                                    <fieldset className="mb-2">
+                                        <h3>Map size</h3>
 
-                                                <input type="number" className="form-control mx-2" placeholder="Height"
-                                                       onChange={(e) => setSizeMap('height', e.target.value)}
-                                                       value={config.config.setup.height - 2}/>
-                                            </div>
-                                        </fieldset>
-                                    </div>
+                                        <div className="d-flex align-items-center">
+                                            <span>W</span>
+                                            <input type="number" className="form-control mx-2" placeholder="Width"
+                                                   onChange={(e) => setSizeMap('width', e.target.value)}
+                                                   value={config.config.setup.width - 2}/>
+
+                                            <span>H</span>
+                                            <input type="number" className="form-control mx-2" placeholder="Height"
+                                                   onChange={(e) => setSizeMap('height', e.target.value)}
+                                                   value={config.config.setup.height - 2}/>
+                                        </div>
+                                    </fieldset>
                                 </div>
-                            )}
+                            </div>
+
 
                             <div className="col-8">
                                 <div className="">
                                     <fieldset>
                                         <h3>Start position</h3>
 
-                                        <div className="d-flex">
+                                        <div className="d-flex align-items-center">
+                                            <span>W</span>
                                             <input type="number" className="form-control mx-2" placeholder="x"
                                                    value={config.config.setup.initPositionX} onChange={(e) => {
                                                 changeGlobalConfig('initPositionX', e.target.value, true)
                                             }}/>
 
+                                            <span>H</span>
                                             <input type="number" className="form-control mx-2" placeholder="y"
                                                    value={config.config.setup.initPositionY} onChange={(e) => {
                                                 changeGlobalConfig('initPositionY', e.target.value, true)
@@ -669,72 +683,75 @@ export default function ConfigPage() {
                                 </div>
                             </div>
 
-                            <div className="col-4">
-                                <fieldset>
-                                    <h3>
-                                        Zones <br/>
-                                    </h3>
+                            {isMapDisplay && (
+                                <div className="col-4">
+                                    <fieldset>
+                                        <h3>
+                                            Zones <br/>
+                                        </h3>
 
-                                    <div className="d-flex align-items-center">
-                                        <button className="btn btn-sm btn-success mx-2 my-2" onClick={addGroupeZone}>
-                                            <i className="fa-solid fa-plus"/> Create
-                                        </button>
+                                        <div className="d-flex align-items-center">
+                                            <button className="btn btn-sm btn-success mx-2 my-2"
+                                                    onClick={addGroupeZone}>
+                                                <i className="fa-solid fa-plus"/> Create
+                                            </button>
 
-                                        {/*<label className="d-flex align-items-center">
+                                            {/*<label className="d-flex align-items-center">
                                             select color zone
                                             <input className="mx-2" type="color" value={colorSelect}
                                                    onChange={(e) => {
                                                        setColorSelect(e.target.value)
                                                    }}/>
                                         </label>*/}
-                                    </div>
+                                        </div>
 
-                                    {zoneGroup.length === 0 && (
-                                        <p className="alert alert-warning position-static">
-                                            Need 1 zone minimum </p>
-                                    )}
+                                        {zoneGroup.length === 0 && (
+                                            <p className="alert alert-warning position-static">
+                                                Need 1 zone minimum </p>
+                                        )}
 
-                                    <div className="zones-container">
-                                        {zoneGroup.map((item, currentIndex) => (
-                                            <div
-                                                className={"zones-row " + ((pickedZoneGroup === currentIndex) ? 'zone-selected' : '')}
-                                                key={currentIndex}>
-                                                <div className="d-flex align-items-center my-2 position-relative">
-                                                    {
-                                                        currentIndex !== pickedZoneGroup && (
-                                                            <div className="select-zone-overlay" onClick={selectZone}
-                                                                 data-target-zone={currentIndex}></div>
-                                                        )
-                                                    }
+                                        <div className="zones-container">
+                                            {zoneGroup.map((item, currentIndex) => (
+                                                <div
+                                                    className={"zones-row " + ((pickedZoneGroup === currentIndex) ? 'zone-selected' : '')}
+                                                    key={currentIndex}>
+                                                    <div className="d-flex align-items-center my-2 position-relative">
+                                                        {
+                                                            currentIndex !== pickedZoneGroup && (
+                                                                <div className="select-zone-overlay" onClick={selectZone}
+                                                                     data-target-zone={currentIndex}></div>
+                                                            )
+                                                        }
 
 
-                                                    <div>
-                                                        <input className="form-control" type="text"
-                                                               value={zoneGroupName[currentIndex]} onChange={(e) =>
-                                                            handleChangeNameGroupZone(currentIndex, e.target.value, item)}/>
+                                                        <div>
+                                                            <input className="form-control" type="text"
+                                                                   value={zoneGroupName[currentIndex]} onChange={(e) =>
+                                                                handleChangeNameGroupZone(currentIndex, e.target.value, item)}/>
 
-                                                    </div>
+                                                        </div>
 
-                                                    <div>
-                                                        <input className="mx-2" type="color"
-                                                               value={zoneGroupColor[currentIndex]} onChange={(e) =>
-                                                            handleChangeColorGroupZone(currentIndex, e.target.value, item)}/>
-                                                    </div>
+                                                        <div>
+                                                            <input className="mx-2" type="color"
+                                                                   value={zoneGroupColor[currentIndex]} onChange={(e) =>
+                                                                handleChangeColorGroupZone(currentIndex, e.target.value, item)}/>
+                                                        </div>
 
-                                                    <div>
-                                                        <button className="btn-sm btn-danger mx-2"
-                                                                onClick={handleDeleteZone}
-                                                                data-target-zone-d={currentIndex}>
-                                                            <i className="fa-solid fa-trash mx-1"/>
-                                                            delete
-                                                        </button>
+                                                        <div>
+                                                            <button className="btn-sm btn-danger mx-2"
+                                                                    onClick={handleDeleteZone}
+                                                                    data-target-zone-d={currentIndex}>
+                                                                <i className="fa-solid fa-trash mx-1"/>
+                                                                delete
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </fieldset>
-                            </div>
+                                            ))}
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            )}
 
                             <div className="col-8">
                                 <div className="d-flex justify-content-center">
