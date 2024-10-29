@@ -1,7 +1,16 @@
 .section-config-container {
     display: flex;
     justify-content: center;
-    border-bottom: 2px solid #EEE;
+    position: relative;
+    /*border-bottom: 2px solid #EEE;*/
+    max-height: 130px;
+    overflow: hidden;
+}
+
+.section-config-container.is-close{
+    animation-name: openAccordion;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
 }
 
 .section-config-aside {
@@ -14,6 +23,7 @@
     padding: 15px;
     width: 900px;
     border: 1px solid #EEE;
+    overflow: hidden;
 }
 
 .label-definition {
@@ -50,4 +60,14 @@
     position: fixed;
     right: 3vw;
     bottom: 5vh
+}
+
+@keyframes openAccordion {
+    0% {
+        max-height: 130px;
+    }
+
+    100% {
+        max-height: 1000px;
+    }
 }

@@ -6,6 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="df89ccb8-fdbc-4a54-823c-7ccd03a98237" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/build/asset-manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/build/asset-manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/build/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/client/build/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/build/static/css/main.d1d211e5.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/build/static/css/main.d1d211e5.css.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/build/static/js/main.db22499e.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/build/static/js/main.db22499e.js.LICENSE.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/build/static/js/main.db22499e.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/pages/ConfigSessionPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/ConfigSessionPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/pages/ConfigSessionPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/ConfigSessionPage.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,12 +60,13 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/wamp64/www/hortenselot&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/projects/big-jump&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -68,6 +78,14 @@
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\projects\big-jump\client\src\class" />
     </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-91d5c284f522-JavaScript-PS-241.15989.102" />
+        <option value="bundled-php-predefined-ba97393d7c68-c76157a7178b-com.jetbrains.php.sharedIndexes-PS-241.15989.102" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -141,7 +159,26 @@
       <workItem from="1712786362660" duration="17467000" />
       <workItem from="1713042826356" duration="34000" />
       <workItem from="1713278723184" duration="5770000" />
-      <workItem from="1713703880867" duration="1262000" />
+      <workItem from="1713703880867" duration="3109000" />
+      <workItem from="1713783583153" duration="1321000" />
+      <workItem from="1714918969455" duration="1244000" />
+      <workItem from="1715104604344" duration="8148000" />
+      <workItem from="1715588221622" duration="1443000" />
+      <workItem from="1715594969923" duration="103000" />
+      <workItem from="1715614191231" duration="819000" />
+      <workItem from="1715670589708" duration="9000" />
+      <workItem from="1717347612791" duration="616000" />
+      <workItem from="1717510939523" duration="2509000" />
+      <workItem from="1720273735629" duration="1773000" />
+      <workItem from="1720356782442" duration="1478000" />
+      <workItem from="1720520389011" duration="322000" />
+      <workItem from="1721322203692" duration="8000" />
+      <workItem from="1724263816037" duration="53000" />
+      <workItem from="1727774683201" duration="309000" />
+      <workItem from="1729300089270" duration="836000" />
+      <workItem from="1729938819676" duration="635000" />
+      <workItem from="1729941793300" duration="7839000" />
+      <workItem from="1730024475011" duration="12287000" />
     </task>
     <servers />
   </component>

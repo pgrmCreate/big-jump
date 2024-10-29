@@ -5,6 +5,8 @@ import {ConfigContext} from "../utils/ConfigContext";
 import './ConfigSessionPage.css';
 import {Requester} from "../class/Requester";
 import {GameConfig} from "../class/GameConfig";
+import {ControllerConfigPanel} from "../components/ControllerConfigPanel";
+import {AccordionButton} from "../components/AccordionButton";
 
 export default function ConfigSessionPage() {
     const params = useParams();
@@ -24,6 +26,7 @@ export default function ConfigSessionPage() {
     const [instructionPage, setInstructionPage] = useState('');
     const [endPage, setEndPage] = useState('');
     const [zoneGroup, setZoneGroup] = useState([]);
+    const [menuIsOpen, setMenuIsOpen] = useState([true, true, true, true, true]);
 
     useEffect(() => {
         loadConfig();
@@ -124,7 +127,7 @@ export default function ConfigSessionPage() {
         setTextsEvent(targetArray);
     }
 
-    function saveMap() {
+    function saveMap(isWithNavigate = true) {
         currentConfig.setup.participantInfo = participantInfo;
         currentConfig.setup.instructionPage = instructionPage;
         currentConfig.setup.endPage = endPage;
@@ -141,19 +144,30 @@ export default function ConfigSessionPage() {
 
         targetArray[targetIndex] = currentConfig;
 
-        updateConfigServer();
+        updateConfigServer(isWithNavigate);
     }
 
-    function updateConfigServer() {
+    function updateConfigServer(isWithNavigate = true) {
         const dataConfig = {...currentConfig.setup};
         delete dataConfig.roundLeftMax;
         delete dataConfig.id;
 
         Requester.post(`/api/gameconfig/${dataConfig._id}`, dataConfig).then(res => res.json())
-            .then(() => navigate('/'))
+            .then(() => {
+                if(isWithNavigate)
+                    navigate('/');
+            })
             .catch((error) => {
                 console.error(error);
             })
+    }
+
+    function openMenuAccordion(targetIndex) {
+        const cpyMenu = [...menuIsOpen];
+        cpyMenu[targetIndex] = !cpyMenu[targetIndex];
+        setMenuIsOpen(cpyMenu);
+
+        console.log(cpyMenu)
     }
 
     return (
@@ -171,13 +185,17 @@ export default function ConfigSessionPage() {
                                 Edit config : <b className="success">{currentConfig.setup.name}</b>
                             </h1>
                         </div>
+
+                        <ControllerConfigPanel isEditConfig={!!params.id} configPart={2} configStep={6} currentConfig={currentConfig}
+                                                   saveStep={saveMap} saveMap={saveMap}/>
                     </div>
 
                     <div>
                         <h2 className="text-center my-3">Participant session configuration</h2>
                     </div>
 
-                    <div className="section-config-container">
+                    <div className={"section-config-container " + (menuIsOpen[0] ? 'is-close' : '')}>
+                        <AccordionButton inputValue={menuIsOpen[0]} openMenu={() => openMenuAccordion(0)}/>
                         <div className="section-config">
                             <h3>Participant informations</h3>
                             <p className="fst-italic">information requested from the first page during a session</p>
@@ -231,7 +249,8 @@ export default function ConfigSessionPage() {
                         </div>
                     </div>
 
-                    <div className="section-config-container">
+                    <div className={"section-config-container " + (menuIsOpen[1] ? 'is-close' : '')}>
+                        <AccordionButton inputValue={menuIsOpen[1]} openMenu={() => openMenuAccordion(1)}/>
                         <div className="section-config">
                             <h3>Instructions page</h3>
                             <p className="fst-italic">Indicate the instructions to be given to the player before
@@ -245,7 +264,8 @@ export default function ConfigSessionPage() {
                         <div className="section-config-aside"></div>
                     </div>
 
-                    <div className="section-config-container">
+                    <div className={"section-config-container " + (menuIsOpen[2] ? 'is-close' : '')}>
+                        <AccordionButton inputValue={menuIsOpen[2]} openMenu={() => openMenuAccordion(2)}/>
                         <div className="section-config">
                             <h3>Game Interface Page</h3>
                             <p className="fst-italic">changes to player interface labels</p>
@@ -292,7 +312,8 @@ export default function ConfigSessionPage() {
                         </div>
                     </div>
 
-                    <div className="section-config-container">
+                    <div className={"section-config-container " + (menuIsOpen[3] ? 'is-close' : '')}>
+                        <AccordionButton inputValue={menuIsOpen[3]} openMenu={() => openMenuAccordion(3)}/>
                         <div className="section-config">
                             <h3>Text event</h3>
                             <p className="fst-italic">proposal of text to display by type of event</p>
@@ -372,7 +393,8 @@ export default function ConfigSessionPage() {
                         </div>
                     </div>
 
-                    <div className="section-config-container">
+                    <div className={"section-config-container " + (menuIsOpen[4] ? 'is-close' : '')}>
+                        <AccordionButton inputValue={menuIsOpen[4]} openMenu={() => openMenuAccordion(4)}/>
                         <div className="section-config">
                             <h3>End page</h3>
                             <p className="fst-italic">Message or link sent to the player at the end of the game</p>
