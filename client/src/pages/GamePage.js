@@ -344,6 +344,10 @@ export function GamePage() {
         setEarnPoints([...earnPoints, {id: targetNewId, points: targetPoints}]);
     }
 
+    function handleStopGame() {
+        setGameRoundLeft(0);
+    }
+
     return (
         <div className="container">
             { (!isStart && isGettingParticipantInfo) && (
@@ -482,7 +486,7 @@ export function GamePage() {
                             </div>
 
                             <div className="d-flex justify-content-center">
-                                <button className="btn btn-danger">Stop</button>
+                                <button className="btn btn-danger" onClick={handleStopGame}>Stop</button>
                             </div>
                         </div>
                     )}
