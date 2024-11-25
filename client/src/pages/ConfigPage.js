@@ -6,6 +6,7 @@ import {ConfigContext} from "../utils/ConfigContext";
 import {Link, useNavigate, useParams} from 'react-router-dom';
 import {Requester} from "../class/Requester";
 import {ControllerConfigPanel} from "../components/ControllerConfigPanel";
+import NumericInput from "../components/NumericInput";
 
 export default function ConfigPage() {
     const params = useParams();
@@ -647,12 +648,12 @@ export default function ConfigPage() {
 
                                         <div className="d-flex align-items-center">
                                             <span>W</span>
-                                            <input type="number" className="form-control mx-2" placeholder="Width"
+                                            <NumericInput className="form-control mx-2" placeholder="Width" allowDecimal={false}
                                                    onChange={(e) => setSizeMap('width', e.target.value)}
                                                    value={config.config.setup.width - 2}/>
 
                                             <span>H</span>
-                                            <input type="number" className="form-control mx-2" placeholder="Height"
+                                            <NumericInput className="form-control mx-2" placeholder="Height"
                                                    onChange={(e) => setSizeMap('height', e.target.value)}
                                                    value={config.config.setup.height - 2}/>
                                         </div>
@@ -668,13 +669,13 @@ export default function ConfigPage() {
 
                                         <div className="d-flex align-items-center">
                                             <span>W</span>
-                                            <input type="number" className="form-control mx-2" placeholder="x"
+                                            <NumericInput className="form-control mx-2" placeholder="x"
                                                    value={config.config.setup.initPositionX} onChange={(e) => {
                                                 changeGlobalConfig('initPositionX', e.target.value, true)
                                             }}/>
 
                                             <span>H</span>
-                                            <input type="number" className="form-control mx-2" placeholder="y"
+                                            <NumericInput className="form-control mx-2" placeholder="y"
                                                    value={config.config.setup.initPositionY} onChange={(e) => {
                                                 changeGlobalConfig('initPositionY', e.target.value, true)
                                             }}/>
@@ -889,7 +890,7 @@ export default function ConfigPage() {
                             <div>
                                 <label className="my-2">
                                     Total player actions
-                                    <input className="form-control" type="number"
+                                    <NumericInput className="form-control"
                                            value={config.config.setup.roundLeftMax} onChange={(e) => {
                                         changeGlobalConfig('roundLeftMax', e.target.value, true)
                                     }}/>
@@ -897,7 +898,7 @@ export default function ConfigPage() {
 
                                 <label className="my-2">
                                     Initial player score
-                                    <input className="form-control" type="number" value={config.config.setup.startPoint}
+                                    <NumericInput className="form-control" value={config.config.setup.startPoint}
                                            onChange={(e) => {
                                                changeGlobalConfig('startPoint', e.target.value, true)
                                            }}/>
@@ -905,7 +906,7 @@ export default function ConfigPage() {
 
                                 <label className="my-2">
                                     Amount of gain level
-                                    <input className="form-control" type="number"
+                                    <NumericInput className="form-control"
                                            value={config.config.setup.gainLevelAmount} onChange={(e) => {
                                         changeGlobalConfig('gainLevelAmount', e.target.value, true)
                                     }}/>
@@ -913,7 +914,7 @@ export default function ConfigPage() {
 
                                 <label className="my-2">
                                     Amount of threat level
-                                    <input className="form-control" type="number"
+                                    <NumericInput className="form-control"
                                            value={config.config.setup.threatLevelAmount} onChange={(e) => {
                                         changeGlobalConfig('threatLevelAmount', e.target.value, true)
                                     }}/>
@@ -921,7 +922,7 @@ export default function ConfigPage() {
 
                                 <label className="my-2">
                                     Try amount by session
-                                    <input className="form-control" type="number" value={config.config.setup.tryAmount}
+                                    <NumericInput className="form-control" value={config.config.setup.tryAmount}
                                            onChange={(e) => {
                                                changeGlobalConfig('tryAmount', e.target.value, true)
                                            }}/>
@@ -1066,11 +1067,11 @@ export default function ConfigPage() {
                                 <div>
                                     <label className="d-flex my-2 align-content-center align-items-center">
                                         Points interval
-                                        <input className="form-control mx-1" type="number" placeholder="From"
+                                        <NumericInput className="form-control mx-1" placeholder="From"
                                                value={config.config.setup.lots.find(i => i.exploration.id === targetLevelConfig).exploration.earnPointMin}
                                                onChange={(e) => changeLotConfig('earnPointMin', e.target.value, 'exploration')}/>
                                         <span className="mx-1">to</span>
-                                        <input className="form-control mx-1" type="number" placeholder="to"
+                                        <NumericInput className="form-control mx-1" placeholder="to"
                                                value={config.config.setup.lots.find(i => i.exploration.id === targetLevelConfig).exploration.earnPointMax}
                                                onChange={(e) => changeLotConfig('earnPointMax', e.target.value, 'exploration')}/>
                                     </label>
@@ -1079,7 +1080,7 @@ export default function ConfigPage() {
                                 {config.config.setup.drawTypeGain === 'sequential' && (
                                     <label className="my-2">
                                         Max draw
-                                        <input className="form-control mx-1" type="number" placeholder="Max draw"
+                                        <NumericInput className="form-control mx-1" placeholder="Max draw"
                                                value={config.config.setup.lots.find(i => i.exploration.id === targetLevelConfig).exploration.maxDraw}
                                                onChange={(e) => changeLotConfig('maxDraw', e.target.value, 'exploration')}/>
                                     </label>
@@ -1088,7 +1089,7 @@ export default function ConfigPage() {
                                 {config.config.setup.drawTypeGain === 'semi-random' && (
                                     <label className="my-2">
                                         Draw amount %
-                                        <input type="number" className="form-control"
+                                        <NumericInput className="form-control"
                                                value={config.config.setup.lotWinConfig.randomAmount['exploration'][simpleIndexLevelPicked]}
                                                data-draw-index={simpleIndexLevelPicked}
                                                onChange={(e) => changeRandomDrawAmount('gain', e, 'exploration')}/>
@@ -1135,11 +1136,11 @@ export default function ConfigPage() {
                                 <div>
                                     <label className="d-flex my-2 align-content-center align-items-center">
                                         Points interval
-                                        <input className="form-control mx-1" type="number" placeholder="From"
+                                        <NumericInput className="form-control mx-1" placeholder="From"
                                                value={config.config.setup.lots.find(i => i.exploitation.id === targetLevelConfig).exploitation.earnPointMin}
                                                onChange={(e) => changeLotConfig('earnPointMin', e.target.value, 'exploitation')}/>
                                         <span className="mx-1">to</span>
-                                        <input className="form-control mx-1" type="number" placeholder="to"
+                                        <NumericInput className="form-control mx-1" placeholder="to"
                                             /*value={config.config.setup.lots.[targetLevelConfig].exploitation.earnPointMax}*/
                                                value={config.config.setup.lots.find(i => i.exploitation.id === targetLevelConfig).exploitation.earnPointMax}
                                                onChange={(e) => changeLotConfig('earnPointMax', e.target.value, 'exploitation')}/>
@@ -1149,7 +1150,7 @@ export default function ConfigPage() {
                                 {config.config.setup.drawTypeGain === 'sequential' && (
                                     <label className="my-2">
                                         Max draw
-                                        <input className="form-control mx-1" type="number" placeholder="Max draw"
+                                        <NumericInput className="form-control mx-1" placeholder="Max draw"
                                                value={config.config.setup.lots.find(i => i.exploitation.id === targetLevelConfig).exploitation.maxDraw}
                                                onChange={(e) => changeLotConfig('maxDraw', e.target.value, 'exploitation')}/>
                                     </label>
@@ -1158,7 +1159,7 @@ export default function ConfigPage() {
                                 {config.config.setup.drawTypeGain === 'semi-random' && (
                                     <label className="my-2">
                                         Draw amount %
-                                        <input type="number" className="form-control"
+                                        <NumericInput className="form-control"
                                                value={config.config.setup.lotWinConfig.randomAmount['exploitation'][simpleIndexLevelPicked]}
                                                data-draw-index={simpleIndexLevelPicked}
                                                onChange={(e) => changeRandomDrawAmount('gain', e, 'exploitation')}/>
@@ -1249,11 +1250,11 @@ export default function ConfigPage() {
                                 <div>
                                     <label className="d-flex my-2 align-content-center align-items-center">
                                         Points interval
-                                        <input className="form-control mx-1" type="number" placeholder="From"
+                                        <NumericInput className="form-control mx-1" placeholder="From"
                                                value={config.config.setup.lots.find(i => i.exploration.id === targetLevelConfig).exploration.earnPointMin}
                                                onChange={(e) => changeLotConfig('earnPointMin', e.target.value, 'exploration')}/>
                                         <span className="mx-1">to</span>
-                                        <input className="form-control mx-1" type="number" placeholder="to"
+                                        <NumericInput className="form-control mx-1" placeholder="to"
                                                value={config.config.setup.lots.find(i => i.exploration.id === targetLevelConfig).exploration.earnPointMax}
                                                onChange={(e) => changeLotConfig('earnPointMax', e.target.value, 'exploration')}/>
                                     </label>
@@ -1262,7 +1263,7 @@ export default function ConfigPage() {
                                 {config.config.setup.drawTypeThreat === 'sequential' && (
                                     <label className="my-2">
                                         Max draw
-                                        <input className="form-control mx-1" type="number" placeholder="Max draw"
+                                        <NumericInput className="form-control mx-1" placeholder="Max draw"
                                                value={config.config.setup.lots.find(i => i.exploration.id === targetLevelConfig).exploration.maxDraw}
                                                onChange={(e) => changeLotConfig('maxDraw', e.target.value, 'exploration')}/>
                                     </label>
@@ -1271,7 +1272,7 @@ export default function ConfigPage() {
                                 {config.config.setup.drawTypeThreat === 'semi-random' && (
                                     <label className="my-2">
                                         Draw amount %
-                                        <input type="number" className="form-control"
+                                        <NumericInput className="form-control"
                                                value={config.config.setup.lotLooseConfig.randomAmount['exploration'][simpleIndexLevelPicked]}
                                                data-draw-index={simpleIndexLevelPicked}
                                                onChange={(e) => changeRandomDrawAmount('threat', e, 'exploration')}/>
@@ -1318,11 +1319,11 @@ export default function ConfigPage() {
                                 <div>
                                     <label className="d-flex my-2 align-content-center align-items-center">
                                         Points interval
-                                        <input className="form-control mx-1" type="number" placeholder="From"
+                                        <NumericInput className="form-control mx-1" placeholder="From"
                                                value={config.config.setup.lots.find(i => i.exploitation.id === targetLevelConfig).exploitation.earnPointMin}
                                                onChange={(e) => changeLotConfig('earnPointMin', e.target.value, 'exploitation')}/>
                                         <span className="mx-1">to</span>
-                                        <input className="form-control mx-1" type="number" placeholder="to"
+                                        <NumericInput className="form-control mx-1" placeholder="to"
                                                value={config.config.setup.lots.find(i => i.exploitation.id === targetLevelConfig).exploitation.earnPointMax}
                                                onChange={(e) => changeLotConfig('earnPointMax', e.target.value, 'exploitation')}/>
                                     </label>
@@ -1331,7 +1332,7 @@ export default function ConfigPage() {
                                 {config.config.setup.drawTypeThreat === 'sequential' && (
                                     <label className="my-2">
                                         Max draw
-                                        <input className="form-control mx-1" type="number" placeholder="Max draw"
+                                        <NumericInput className="form-control mx-1" placeholder="Max draw"
                                                value={config.config.setup.lots.find(i => i.exploitation.id === targetLevelConfig).exploitation.maxDraw}
                                                onChange={(e) => changeLotConfig('maxDraw', e.target.value, 'exploitation')}/>
                                     </label>
@@ -1340,7 +1341,7 @@ export default function ConfigPage() {
                                 {config.config.setup.drawTypeThreat === 'semi-random' && (
                                     <label className="my-2">
                                         Draw amount %
-                                        <input type="number" className="form-control"
+                                        <NumericInput className="form-control"
                                                value={config.config.setup.lotLooseConfig.randomAmount['exploitation'][simpleIndexLevelPicked]}
                                                data-draw-index={simpleIndexLevelPicked}
                                                onChange={(e) => changeRandomDrawAmount('threat', e, 'exploitation')}/>
