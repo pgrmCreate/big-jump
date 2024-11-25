@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const HistoryGame = require('../db/models/HistoryGameSchema');
+const GameConfig = require("../db/models/GameConfigSchema");
 
 exports.getAll = (req, res, next) => {
     HistoryGame.find({}).then((data) => {
@@ -21,4 +22,24 @@ exports.create = (req, res, next) => {
     newHistory.save().then((data) => {
         res.status(200).json({data});
     })
+}
+
+exports.delete = (req, res, next) => {
+    const targetId = req.params.id;
+
+    HistoryGame.findOne({_id : targetId}).then((data) => {
+        data.remove();
+
+        res.status(200).json({});
+    }).catch((error) => res.status(500).json({error}));
+}
+
+exports.deleteByConfig = (req, res, next) => {
+    const targetId = req.params.id;
+
+    HistoryGame.findOne({configId : targetId}).then((data) => {
+        data.remove();
+
+        res.status(200).json({});
+    }).catch((error) => res.status(500).json({error}));
 }

@@ -1,110 +1,111 @@
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 
-  --primary-color: #195889;
-  --secondary-color: #d2485b;
+    --primary-color: #195889;
+    --secondary-color: #d2485b;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
 .popin-container {
-  position: fixed;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 70;
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 70;
 }
 
 .popin-container:after {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: rgba(0, 0, 0, .8);
-  content: "";
-  z-index: 25;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, .8);
+    content: "";
+    z-index: 25;
 }
 
 .popin-content {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 400px;
-  height: 300px;
-  background: white;
-  border: 1px solid #EEE;
-  z-index: 50;
-  animation: popinShow .3s;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 400px;
+    height: 300px;
+    background: white;
+    border: 1px solid #EEE;
+    z-index: 50;
+    animation: popinShow .3s;
 }
 
 .popin-close {
-  position: absolute;
-  right: 40px;
-  top: 20px;
-  font-size: 28px;
-  cursor: pointer;
-  transition: .2s;
+    position: absolute;
+    right: 40px;
+    top: 20px;
+    font-size: 28px;
+    cursor: pointer;
+    transition: .2s;
 }
 
 .popin-close:hover {
-  color: var(--secondary-color);
+    color: var(--secondary-color);
 }
 
 
 @keyframes popinShow {
-  0% {
-    transform: translateX(-100vw);
-  }
+    0% {
+        transform: translateX(-100vw);
+    }
 
-  100% {
-    transform: translateX(0);
-  }
+    100% {
+        transform: translateX(0);
+    }
 }
 
 
 .loader {
-  width: 48px;
-  height: 48px;
-  border: 3px solid var(--primary-color);
-  border-radius: 50%;
-  display: inline-block;
-  position: relative;
-  box-sizing: border-box;
-  animation: rotation 1s linear infinite;
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--primary-color);
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
 }
+
 .loader::after {
-  content: '';
-  box-sizing: border-box;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 3px solid;
-  border-color: #FF3D00 transparent;
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid;
+    border-color: #FF3D00 transparent;
 }
 
 @keyframes rotation {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }

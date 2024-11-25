@@ -71,6 +71,23 @@ h3 {
     border-color: #669666;
 }
 
+.btn.btn-warning {
+    background: #B9AC3BFF;
+    border-color: #B9AC3BFF;
+    color: white;
+}
+
+.btn.btn-warning:hover {
+    background: #a28e2e;
+}
+
+.btn.btn-warning[data-disabled="true"] {
+    background: #878788;
+    border-color: #878788;
+    cursor: default;
+}
+
+
 .btn-light {
     background: #EEE;
 }

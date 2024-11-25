@@ -13,6 +13,7 @@ export default function Home() {
     const [globalConfig, setGlobalConfig] = useContext(ConfigContext);
     const [userContext, setUserContext] = useContext(UserContext);
     const [targetXpLink, setTargetXpLink] = useState(false);
+    const [historyGames, setHistoryGames] = useState([]);
     const navigate = useNavigate();
 
     const customStylesModal = {
@@ -54,7 +55,13 @@ export default function Home() {
                 })
 
                 setGlobalConfig({list: listConfig, config: null});
-            })
+            });
+
+        Requester.get('/api/history')
+            .then((res => res.json()))
+            .then((data) => {
+                setHistoryGames(data);
+            });
     }
 
     function pickExperience(targetXp) {
@@ -72,8 +79,24 @@ export default function Home() {
         targetSetup.loading = true;
         setGlobalConfig({list : globalConfig.list, config : globalConfig.list.find(i => i.setup._id === targetSetup._id)});
 
-        Requester.delete(`/api/gameconfig/${targetSetup._id}`).then(res => res.json())
+        Requester.delete(`/api/gameconfig/${targetSetup._id}`)
+            .then(res => res.json())
             .then(() => {
+                loadConfigs();
+            }).catch((error) => console.error({error}))
+    }
+
+    function handleClearHistory(targetSetup, isDisabled) {
+        if (isDisabled === 'true')
+            return;
+
+        targetSetup.loading = true;
+        setGlobalConfig({list : globalConfig.list, config : globalConfig.list.find(i => i.setup._id === targetSetup._id)});
+
+        Requester.delete(`/api/history/gameconfig/${targetSetup._id}`)
+            .then(res => res.json())
+            .then(() => {
+                targetSetup.loading = false;
                 loadConfigs();
             }).catch((error) => console.error({error}))
     }
@@ -233,6 +256,13 @@ export default function Home() {
                                                 <button className="btn btn-sm btn-primary mx-2" onClick={() => pickExperience(item)}>
                                                     <i className="fa-solid fa-play mx-2"/>
                                                     Run test
+                                                </button>
+
+                                                <button className={"btn btn-sm btn-warning me-2"}
+                                                        data-disabled={historyGames.filter(i => i.configId === item._id).length === 0}
+                                                        onClick={(e) => handleClearHistory(item.setup, e.target.dataset.disabled)}>
+                                                    <i className="fa-solid fa-trash mx-2"/>
+                                                    Clear story
                                                 </button>
 
                                                 <button className="btn btn-sm btn-danger" onClick={() => handleRemoveExperience(item.setup)}>
