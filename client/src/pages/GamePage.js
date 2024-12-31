@@ -55,7 +55,8 @@ export function GamePage() {
     }, [handleKeyUp]);
 
     useEffect(() => {
-        if(gameRoundLeft === 0 && gameSessionLeft !== 0) {
+        if(gameRoundLeft === 0 && historyRows.length > 0) {
+            console.log('historyRows', historyRows);
             setHistorySession([...historySession, {
                 rows: [...historyRows],
                 stats: {
@@ -93,6 +94,7 @@ export function GamePage() {
     }
 
     function initGame(newSession = false) {
+        console.log('newSession', newSession)
         config.config.initRound();
         setTextsEvent([]);
         GameManager.get().settingConfig(config.config);
@@ -120,6 +122,7 @@ export function GamePage() {
     }
 
     function endSession() {
+        console.log('END SESSION SEND')
         const targetNewHistory = {
             userId : cookies.user.userId,
             sessions : historySession,
@@ -177,22 +180,22 @@ export function GamePage() {
         }
 
         setPlayer(targetObject);
-        exploreAction(direction);
+        userOpenAction(direction, 'exploration');
         setGameRoundLeft(roundLeft => roundLeft - 1);
     }
 
-    function exploreAction(direction = 'top') {
+    function userOpenAction(direction = 'top', typeAction = "exploration") {
         let foundZone = false;
         GameManager.get().gameConfig.setup.zones.forEach((currentZone) => {
             if (currentZone.x === player.position.x && currentZone.y === player.position.y) {
-                setHistoryRows([...historyRows, openZone(currentZone, 'exploration', direction)]);
+                setHistoryRows([...historyRows, openZone(currentZone, typeAction, direction)]);
                 foundZone = true;
             }
         });
 
-        if(!foundZone) {
+        if(!foundZone && typeAction === 'exploration') {
             setHistoryRows([...historyRows, {
-                typeAction : 'exploration',
+                typeAction : typeAction,
                 positionX : player.position.x,
                 positionY : player.position.y,
                 direction : direction,
@@ -201,16 +204,10 @@ export function GamePage() {
                 actionPointsLeft: gameRoundLeft
             }]);
         }
-    }
 
-    function exploitAction() {
-        GameManager.get().gameConfig.setup.zones.forEach((currentZone) => {
-            if (currentZone.x === player.position.x && currentZone.y === player.position.y) {
-                setHistoryRows([...historyRows, openZone(currentZone, 'exploitation')]);
-            }
-        });
-
-        setGameRoundLeft(roundLeft => roundLeft - 1);
+        if(typeAction === 'exploitation') {
+            setGameRoundLeft(roundLeft => roundLeft - 1);
+        }
     }
 
     function openZone(zone, typeAction = 'exploration', direction = null) {
@@ -464,8 +461,7 @@ export function GamePage() {
                                             <i className="fa-solid fa-arrow-left"/>
                                         </button>
 
-                                        <button className="btn btn-primary mx-2" onClick={exploitAction}
-                                                data-direction="left">
+                                        <button className="btn btn-primary mx-2" onClick={() => userOpenAction(null, 'exploitation')}>
                                             <i className="fa-solid fa-person-digging mx-2"/>
                                             { config.config.setup.gameInterfacePage.exploite}
                                         </button>

@@ -111,56 +111,6 @@ export default function Home() {
         setTargetXpLink(xp);
     }
 
-    function exportData(data) {
-        const json = JSON.stringify(data);
-        const blob = new Blob([json], { type: 'application/json' });
-        const href = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = href;
-        link.download = data.setup.name.split(' ')[0] + '.json';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    function exportDataConfigToCSV(data) {
-        // Préparation du contenu CSV pour les zones
-        let csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += "Section: Zones\r\n";
-        csvContent += "ID,Couleur,Visible,Pourcentage Perte,Pourcentage Gain,Groupe Cible,X,Y,_ID\r\n";
-
-        data.setup.zones.forEach(zone => {
-            let row = `${zone.id},${zone.color},${zone.isVisible},${zone.percentLoose},${zone.percentWin},${zone.targetGroupZone},${zone.x},${zone.y},${zone._id}\r\n`;
-            csvContent += row;
-        });
-
-        // Séparation des sections
-        csvContent += "\r\n"; // Ajouter une ligne vide entre les sections pour une meilleure lisibilité
-
-        // Préparation du contenu CSV pour les lots
-        csvContent += "Section: Lots\r\n";
-        csvContent += "ID,Exploration Gagne,Exploration Niveau,Exploration Max Tirage,Exploration Points Min,Exploration Points Max,Exploitation Gagne,Exploitation Niveau,Exploitation Max Tirage,Exploitation Points Min,Exploitation Points Max,_ID\r\n";
-
-        data.setup.lots.forEach(lot => {
-            let row = `${lot.exploration.id},${lot.exploration.isWin},${lot.exploration.level},${lot.exploration.maxDraw},${lot.exploration.earnPointMin},${lot.exploration.earnPointMax},${lot.exploitation.isWin},${lot.exploitation.level},${lot.exploitation.maxDraw},${lot.exploitation.earnPointMin},${lot.exploitation.earnPointMax},${lot._id}\r\n`;
-            csvContent += row;
-        });
-
-        // Créer un Blob avec le contenu CSV
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const href = URL.createObjectURL(blob);
-
-        // Créer un lien pour le téléchargement
-        const link = document.createElement('a');
-        link.href = href;
-        link.download = "export.csv"; // Nom du fichier CSV
-        document.body.appendChild(link);
-        link.click();
-
-        // Nettoyage en supprimant le lien du DOM
-        document.body.removeChild(link);
-    }
-
     function exportDataHistoryToCSV(item) {
         Requester.get('/api/history')
             .then(res => res.json())
@@ -169,7 +119,7 @@ export default function Home() {
                     return currentHistory.configId === item._id;
                 });
 
-                const csvCreator = new CSVCreator(targetHistory);
+                const csvCreator = new CSVCreator(targetHistory,);
 
                 // Créer un Blob avec le contenu CSV
                 const blob = new Blob([csvCreator.generateCSV()], { type: 'text/csv;charset=utf-8;' });
