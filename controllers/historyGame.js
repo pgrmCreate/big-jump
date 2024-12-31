@@ -27,8 +27,8 @@ exports.create = (req, res, next) => {
 exports.delete = (req, res, next) => {
     const targetId = req.params.id;
 
-    HistoryGame.findOne({_id : targetId}).then((data) => {
-        data.remove();
+    HistoryGame.findOne({_id : targetId}).then(async (data) => {
+        await data.remove();
 
         res.status(200).json({});
     }).catch((error) => res.status(500).json({error}));
@@ -37,9 +37,9 @@ exports.delete = (req, res, next) => {
 exports.deleteByConfig = (req, res, next) => {
     const targetId = req.params.id;
 
-    HistoryGame.findOne({configId : targetId}).then((data) => {
-        data.remove();
+    HistoryGame.findOne({configId : targetId}).then(async (data) => {
+        await data.remove();
 
-        res.status(200).json({});
+        res.status(200).json({})
     }).catch((error) => res.status(500).json({error}));
 }

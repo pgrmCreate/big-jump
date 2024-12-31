@@ -13,7 +13,17 @@ export default function Home() {
     const [globalConfig, setGlobalConfig] = useContext(ConfigContext);
     const [userContext, setUserContext] = useContext(UserContext);
     const [targetXpLink, setTargetXpLink] = useState(false);
+    const [isMenuExportOpen, setIsMenuExportOpen] = useState(false);
     const [historyGames, setHistoryGames] = useState([]);
+    const [exportDataConfig, setExportDataConfig] = useState({
+        position: true,
+        typeAction : true,
+        eventType : true,
+        pointsEvent: true,
+        score: true,
+        actionPoints: true,
+        targetConfig: null
+    });
     const navigate = useNavigate();
 
     const customStylesModal = {
@@ -111,7 +121,9 @@ export default function Home() {
         setTargetXpLink(xp);
     }
 
-    function exportDataHistoryToCSV(item) {
+    function exportDataHistoryToCSV() {
+        let item = exportDataConfig.targetConfig;
+
         Requester.get('/api/history')
             .then(res => res.json())
             .then((data) => {
@@ -119,7 +131,7 @@ export default function Home() {
                     return currentHistory.configId === item._id;
                 });
 
-                const csvCreator = new CSVCreator(targetHistory,);
+                const csvCreator = new CSVCreator(targetHistory, exportDataConfig);
 
                 // Créer un Blob avec le contenu CSV
                 const blob = new Blob([csvCreator.generateCSV()], { type: 'text/csv;charset=utf-8;' });
@@ -135,6 +147,18 @@ export default function Home() {
                 // Nettoyage en supprimant le lien du DOM
                 document.body.removeChild(link);
             });
+    }
+
+    function handleActiveExportDataMenu(targetConfig) {
+        setIsMenuExportOpen(true);
+        setExportDataConfig({...exportDataConfig, targetConfig: targetConfig})
+    }
+
+    function handleChangeExportData(e) {
+        setExportDataConfig({
+            ...exportDataConfig,
+            [e.target.dataset.key]: !exportDataConfig[e.target.dataset.key],
+        })
     }
 
     return (<div className="container">
@@ -196,7 +220,7 @@ export default function Home() {
                                                     Edit
                                                 </button>
 
-                                                <button className="btn btn-primary" onClick={() => exportDataHistoryToCSV(item)}>
+                                                <button className="btn btn-primary" onClick={() => handleActiveExportDataMenu(item)}>
                                                     <i className="fa-solid fa-file-export mx-2"/>
                                                     Export data
                                                 </button>
@@ -242,7 +266,7 @@ export default function Home() {
             <Modal
                 style={customStylesModal}
                 isOpen={targetXpLink ? true : false}
-                contentLabel="Minimal Modal Example">
+                contentLabel="Menu open">
 
                 <div className="d-flex flex-column h-100">
                     <div className="d-flex flex-1 flex-column">
@@ -263,6 +287,63 @@ export default function Home() {
                     </button>
                 </div>
             </Modal>
+
+            <Modal style={customStylesModal} isOpen={isMenuExportOpen} contentLabel="Minimal Modal Example">
+                <div className="d-flex flex-column h-100">
+                    <h2 className="text-center mb-4">Export data config</h2>
+
+                    <div className="export-data-container">
+                        <div className="export-data-row">
+                            Position
+                            <i className={"fa-solid fa-square" + (exportDataConfig.position ? '-check' : '')}
+                               data-key="position" onClick={handleChangeExportData}/>
+                        </div>
+
+                        <div className="export-data-row">
+                            Action type
+                            <i className={"fa-solid fa-square" + (exportDataConfig.typeAction ? '-check' : '')}
+                               data-key="typeAction" onClick={handleChangeExportData}/>
+                        </div>
+
+                        <div className="export-data-row">
+                            Event type (threat, Gain or empty)
+                            <i className={"fa-solid fa-square" + (exportDataConfig.eventType ? '-check' : '')}
+                               data-key="eventType" onClick={handleChangeExportData}/>
+                        </div>
+
+                        <div className="export-data-row">
+                            Points earn or lost
+                            <i className={"fa-solid fa-square" + (exportDataConfig.pointsEvent ? '-check' : '')}
+                               data-key="pointsEvent" onClick={handleChangeExportData}/>
+                        </div>
+
+                        <div className="export-data-row">
+                            Score
+                            <i className={"fa-solid fa-square" + (exportDataConfig.score ? '-check' : '')}
+                               data-key="score" onClick={handleChangeExportData}/>
+                        </div>
+
+                        <div className="export-data-row">
+                            Actions points remaining
+                            <i className={"fa-solid fa-square" + (exportDataConfig.actionPoints ? '-check' : '')}
+                               data-key="actionPoints" onClick={handleChangeExportData}/>
+                        </div>
+                    </div>
+
+                    <div className="d-flex justify-content-end">
+                        <button className="btn btn-success mx-3" onClick={exportDataHistoryToCSV}>
+                            <i className="fa-solid fa-check mx-2"/>
+                            Export data
+                        </button>
+
+                        <button className="btn btn-primary" onClick={() => setIsMenuExportOpen(false)}>
+                            <i className="fa-regular fa-circle-xmark mx-2"/>
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </Modal>
         </div>
-    </div>)
+        </div>
+    )
 }
