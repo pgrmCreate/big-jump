@@ -5,6 +5,7 @@ const historyGame = new mongoose.Schema({
     userId : String,
     extraInfo : [mongoose.Schema.Types.Mixed],
     configId : String,
+    spentTime: Number,
     sessions: [{
         stats: {
             score : Number,

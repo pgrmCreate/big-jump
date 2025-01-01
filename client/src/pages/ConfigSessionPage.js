@@ -338,35 +338,36 @@ export default function ConfigSessionPage() {
                                         <option value="empty">Empty</option>
                                     </select>
 
-                                    <select className="form-select mx-2" value={currentEvent.lot}
-                                            onChange={(e) => {
-                                                editTextEvent('lot', e.target.value, currentIndex)
-                                            }}>
-                                        {currentConfig.setup.lots.map((currentLot) => (
+                                    <select className="form-select mx-2" value={currentEvent.lot} onChange={(e) => {
+                                        editTextEvent('lot', e.target.value, currentIndex)
+                                    }}>
+                                        {currentConfig.setup.lots
+                                            .filter(i => (currentEvent.type === 'earn' && i.exploration.isWin) ||
+                                                (currentEvent.type === 'threat' && !i.exploration.isWin))
+                                            .map((currentLot) => (
                                             <option value={currentLot.exploration.id}>
-                                                #{currentLot.exploration.id} :
-                                                {currentEvent.type === 'earn' && (<> Gain </>)}
-                                                {currentEvent.type === 'threat' && (<> Threat </>)}
-                                                {currentEvent.type === 'empty' && (<> Empty </>)}
-                                                (level {currentLot.exploration.level})
+
+                                                {/*{currentEvent.type === 'earn' && (<> Gain </>)}
+                                                {currentEvent.type === 'threat' && (<> Threat </>)*/}
+                                                level {currentLot.exploration.level}
                                             </option>
                                         ))}
+                                        {currentEvent.type === 'empty' && (<option value="null">Any level (empty)</option>)}
                                     </select>
 
-                                    <select className="form-select mx-2" value={currentEvent.actionType}
-                                            onChange={(e) => {
-                                                editTextEvent('actionType', e.target.value, currentIndex)
-                                            }}>
+                                    {<select className="form-select mx-2" value={currentEvent.actionType}
+                                             onChange={(e) => {
+                                                 editTextEvent('actionType', e.target.value, currentIndex)
+                                             }}>
                                         {['exploration', 'exploitation', 'both'].map((currentAction) => (
                                             <option value={currentAction}>
-                                                { currentAction }
+                                                {currentAction}
                                             </option>
                                         ))}
-                                    </select>
+                                    </select>}
 
                                     <input className="form-control mx-2 text-event-input" type="text"
-                                           placeholder="custom text"
-                                           value={currentEvent.label} onChange={(e) => {
+                                           placeholder="custom text" value={currentEvent.label} onChange={(e) => {
                                         editTextEvent('label', e.target.value, currentIndex)
                                     }}/>
                                 </div>

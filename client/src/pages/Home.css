@@ -2,12 +2,13 @@
     display: flex;
     flex-wrap: wrap;
     text-align: left;
+    justify-content: center;
 }
 
 .experience-card {
     display: flex;
     flex-direction: column;
-    width: 400px;
+    width: 380px;
     padding: 10px;
     border: 1px solid #EEE;
     margin: 5px;
@@ -40,14 +41,14 @@
 .export-data-container {
     display: flex;
     flex-direction: column;
-    width: 250px;
+    width: 320px;
 }
 
 .export-data-row {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .export-data-row i {

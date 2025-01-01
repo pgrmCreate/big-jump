@@ -6,9 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="df89ccb8-fdbc-4a54-823c-7ccd03a98237" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/App.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/components/User.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/components/User.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/pages/ConfigSessionPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/ConfigSessionPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/pages/GamePage.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/GamePage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/pages/GamePage.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/GamePage.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/pages/Home.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/Home.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/pages/Home.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/Home.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controllers/historyGame.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/historyGame.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/gameConfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/gameConfig.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db/models/HistoryGameSchema.js" beforeDir="false" afterPath="$PROJECT_DIR$/db/models/HistoryGameSchema.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,21 +55,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/projects/big-jump&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "D:/projects/big-jump",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\PhpStorm 2024.1.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\projects\big-jump\client" />
@@ -178,7 +185,7 @@
       <workItem from="1730802169227" duration="84000" />
       <workItem from="1730899593331" duration="1722000" />
       <workItem from="1732272227203" duration="28287000" />
-      <workItem from="1735631475662" duration="13743000" />
+      <workItem from="1735631475662" duration="27947000" />
     </task>
     <servers />
   </component>

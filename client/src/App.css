@@ -81,7 +81,7 @@ h3 {
     background: #a28e2e;
 }
 
-.btn.btn-warning[data-disabled="true"] {
+.btn.btn-warning[data-disabled="true"], .btn.btn-primary[data-disabled="true"] {
     background: #878788;
     border-color: #878788;
     cursor: default;

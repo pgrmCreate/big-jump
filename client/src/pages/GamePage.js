@@ -26,6 +26,7 @@ export function GamePage() {
     const [gameSessionLeft, setGameSessionLeft] = useState(0);
     const [enteringParticipantInfo, setEnteringParticipantInfo] = useState([]);
     const [textsEvent, setTextsEvent] = useState([]);
+    const [startDate, setStartDate] = useState(null);
 
     const handleKeyUp = useCallback((e) => {
         if(gameRoundLeft === 0) {
@@ -43,6 +44,7 @@ export function GamePage() {
     }, [player, gameRoundLeft]);
 
     useEffect(() => {
+        setStartDate(Date.now());
         loadConfig();
     }, []);
 
@@ -122,12 +124,12 @@ export function GamePage() {
     }
 
     function endSession() {
-        console.log('END SESSION SEND')
         const targetNewHistory = {
             userId : cookies.user.userId,
             sessions : historySession,
             extraInfo : enteringParticipantInfo,
-            configId: config.config.setup._id
+            configId: config.config.setup._id,
+            spentTime: (Date.now() - startDate) / 1000
         };
 
         Requester.post('/api/history', targetNewHistory).then(res => res.json())
@@ -342,6 +344,7 @@ export function GamePage() {
     }
 
     function handleStopGame() {
+        setGameSessionLeft(gameSessionLeft - 1);
         setGameRoundLeft(0);
     }
 
@@ -379,20 +382,26 @@ export function GamePage() {
             { isStart && (
                 <div className="row d-flex align-items-center vh-100">
                     <div className="col-12 d-flex justify-content-center align-items-center">
-                        <p className="text-center">{ config.config.setup.gameInterfacePage.score} : {player.score}</p>
+                        <div className="position-relative">
+                            <p className="text-center">
+                                {config.config.setup.gameInterfacePage.score} : {player.score}
+                            </p>
+                            <div className="points-earn-container">
+                                {earnPoints.map((currentEarn, index) => (
+                                    <div
+                                        className={'points-earn ' + (currentEarn.points > 0 ? 'earn-plus' : 'earn-minus')}
+                                        key={index}>
+                                        {currentEarn.points > 0 ? '+' : ''}
+                                        {currentEarn.points}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
 
-                        <p className="text-center mx-5">{ config.config.setup.gameInterfacePage.actionPoints} : {gameRoundLeft}</p>
+
+                        <p className="text-center mx-5">{config.config.setup.gameInterfacePage.actionPoints} : {gameRoundLeft}</p>
 
                         <p className="text-center mx-5"> Sessions left : {gameSessionLeft}</p>
-                    </div>
-
-                    <div className="points-earn-container">
-                        { earnPoints.map((currentEarn, index) => (
-                            <div className={'points-earn ' + (currentEarn.points > 0 ? 'earn-plus' : 'earn-minus')} key={index}>
-                                { currentEarn.points > 0 ? '+' : ''}
-                                { currentEarn.points}
-                            </div>
-                        ))}
                     </div>
 
                     {gameRoundLeft > 0 && (
@@ -450,7 +459,8 @@ export function GamePage() {
                             <div className="d-flex justify-content-center mb-4">
                                 <div>
                                     <div className="d-flex justify-content-center">
-                                        <button className="btn btn-primary" onClick={handleButtonMove} data-direction="up">
+                                        <button className="btn btn-primary" onClick={handleButtonMove}
+                                                data-direction="up">
                                             <i className="fa-solid fa-arrow-up"/>
                                         </button>
                                     </div>
@@ -461,9 +471,10 @@ export function GamePage() {
                                             <i className="fa-solid fa-arrow-left"/>
                                         </button>
 
-                                        <button className="btn btn-primary mx-2" onClick={() => userOpenAction(null, 'exploitation')}>
+                                        <button className="btn btn-primary mx-2"
+                                                onClick={() => userOpenAction(null, 'exploitation')}>
                                             <i className="fa-solid fa-person-digging mx-2"/>
-                                            { config.config.setup.gameInterfacePage.exploite}
+                                            {config.config.setup.gameInterfacePage.exploite}
                                         </button>
 
                                         <button className="btn btn-primary mx-2" onClick={handleButtonMove}
@@ -479,10 +490,12 @@ export function GamePage() {
                                         </button>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="d-flex justify-content-center">
-                                <button className="btn btn-danger" onClick={handleStopGame}>Stop</button>
+                                <div className="d-flex align-items-end">
+                                    <div className="d-flex justify-content-center">
+                                        <button className="btn btn-danger" onClick={handleStopGame}>Stop</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}

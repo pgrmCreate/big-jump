@@ -1,15 +1,15 @@
 .points-earn-container{
     position: absolute;
-    top: -24px;
-    left: 29vw;
+    top: -40px;
+    right: 0;
     font-size: 20px;
     width: 50px;
 }
 
 .points-earn {
     position: absolute;
-    left: 20vw;
-    top: 50px;
+    left: 60px;
+    top: 0;
     animation: slideUp 2s forwards;
 }
 
