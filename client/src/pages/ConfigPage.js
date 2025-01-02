@@ -25,7 +25,7 @@ export default function ConfigPage() {
     const [isLevelNeedEdit, setIsLevelNeedEdit] = useState(true);
     const mapRef = useRef(null);
     const [errorMapGenerate, setErrorMapGenerate] = useState(false);
-    const [isMapDisplay, setIsMapDisplay] = useState(false);
+    const [isMapDisplay, setIsMapDisplay] = useState(true);
     const [sameConfigExploit, setSameConfigExploit] = useState(true);
     const [lastColorAdded, setLastColorAdded] = useState('#FFCC00');
     const [isErrorDrawAmount, setIsErrorDrawAmount] = useState(false);
@@ -138,12 +138,15 @@ export default function ConfigPage() {
     }
 
     function setSizeMap(key, value) {
-        setIsMapDisplay(false);
-        if (value < 0 || value === '')
+        if (value < 0 || value === '') {
+            setIsMapDisplay(false);
             return;
+        }
+
         value = parseInt(value) + 2;
         config.config.setup[key] = value;
         updateConfig();
+
     }
 
     function selectZone(e) {
@@ -414,6 +417,15 @@ export default function ConfigPage() {
             oldValueDrawType = (key === 'drawTypeGain') ? config.config.setup.drawTypeGain : config.config.setup.drawTypeThreat;
         }
 
+        if(key === "initPositionX" || key === "initPositionY") {
+            let currentAxis = (key === "initPositionX") ? 'width' : 'height';
+            if(config.config.setup[currentAxis] <= value + 1 || value < 1) {
+                config.config.setup[key] = 1;
+                updateConfig();
+                return;
+            }
+        }
+
         config.config.setup[key] = value;
 
 
@@ -426,6 +438,8 @@ export default function ConfigPage() {
             && 'semi-random' === config.config.setup.drawTypeThreat)) {
             settingRandomDraw(false);
         }
+        
+
 
         updateConfig();
     }
@@ -756,12 +770,12 @@ export default function ConfigPage() {
 
                             <div className="col-8">
                                 <div className="d-flex justify-content-center">
-                                    <div>
+                                    {/*<div>
                                         <button className="btn btn-success"
                                                 onClick={() => setIsConfirmGenerateMap(true)}>
                                             <i className="fa-solid fa-recycle mx-2"></i> Generate map
                                         </button>
-                                    </div>
+                                    </div>*/}
 
                                     {
                                         errorMapGenerate && (
