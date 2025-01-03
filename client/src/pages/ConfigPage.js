@@ -323,15 +323,15 @@ export default function ConfigPage() {
         const firstZoneType = getZoneFromId(targetZones);
 
         if (targetKey === 'empty') {
-            return Math.floor((1 - (firstZoneType.percentWin + firstZoneType.percentLoose)) * 100);
+            return (1 - (firstZoneType.percentWin + firstZoneType.percentLoose)) * 100;
         }
 
         if (targetKey === 'win') {
-            return around2Decimales(firstZoneType.percentWin);
+            return firstZoneType.percentWin;
         }
 
         if (targetKey === 'loose') {
-            return around2Decimales(firstZoneType.percentLoose);
+            return firstZoneType.percentLoose;
         }
 
         if (targetKey === 'isVisible') {
@@ -348,57 +348,44 @@ export default function ConfigPage() {
     }
 
     function changeZoneConfig(targetZoneGroup, key, value) {
-        const targetIdZoneGroup = config.config.setup.zones.find(i => i.id === targetZoneGroup[0]).targetGroupZone;
-        if (value < 0)
-            return;
+        const targetZoneObj = config.config.setup.zones.find(
+            (i) => i.id === targetZoneGroup[0]
+        );
+        if (!targetZoneObj) return;
 
-        if (key === 'gainLevelAmount' || key === 'threatLevelAmount') {
-            setIsLevelNeedEdit(true);
-        }
+        const targetIdZoneGroup = targetZoneObj.targetGroupZone;
 
-        function checkingAjustingPercent(keyAjust, valueAjust, itemAjust) {
-            if ((itemAjust.percentWin + itemAjust.percentLoose) > 1) {
-                if (key === 'percentWin') {
-                    itemAjust.percentLoose = 1 - around2Decimales(itemAjust['percentWin']);
-                } else {
-                    itemAjust.percentWin = 1 - around2Decimales(itemAjust['percentLoose']);
-                }
-            }
-        }
+        // Éventuellement, refuser les valeurs négatives
+        if (parseFloat(value) < 0) return;
 
         let isBadConfigZone = false;
-        config.config.setup.zones.map((item) => {
+        config.config.setup.zones.forEach((item) => {
             if (item.targetGroupZone === targetIdZoneGroup) {
                 if (key === 'percentWin' || key === 'percentLoose') {
-                    item[key] = around2Decimales(value / 100);
-                    //checkingAjustingPercent(key, value, item);
+                    const floatVal = parseFloat(value);
+                    if (!isNaN(floatVal)) {
+                        // Stockage en fraction
+                        item[key] = floatVal / 100;
+                        // Par exemple 40.6 => 0.406
+                    } else {
+                        item[key] = 0;
+                    }
+
+                    // Contrôle si la somme dépasse 1
                     if (item.percentWin + item.percentLoose > 1) {
                         isBadConfigZone = true;
                     }
-                    return;
-                }
-
-                item[key] = value;
-            }
-        });
-        setPageZoneConfigError(isBadConfigZone);
-        /*config.config.setup.zones.map((item) => {
-            targetZoneGroup.forEach((elementZone) => {
-                if (elementZone === item.id) {
-                    // Decimal property
-                    if (key === 'percentWin' || key === 'percentLoose') {
-                        item[key] = around2Decimales(value / 100);
-                        checkingAjustingPercent(key, value, item);
-                        return;
-                    }
-
+                } else {
+                    // Autres clés (isVisible, name, etc.)
                     item[key] = value;
                 }
-            })
-        });*/
+            }
+        });
 
+        setPageZoneConfigError(isBadConfigZone);
         updateConfig();
     }
+
 
     function changeGlobalConfig(key, value, isNumber = false) {
         if (key === 'gainLevelAmount' || key === 'threatLevelAmount') {
@@ -848,14 +835,14 @@ export default function ConfigPage() {
                                                 </td>
                                                 <td>{getZoneAttributFromGroup(currentZoneGroup, 'empty')}%</td>
                                                 <td>
-                                                    <input type="text" className="form-control"
+                                                    <NumericInput type="text" className="form-control" allowDecimal
                                                            onChange={(e) => changeZoneConfig(currentZoneGroup, 'percentWin', e.target.value, true)}
-                                                           value={around2Decimales(getZoneAttributFromGroup(currentZoneGroup, 'win') * 100)}/>
+                                                           value={getZoneAttributFromGroup(currentZoneGroup, 'win') * 100}/>
                                                 </td>
                                                 <td>
-                                                    <input type="text" className="form-control"
+                                                    <NumericInput type="text" className="form-control" allowDecimal
                                                            onChange={(e) => changeZoneConfig(currentZoneGroup, 'percentLoose', e.target.value, true)}
-                                                           value={around2Decimales(getZoneAttributFromGroup(currentZoneGroup, 'loose') * 100)}/>
+                                                           value={getZoneAttributFromGroup(currentZoneGroup, 'loose') * 100}/>
                                                 </td>
                                             </tr>
                                         ))}
