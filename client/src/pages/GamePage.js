@@ -132,8 +132,6 @@ export function GamePage() {
             spentTime: (Date.now() - startDate) / 1000
         };
 
-        console.log(enteringParticipantInfo);
-
         Requester.post('/api/history', targetNewHistory).then(res => res.json())
             .then((result) => {
             }).catch((error) => console.log(error));

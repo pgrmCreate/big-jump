@@ -166,8 +166,6 @@ export default function ConfigSessionPage() {
         const cpyMenu = [...menuIsOpen];
         cpyMenu[targetIndex] = !cpyMenu[targetIndex];
         setMenuIsOpen(cpyMenu);
-
-        console.log(cpyMenu)
     }
 
     return (
