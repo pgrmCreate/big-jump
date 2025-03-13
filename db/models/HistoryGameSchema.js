@@ -3,7 +3,7 @@ const {Schema} = require("mongoose");
 
 const historyGame = new mongoose.Schema({
     userId : String,
-    extraInfo : [mongoose.Schema.Types.Mixed],
+    infosParticipant : [mongoose.Schema.Types.Mixed],
     configId : String,
     spentTime: Number,
     sessions: [{

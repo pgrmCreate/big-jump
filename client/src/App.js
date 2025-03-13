@@ -14,6 +14,7 @@ import {Requester} from "./class/Requester";
 import {useCookies} from "react-cookie";
 import Modal from 'react-modal';
 
+
 function App() {
     const currentConfig = useState({list: [], config: null});
     const userConfig = useState(null);

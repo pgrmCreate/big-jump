@@ -127,10 +127,12 @@ export function GamePage() {
         const targetNewHistory = {
             userId : cookies.user.userId,
             sessions : historySession,
-            extraInfo : enteringParticipantInfo,
+            infosParticipant : enteringParticipantInfo ?? [],
             configId: config.config.setup._id,
             spentTime: (Date.now() - startDate) / 1000
         };
+
+        console.log(enteringParticipantInfo);
 
         Requester.post('/api/history', targetNewHistory).then(res => res.json())
             .then((result) => {

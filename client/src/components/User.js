@@ -56,7 +56,7 @@ export default function User() {
         )}
 
         { user && (
-            <div className="user-setup">
+            <div className="user-setup user-logged">
                 <p className="user-connected">
                     { user.email }
 

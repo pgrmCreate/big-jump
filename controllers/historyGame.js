@@ -20,7 +20,7 @@ exports.create = (req, res, next) => {
     const newHistory = new HistoryGame(req.body);
 
     newHistory.save().then((data) => {
-        res.status(200).json({data});
+        res.status(204).json({data});
     })
 }
 
@@ -37,9 +37,8 @@ exports.delete = (req, res, next) => {
 exports.deleteByConfig = (req, res, next) => {
     const targetId = req.params.id;
 
-    HistoryGame.findOne({configId : targetId}).then(async (data) => {
-        await data.remove();
-
-        res.status(200).json({})
-    }).catch((error) => res.status(500).json({error}));
+    HistoryGame.deleteMany({configId : targetId})
+        .then(async (data) => {
+            res.status(200).json({})})
+        .catch((error) => res.status(500).json({error}));
 }

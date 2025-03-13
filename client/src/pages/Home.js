@@ -23,7 +23,8 @@ export default function Home() {
         score: true,
         actionPoints: true,
         spentTotalTime: true,
-        targetConfig: null
+        infosParticipant: true,
+        targetConfig: null,
     });
     const navigate = useNavigate();
 
@@ -346,6 +347,12 @@ export default function Home() {
                                 Total spent time
                                 <i className={"fa-solid fa-square" + (exportDataConfig.spentTotalTime ? '-check' : '')}
                                    data-key="spentTotalTime" onClick={handleChangeExportData}/>
+                            </div>
+
+                            <div className="export-data-row">
+                                Infos participant
+                                <i className={"fa-solid fa-square" + (exportDataConfig.infosParticipant ? '-check' : '')}
+                                   data-key="infosParticipant" onClick={handleChangeExportData}/>
                             </div>
                         </div>
 
