@@ -342,9 +342,9 @@ export default function ConfigSessionPage() {
                                         {currentConfig.setup.lots
                                             .filter(i => (currentEvent.type === 'earn' && i.exploration.isWin) ||
                                                 (currentEvent.type === 'threat' && !i.exploration.isWin))
-                                            .map((currentLot) => (
+                                            .map((currentLot, currentIndex) => (
                                             <option value={currentLot.exploration.id}>
-
+                                                key={currentIndex}
                                                 {/*{currentEvent.type === 'earn' && (<> Gain </>)}
                                                 {currentEvent.type === 'threat' && (<> Threat </>)*/}
                                                 level {currentLot.exploration.level}

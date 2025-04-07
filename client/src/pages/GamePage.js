@@ -58,7 +58,6 @@ export function GamePage() {
 
     useEffect(() => {
         if(gameRoundLeft === 0 && historyRows.length > 0) {
-            console.log('historyRows', historyRows);
             setHistorySession([...historySession, {
                 rows: [...historyRows],
                 stats: {
@@ -96,7 +95,6 @@ export function GamePage() {
     }
 
     function initGame(newSession = false) {
-        console.log('newSession', newSession)
         config.config.initRound();
         setTextsEvent([]);
         GameManager.get().settingConfig(config.config);

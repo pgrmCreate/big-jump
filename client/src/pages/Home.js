@@ -308,6 +308,12 @@ export default function Home() {
 
                         <div className="export-data-container">
                             <div className="export-data-row">
+                                Infos participant
+                                <i className={"fa-solid fa-square" + (exportDataConfig.infosParticipant ? '-check' : '')}
+                                   data-key="infosParticipant" onClick={handleChangeExportData}/>
+                            </div>
+
+                            <div className="export-data-row">
                                 Position
                                 <i className={"fa-solid fa-square" + (exportDataConfig.position ? '-check' : '')}
                                    data-key="position" onClick={handleChangeExportData}/>
@@ -341,25 +347,19 @@ export default function Home() {
                                 Actions points remaining
                                 <i className={"fa-solid fa-square" + (exportDataConfig.actionPoints ? '-check' : '')}
                                    data-key="actionPoints" onClick={handleChangeExportData}/>
-                            </div>
+                            </div>fg
 
                             <div className="export-data-row">
                                 Total spent time
                                 <i className={"fa-solid fa-square" + (exportDataConfig.spentTotalTime ? '-check' : '')}
                                    data-key="spentTotalTime" onClick={handleChangeExportData}/>
                             </div>
-
-                            <div className="export-data-row">
-                                Infos participant
-                                <i className={"fa-solid fa-square" + (exportDataConfig.infosParticipant ? '-check' : '')}
-                                   data-key="infosParticipant" onClick={handleChangeExportData}/>
-                            </div>
                         </div>
 
                         <div className="d-flex justify-content-end">
                             <button className="btn btn-success mx-3" onClick={exportDataHistoryToCSV}>
                                 <i className="fa-solid fa-download mx-2"/>
-                                 Download history / Export data
+                                Download history / Export data
                             </button>
 
                             <button className="btn btn-primary" onClick={() => setIsMenuExportOpen(false)}>

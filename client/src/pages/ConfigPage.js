@@ -114,6 +114,26 @@ export default function ConfigPage() {
         return targetNewGroupe;
     }
 
+    function removeCaseOutMap() {
+        const currentHeight = config.config.setup.height - 2;
+        const currentWidth = config.config.setup.width - 2;
+
+        let needChangeGroup = false;
+        config.config.setup.zones = config.config.setup.zones.filter(zone => {
+            const isZoneInGrid = zone.x <= currentWidth && zone.y <= currentHeight;
+
+            if(!isZoneInGrid)
+                needChangeGroup = true;
+
+            return isZoneInGrid;
+        });
+
+        if(needChangeGroup) {
+            makeZoneGroup();
+            updateConfig();
+        }
+    }
+
     function getValidConfigStep1() {
         if (!config.config.setup.height || !config.config.setup.width ||
             config.config.setup.zones.length === 0)
@@ -146,7 +166,7 @@ export default function ConfigPage() {
         value = parseInt(value) + 2;
         config.config.setup[key] = value;
         updateConfig();
-
+        removeCaseOutMap();
     }
 
     function selectZone(e) {
