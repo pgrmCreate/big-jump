@@ -347,7 +347,7 @@ export default function Home() {
                                 Actions points remaining
                                 <i className={"fa-solid fa-square" + (exportDataConfig.actionPoints ? '-check' : '')}
                                    data-key="actionPoints" onClick={handleChangeExportData}/>
-                            </div>fg
+                            </div>
 
                             <div className="export-data-row">
                                 Total spent time

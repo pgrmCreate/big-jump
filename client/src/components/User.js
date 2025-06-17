@@ -13,6 +13,7 @@ export default function User() {
     });
     const [user, setUser] = useContext(UserContext);
     const [, setCookie, removeCookies] = useCookies(['cookie-name']);
+    const [isLoadingConnect, setIsLoadingConnect] = useState(false);
 
     function signup() {
         Requester.post('/api/user/signup', {email : 'dd@dd.com', password : 'passpass'})
@@ -24,6 +25,8 @@ export default function User() {
 
     function login(e) {
         e.preventDefault();
+
+        setIsLoadingConnect(true);
 
         Requester.post('/api/user/login', {email : loginInput.email, password : loginInput.password}, true)
             .then(res => res.json())
@@ -38,8 +41,10 @@ export default function User() {
                 setUser(data);
                 setOpenUserSetup(false);
                 setErrorLogin(false);
+                setIsLoadingConnect(false);
             }).catch((error) => {
-                removeCookies('user')
+                removeCookies('user');
+                setIsLoadingConnect(false);
             });
     }
 
@@ -72,24 +77,33 @@ export default function User() {
                     <span className="popin-close" onClick={() => setOpenUserSetup(false)}>
                         <i className="fa-solid fa-xmark"></i>
                     </span>
-                    <form>
-                        <input type="text" className="form-control mb-2" placeholder="email" value={loginInput.email}
-                               onChange={(e) => handleChangeLoginInput('email', e.target.value)}/>
+                    {!isLoadingConnect && (
+                        <form>
+                            <input type="text" className="form-control mb-2" placeholder="email"
+                                   value={loginInput.email}
+                                   onChange={(e) => handleChangeLoginInput('email', e.target.value)}/>
 
-                        <input type="password" className="form-control mb-4" placeholder="mot de passe" value={loginInput.password}
-                               onChange={(e) => handleChangeLoginInput('password', e.target.value)}/>
+                            <input type="password" className="form-control mb-4" placeholder="mot de passe"
+                                   value={loginInput.password}
+                                   onChange={(e) => handleChangeLoginInput('password', e.target.value)}/>
 
-                        <button className="btn btn-primary" onClick={(e) => login(e)}>
-                            <i className="fa-solid fa-circle-user mx-2"></i>
-                            Se connecter
-                        </button>
+                            <button className="btn btn-primary" onClick={(e) => login(e)}>
+                                <i className="fa-solid fa-circle-user mx-2"></i>
+                                Se connecter
+                            </button>
 
-                        { errorLogin && (
-                            <p className="alert alert-danger my-3">
-                                Erreur d'authentification
-                            </p>
-                        )}
-                    </form>
+                            {errorLogin && (
+                                <p className="alert alert-danger my-3">
+                                    Erreur d'authentification </p>
+                            )}
+                        </form>
+                    )}
+
+                    { isLoadingConnect && (
+                        <div className="d-flex w-100 justify-content-center">
+                            <span className="loader"></span>
+                        </div>
+                    )}
                 </div>
             </div>
         )}

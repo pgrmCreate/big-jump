@@ -134,6 +134,12 @@ export default function ConfigPage() {
         }
     }
 
+    function haveExistingCase() {
+        config.config.setup.zones.map((currentCase) => {
+
+        })
+    }
+
     function getValidConfigStep1() {
         if (!config.config.setup.height || !config.config.setup.width ||
             config.config.setup.zones.length === 0)
@@ -804,7 +810,7 @@ export default function ConfigPage() {
                                 </div>
 
                                 {!isConfirmGenerateMap && (
-                                    <div className="d-flex justify-content-end">
+                                    <div className="d-flex justify-content-end mb-2">
                                         <button type="button" onClick={saveStep} data-target-nav={2}
                                                 disabled={getValidConfigStep1()} className="btn btn-primary">
                                             <i className="fa-solid fa-arrow-right mx-2" data-target-nav={2}/>Save map /
