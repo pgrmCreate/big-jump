@@ -909,7 +909,7 @@ export default function ConfigPage() {
 
                                     <button type="button" onClick={saveDraft} data-target-nav={1}
                                             className="btn btn-primary mx-2">
-                                        <i className="fa-regular fa-hard-drive mx-2" data-target-nav={1}/> Save draft
+                                        <i className="fa-regular fa-hard-drive mx-2" data-target-nav={1}/> Save draft / Update
                                     </button>
                                 </div>
 
@@ -1063,7 +1063,7 @@ export default function ConfigPage() {
                                 </button>
                                 <button type="button" onClick={saveDraft} data-target-nav={1}
                                         className="btn btn-primary mx-2">
-                                    <i className="fa-regular fa-hard-drive mx-2" data-target-nav={1}/> Save draft
+                                    <i className="fa-regular fa-hard-drive mx-2" data-target-nav={1}/> Save draft / Update
                                 </button>
                             </div>
 
@@ -1250,7 +1250,7 @@ export default function ConfigPage() {
                                 </button>
                                 <button type="button" onClick={saveDraft} data-target-nav={1}
                                         className="btn btn-primary mx-2">
-                                    <i className="fa-regular fa-hard-drive mx-2" data-target-nav={1}/> Save draft
+                                    <i className="fa-regular fa-hard-drive mx-2" data-target-nav={1}/> Save draft / Update
                                 </button>
                             </div>
 
