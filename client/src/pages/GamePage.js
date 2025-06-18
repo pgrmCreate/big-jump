@@ -354,18 +354,48 @@ export function GamePage() {
                     { enteringParticipantInfo.length > 0 && (
                         <form>
                             { config.config.setup.participantInfo.map((label, index) => (
-                                <input key={index} className="form-control mb-2" placeholder={label} value={enteringParticipantInfo[getIndexEnteringInfo(label)].value}
-                                onChange={(e) => setValueForEnteringInfo(label, e.target.value)}/>
+                                <div key={index} >
+                                    {label === 'Age' && (
+                                        <input className="form-control mb-2" placeholder={label}
+                                               type="number"
+                                               value={enteringParticipantInfo[getIndexEnteringInfo(label)].value}
+                                               onChange={(e) => setValueForEnteringInfo(label, e.target.value)}/>
+                                    )}
+
+                                    {label === 'Email' && (
+                                        <input className="form-control mb-2" placeholder={label}
+                                               type="email"
+                                               value={enteringParticipantInfo[getIndexEnteringInfo(label)].value}
+                                               onChange={(e) => setValueForEnteringInfo(label, e.target.value)}/>
+                                    )}
+
+                                    {label === 'Sexe' && (
+                                        <select onChange={(e) => setValueForEnteringInfo(label, e.target.value)}
+                                                className="form-control my-2"
+                                                value={enteringParticipantInfo[getIndexEnteringInfo(label)].value} key={index}>
+                                            <option value="male">Female</option>
+                                            <option value="female">Male</option>
+                                        </select>
+                                    )}
+
+                                    {(['Sexe', 'Email', 'Age'].indexOf(label) === -1) && (
+                                        <input className="form-control mb-2" placeholder={label}
+                                               value={enteringParticipantInfo[getIndexEnteringInfo(label)].value}
+                                               onChange={(e) => setValueForEnteringInfo(label, e.target.value)}/>
+                                    )}
+
+                                </div>
                             ))}
                         </form>
                     )}
 
-                    <button className="btn btn-primary" onClick={() => setIsGettingParticipantInfo(false)}>Next/Instructions</button>
+                    <button className="btn btn-primary" onClick={() => setIsGettingParticipantInfo(false)}>Next/Instructions
+                    </button>
                 </div>
             </div>
             )}
 
-            { (!isStart && !isGettingParticipantInfo) && (
+            {(!isStart && !isGettingParticipantInfo) && (
             <div className="row vh-100 align-items-center">
                 <div className="col-12 ">
                     <p style={{whiteSpace: 'pre-line'}}>
