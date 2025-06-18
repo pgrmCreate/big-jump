@@ -277,8 +277,6 @@ export default function ConfigPage() {
         const targetX = Math.floor(targetRect.x / GameConfig.sizeCellGrid);
         const targetY = Math.floor(targetRect.y / GameConfig.sizeCellGrid);
 
-
-        console.log(haveExistingCase(config.config.setup.zones, targetX, targetY))
         if(haveExistingCase(config.config.setup.zones, targetX, targetY, pickedZoneGroup))
             return false;
 
@@ -572,14 +570,21 @@ export default function ConfigPage() {
     }
 
 
-    function saveMap() {
+    function saveMap(nextStepNavigate = null) {
         saveConfigSever(!!params.id).then(res => res.json()).then((data) => {
             const newConfig = new GameConfig();
             newConfig.setup = data;
             newConfig._id = data._id;
             setGlobalConfig({list: [...globalConfig.list, config.config], config: newConfig});
-            navigate('/edit-session/' + data._id);
+            if(nextStepNavigate === null)
+                navigate('/edit-session/' + data._id);
+            else
+                navigate(nextStepNavigate);
         }).catch((error) => console.error(error));
+    }
+
+    function saveDraft() {
+        saveMap('/');
     }
 
     function saveConfigSever(isUpdate = false) {
@@ -901,6 +906,11 @@ export default function ConfigPage() {
                                             className="btn btn-primary">
                                         <i className="fa-solid fa-arrow-left mx-2" data-target-nav={1}/> Back
                                     </button>
+
+                                    <button type="button" onClick={saveDraft} data-target-nav={1}
+                                            className="btn btn-primary mx-2">
+                                        <i className="fa-regular fa-hard-drive mx-2" data-target-nav={1}/> Save draft
+                                    </button>
                                 </div>
 
                                 <div className="d-flex justify-content-end">
@@ -1050,6 +1060,10 @@ export default function ConfigPage() {
                                 <button type="button" onClick={saveStep} data-target-nav={2}
                                         className="btn btn-primary">
                                     <i className="fa-solid fa-arrow-left mx-2" data-target-nav={2}/> Back
+                                </button>
+                                <button type="button" onClick={saveDraft} data-target-nav={1}
+                                        className="btn btn-primary mx-2">
+                                    <i className="fa-regular fa-hard-drive mx-2" data-target-nav={1}/> Save draft
                                 </button>
                             </div>
 
@@ -1234,12 +1248,16 @@ export default function ConfigPage() {
                                         className="btn btn-primary">
                                     <i className="fa-solid fa-arrow-left mx-2" data-target-nav={3}/> Back
                                 </button>
+                                <button type="button" onClick={saveDraft} data-target-nav={1}
+                                        className="btn btn-primary mx-2">
+                                    <i className="fa-regular fa-hard-drive mx-2" data-target-nav={1}/> Save draft
+                                </button>
                             </div>
 
                             <div className="d-flex justify-content-end">
                                 <button type="button" onClick={saveStep} data-target-nav={5}
                                         disabled={isErrorDrawAmount} className="btn btn-primary">
-                                    <i className="fa-solid fa-arrow-right mx-2" data-target-nav={5}/>
+                                <i className="fa-solid fa-arrow-right mx-2" data-target-nav={5}/>
                                     Save map / Next
                                 </button>
                             </div>
