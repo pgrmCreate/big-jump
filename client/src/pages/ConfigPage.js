@@ -134,13 +134,17 @@ export default function ConfigPage() {
         }
     }
 
-    function haveExistingCase(zones, x, y) {
+    function haveExistingCase(zones, x, y, excludeGroup = null) {
         if (!Array.isArray(zones)) {
             console.error('haveExistingCase ➜ le premier argument doit être un tableau de zones');
             return false;
         }
 
-        return zones.some(z => z.x === x && z.y === y);
+        return zones.some(z => {
+            const sameCoords = z.x === x && z.y === y;
+            const isExcluded = excludeGroup !== null && z.targetGroupZone === excludeGroup;
+            return sameCoords && !isExcluded;
+        });
     }
 
     function getValidConfigStep1() {
@@ -275,7 +279,7 @@ export default function ConfigPage() {
 
 
         console.log(haveExistingCase(config.config.setup.zones, targetX, targetY))
-        if(haveExistingCase(config.config.setup.zones, targetX, targetY))
+        if(haveExistingCase(config.config.setup.zones, targetX, targetY, pickedZoneGroup))
             return false;
 
         const newGroupZone = [...zoneGroup];
