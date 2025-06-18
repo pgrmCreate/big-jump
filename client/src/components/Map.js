@@ -39,11 +39,11 @@ export const Map = forwardRef((props, ref) => {
             context.rect(rect.x, rect.y, rect.w, rect.h);
             if (context.isPointInPath(e.offsetX, e.offsetY) && props.targetGroupZone !== null
                 && rect.x > params.basePosition && rect.y > params.basePosition && props.isClickOnGridZone(listRect,index )) {
-                context.fillStyle = rect.isSelected ? 'white' : 'red';
+                /*context.fillStyle = rect.isSelected ? 'white' : 'red';
+                context.fill();*/
                 rect.isSelected = !rect.isSelected;
-                context.fill();
 
-                props.handleZonePicked(listRect, index, params, rect.isSelected)
+                props.handleCellPicked(listRect, index, params, rect.isSelected)
             }
 
             context.closePath();

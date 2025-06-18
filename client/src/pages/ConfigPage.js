@@ -134,10 +134,13 @@ export default function ConfigPage() {
         }
     }
 
-    function haveExistingCase() {
-        config.config.setup.zones.map((currentCase) => {
+    function haveExistingCase(zones, x, y) {
+        if (!Array.isArray(zones)) {
+            console.error('haveExistingCase ➜ le premier argument doit être un tableau de zones');
+            return false;
+        }
 
-        })
+        return zones.some(z => z.x === x && z.y === y);
     }
 
     function getValidConfigStep1() {
@@ -265,11 +268,15 @@ export default function ConfigPage() {
         generateMap();
     }
 
-    function handleZonePicked(zoneList, targetZone, params, isSelected) {
+    function handleCellPicked(zoneList, targetZone, params, isSelected) {
         const targetRect = zoneList[targetZone];
         const targetX = Math.floor(targetRect.x / GameConfig.sizeCellGrid);
         const targetY = Math.floor(targetRect.y / GameConfig.sizeCellGrid);
 
+
+        console.log(haveExistingCase(config.config.setup.zones, targetX, targetY))
+        if(haveExistingCase(config.config.setup.zones, targetX, targetY))
+            return false;
 
         const newGroupZone = [...zoneGroup];
 
@@ -802,7 +809,7 @@ export default function ConfigPage() {
                                 <div className="grid-editor-container">
                                     {
                                         isMapDisplay && (
-                                            <Map modeEditor={true} config={config} handleZonePicked={handleZonePicked}
+                                            <Map modeEditor={true} config={config} handleCellPicked={handleCellPicked}
                                                  targetGroupZone={pickedZoneGroup} zoneGroup={zoneGroup}
                                                  isClickOnGridZone={isClickOnGridZone} ref={mapRef}/>
                                         )
