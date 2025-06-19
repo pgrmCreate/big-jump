@@ -570,7 +570,7 @@ export default function ConfigPage() {
     }
 
 
-    function saveMap(nextStepNavigate = null) {
+    function saveMap(e, nextStepNavigate = null) {
         saveConfigSever(!!params.id).then(res => res.json()).then((data) => {
             const newConfig = new GameConfig();
             newConfig.setup = data;
@@ -584,7 +584,7 @@ export default function ConfigPage() {
     }
 
     function saveDraft() {
-        saveMap('/');
+        saveMap(null, '/');
     }
 
     function saveConfigSever(isUpdate = false) {
