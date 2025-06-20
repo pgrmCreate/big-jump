@@ -319,20 +319,18 @@ export function GamePage() {
                 return false;
         }
 
+
         if(isWin && event.type === 'threat')
             return false
 
         if(!isWin && event.type === 'earn')
             return false
 
+
         if(targetGroupZone !== parseInt(event.zone))
             return false;
 
-        if(parseInt(event.lot) !== targetLot.id)
-            return false
-
         return true;
-
     }
 
     function addEarn(targetPoints) {

@@ -116,6 +116,7 @@ export default function ConfigSessionPage() {
             lot: currentConfig.setup.lots[0].exploration.id,
             label: 'custom label',
             actionType: 'both',
+            level : 1
         }])
     }
 
@@ -166,6 +167,32 @@ export default function ConfigSessionPage() {
         const cpyMenu = [...menuIsOpen];
         cpyMenu[targetIndex] = !cpyMenu[targetIndex];
         setMenuIsOpen(cpyMenu);
+    }
+
+    function getTextsEventLevelChoices(currentEventText, typeLot = 'earn') {
+        let filteredLot = currentConfig.setup.lots;
+        let configReturned = [];
+        function filterByWinState(targetArray) {
+            return [...targetArray.filter(i => i['exploration'].isWin === (currentEventText.type === 'earn'))]
+        }
+
+        if(!currentConfig.setup.lots)
+            return;
+
+        if(currentEventText.type !== 'empty') {
+            filteredLot = filterByWinState(filteredLot);
+        }
+
+        configReturned = filteredLot.map(i => i['exploration']);
+
+        return configReturned;
+    }
+
+    function deleteTextEvent(e) {
+        const targetId = parseInt(e.target.dataset.targetId);
+        const cpyTextEvents = [...textsEvent];
+        cpyTextEvents.splice(targetId, 1);
+        setTextsEvent(cpyTextEvents);
     }
 
     return (
@@ -315,7 +342,6 @@ export default function ConfigSessionPage() {
                         <div className="section-config">
                             <h3>Text event</h3>
                             <p className="fst-italic">proposal of text to display by type of event</p>
-
                             {textsEvent.map((currentEvent, currentIndex) => (
                                 <div className="d-flex mb-3" key={currentIndex}>
                                     <select className="form-select mx-2" value={currentEvent.zone}
@@ -323,7 +349,9 @@ export default function ConfigSessionPage() {
                                                 editTextEvent('zone', e.target.value, currentIndex)
                                             }}>
                                         {zoneGroup.map((currentZone, indexZone) => (
-                                            <option value={indexZone} key={indexZone}>{getZoneFromId(currentZone[0]).name}</option>
+                                            <option value={indexZone} key={indexZone}>
+                                                {getZoneFromId(currentZone[0]).name}
+                                            </option>
                                         ))}
                                     </select>
 
@@ -336,18 +364,16 @@ export default function ConfigSessionPage() {
                                         <option value="empty">Empty</option>
                                     </select>
 
-                                    <select className="form-select mx-2" value={currentEvent.lot} onChange={(e) => {
-                                        editTextEvent('lot', e.target.value, currentIndex)
+                                    <select className="form-select mx-2" value={currentEvent.level} onChange={(e) => {
+                                        editTextEvent('level', e.target.value, currentIndex)
                                     }}>
-                                        {currentConfig.setup.lots
-                                            .filter(i => (currentEvent.type === 'earn' && i.exploration.isWin) ||
-                                                (currentEvent.type === 'threat' && !i.exploration.isWin))
-                                            .map((currentLot, currentIndex) => (
-                                            <option value={currentLot.exploration.id}>
-                                                key={currentIndex}
+                                        {getTextsEventLevelChoices(currentEvent, currentEvent.type)
+                                            .map((currentLot, currentIndexLot) => (
+                                            <option value={currentLot.level}
+                                                key={currentIndexLot}>
                                                 {/*{currentEvent.type === 'earn' && (<> Gain </>)}
                                                 {currentEvent.type === 'threat' && (<> Threat </>)*/}
-                                                level {currentLot.exploration.level}
+                                                level {currentLot.level}
                                             </option>
                                         ))}
                                         {currentEvent.type === 'empty' && (<option value="null">Any level (empty)</option>)}
@@ -358,7 +384,7 @@ export default function ConfigSessionPage() {
                                                  editTextEvent('actionType', e.target.value, currentIndex)
                                              }}>
                                         {['exploration', 'exploitation', 'both'].map((currentAction) => (
-                                            <option value={currentAction}>
+                                            <option value={currentAction} key={currentAction}>
                                                 {currentAction}
                                             </option>
                                         ))}
@@ -368,6 +394,10 @@ export default function ConfigSessionPage() {
                                            placeholder="custom text" value={currentEvent.label} onChange={(e) => {
                                         editTextEvent('label', e.target.value, currentIndex)
                                     }}/>
+
+                                    <div className="d-flex align-items-center">
+                                        <i className="fa fa-trash trash-hover" onClick={deleteTextEvent} data-target-id={currentIndex}/>
+                                    </div>
                                 </div>
                             ))}
                         </div>
