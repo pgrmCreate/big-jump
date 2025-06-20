@@ -319,13 +319,11 @@ export function GamePage() {
                 return false;
         }
 
-
         if(isWin && event.type === 'threat')
             return false
 
         if(!isWin && event.type === 'earn')
             return false
-
 
         if(targetGroupZone !== parseInt(event.zone))
             return false;

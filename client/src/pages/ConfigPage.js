@@ -7,6 +7,7 @@ import {Link, useNavigate, useParams} from 'react-router-dom';
 import {Requester} from "../class/Requester";
 import {ControllerConfigPanel} from "../components/ControllerConfigPanel";
 import NumericInput from "../components/NumericInput";
+import {type} from "@testing-library/user-event/dist/type";
 
 export default function ConfigPage() {
     const params = useParams();
@@ -327,15 +328,7 @@ export default function ConfigPage() {
 
         if (targetNav === 4) {
             if (isLevelNeedEdit) {
-                config.config.cleanAllLot();
-
-                for (let i = 0; i < config.config.setup.gainLevelAmount; i++) {
-                    config.config.createLot(true, i + 1, 14, 25, 3, []);
-                }
-
-                for (let i = 0; i < config.config.setup.threatLevelAmount; i++) {
-                    config.config.createLot(false, i + 1, 14, 25, 3, []);
-                }
+                editLevelAmount();
 
                 setIsLevelNeedEdit(false)
             }
@@ -420,7 +413,6 @@ export default function ConfigPage() {
         setPageZoneConfigError(isBadConfigZone);
         updateConfig();
     }
-
 
     function changeGlobalConfig(key, value, isNumber = false) {
         if (key === 'gainLevelAmount' || key === 'threatLevelAmount') {
@@ -598,6 +590,42 @@ export default function ConfigPage() {
         }
     }
 
+    function editLevelAmount(resetAll = true) {
+        config.config.cleanAllLot();
+
+        for (let i = 0; i < config.config.setup.gainLevelAmount; i++) {
+            config.config.createLot(true, i + 1, 14, 25, 3, []);
+        }
+
+        for (let i = 0; i < config.config.setup.threatLevelAmount; i++) {
+            config.config.createLot(false, i + 1, 14, 25, 3, []);
+        }
+    }
+
+    function handleAddLevel(e) {
+        const levelType = e.target.dataset.levelType || 'gain';
+
+        if(levelType === 'gain')
+            config.config.createLot(true, config.config.setup.gainLevelAmount + 1, 14, 25, 3, []);
+
+        if(levelType === 'threat')
+            config.config.createLot(false, config.config.setup.threatLevelAmount + 1, 14, 25, 3, []);
+
+        updateConfig();
+    }
+
+    function handleRemoveLevel(e) {
+        const typeLevel = e.target.dataset.levelType || 'gain';
+
+        if(config.config.setup.lots.length <= 1)
+            return false;
+
+        setTargetLevelConfig(null);
+
+        config.config.deleteLastLotOfType(typeLevel);
+
+        updateConfig();
+    }
 
     return (
         <div>
@@ -952,7 +980,7 @@ export default function ConfigPage() {
                                            }}/>
                                 </label>
 
-                                <label className="my-2">
+                                {/*<label className="my-2">
                                     Amount of gain level
                                     <NumericInput className="form-control"
                                            value={config.config.setup.gainLevelAmount} onChange={(e) => {
@@ -966,7 +994,7 @@ export default function ConfigPage() {
                                            value={config.config.setup.threatLevelAmount} onChange={(e) => {
                                         changeGlobalConfig('threatLevelAmount', e.target.value, true)
                                     }}/>
-                                </label>
+                                </label>*/}
 
                                 <label className="my-2">
                                     Try amount by session
@@ -1100,6 +1128,18 @@ export default function ConfigPage() {
                                         </p>
                                     </div>
                                 ))}
+                            </div>
+
+                            <div className="d-flex justify-content-end">
+                                <button className="btn btn-sm btn-primary" onClick={handleAddLevel} data-level-type="gain">
+                                    <i className="fa fa-plus mx-2"></i>
+                                    Add level
+                                </button>
+
+                                <button className="btn btn-sm btn-danger mx-3" onClick={handleRemoveLevel} data-level-type="gain">
+                                    <i className="fa fa-trash mx-2"></i>
+                                    Remove one level
+                                </button>
                             </div>
 
                             {
@@ -1289,6 +1329,20 @@ export default function ConfigPage() {
                                 ))}
                             </div>
 
+                            <div className="d-flex justify-content-end">
+                                <button className="btn btn-sm btn-primary" onClick={handleAddLevel}
+                                        data-level-type="threat">
+                                    <i className="fa fa-plus mx-2"></i>
+                                    Add level
+                                </button>
+
+                                <button className="btn btn-sm btn-danger mx-3" onClick={handleRemoveLevel}
+                                        data-level-type="threat">
+                                    <i className="fa fa-trash mx-2"></i>
+                                    Remove one level
+                                </button>
+                            </div>
+
                             {
                                 isErrorDrawAmount && (
                                     <div className="col-12">
@@ -1307,7 +1361,7 @@ export default function ConfigPage() {
                                     <label className="d-flex my-2 align-content-center align-items-center">
                                         Points interval
                                         <NumericInput className="form-control mx-1" placeholder="From"
-                                               value={config.config.setup.lots.find(i => i.exploration.id === targetLevelConfig).exploration.earnPointMin}
+                                                      value={config.config.setup.lots.find(i => i.exploration.id === targetLevelConfig).exploration.earnPointMin}
                                                onChange={(e) => changeLotConfig('earnPointMin', e.target.value, 'exploration')}/>
                                         <span className="mx-1">to</span>
                                         <NumericInput className="form-control mx-1" placeholder="to"

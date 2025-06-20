@@ -106,6 +106,17 @@ export class GameConfig {
         GameConfig.indexLot++;
     }
 
+    deleteLastLotOfType(type = 'gain') {
+        const allLotsTyped = this.setup.lots.filter(i => i['exploration'].isWin === (type === 'gain'));
+        const lastLotPicked = allLotsTyped[allLotsTyped.length - 1];
+
+        const searchId = this.setup.lots.findIndex(i => (i['exploration'].id === lastLotPicked['exploration'].id));
+
+        this.setup.lots.splice(searchId, 1);
+
+        GameConfig.indexLot--;
+    }
+
     cleanAllLot() {
         this.setup.lots = [];
     }
