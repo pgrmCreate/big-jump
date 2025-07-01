@@ -935,9 +935,9 @@ export default function ConfigPage() {
                                         <i className="fa-solid fa-arrow-left mx-2" data-target-nav={1}/> Back
                                     </button>
 
-                                    <button type="button" onClick={saveDraft} data-target-nav={1}
+                                    <button type="button" onClick={saveDraft}
                                             className="btn btn-primary mx-2">
-                                        <i className="fa-regular fa-hard-drive mx-2" data-target-nav={1}/> Save draft / Update
+                                        <i className="fa-regular fa-hard-drive mx-2"/> Save draft / Update
                                     </button>
                                 </div>
 
@@ -1089,9 +1089,9 @@ export default function ConfigPage() {
                                         className="btn btn-primary">
                                     <i className="fa-solid fa-arrow-left mx-2" data-target-nav={2}/> Back
                                 </button>
-                                <button type="button" onClick={saveDraft} data-target-nav={1}
+                                <button type="button" onClick={saveDraft}
                                         className="btn btn-primary mx-2">
-                                    <i className="fa-regular fa-hard-drive mx-2" data-target-nav={1}/> Save draft / Update
+                                    <i className="fa-regular fa-hard-drive mx-2" /> Save draft / Update
                                 </button>
                             </div>
 
@@ -1288,9 +1288,9 @@ export default function ConfigPage() {
                                         className="btn btn-primary">
                                     <i className="fa-solid fa-arrow-left mx-2" data-target-nav={3}/> Back
                                 </button>
-                                <button type="button" onClick={saveDraft} data-target-nav={1}
+                                <button type="button" onClick={saveDraft}
                                         className="btn btn-primary mx-2">
-                                    <i className="fa-regular fa-hard-drive mx-2" data-target-nav={1}/> Save draft / Update
+                                    <i className="fa-regular fa-hard-drive mx-2"/> Save draft / Update
                                 </button>
                             </div>
 
@@ -1490,12 +1490,16 @@ export default function ConfigPage() {
                                         className="btn btn-primary">
                                     <i className="fa-solid fa-arrow-left mx-2" data-target-nav={4}/> Back
                                 </button>
+                                <button type="button" onClick={saveDraft} className="btn btn-primary mx-2">
+                                    <i className="fa-regular fa-hard-drive mx-2"/> Save draft /
+                                    Update
+                                </button>
                             </div>
 
                             <div className="d-flex justify-content-end">
                                 <button type="button" onClick={saveMap} disabled={isErrorDrawAmount}
                                         className="btn btn-primary">
-                                    <i className="fa-solid fa-floppy-disk mx-2"/>
+                                <i className="fa-solid fa-floppy-disk mx-2"/>
                                     Next config
                                 </button>
                             </div>

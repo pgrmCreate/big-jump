@@ -338,7 +338,7 @@ export function GamePage() {
     }
 
     function handleStopGame() {
-        setGameSessionLeft(gameSessionLeft - 1);
+        //setGameSessionLeft(gameSessionLeft - 1);
         setGameRoundLeft(0);
     }
 
