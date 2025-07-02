@@ -39,6 +39,15 @@ app.use('/api/user', userRoutes);
 app.use('/api/gameconfig', gameConfigRoutes);
 app.use('/api/history', historyGameRoutes);
 
+/** 1.  Version “mini-site” placée dans client/public/app */
+app.use('/app', express.static(path.join(__dirname, 'client/public/app')));
+
+/** 2.  Fallback si l’utilisateur tape directement /app/foo/bar */
+app.get('/app/*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client/public/app/index.html'));
+});
+
+
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'client/build/index.html'));
 });
