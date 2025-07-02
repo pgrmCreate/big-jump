@@ -6,13 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="df89ccb8-fdbc-4a54-823c-7ccd03a98237" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/build/asset-manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/build/asset-manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/build/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/client/build/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/build/static/js/main.fc92eaa6.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/build/static/js/main.fc92eaa6.js.LICENSE.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/build/static/js/main.fc92eaa6.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/pages/ConfigPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/ConfigPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/pages/GamePage.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/GamePage.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -209,7 +202,8 @@
       <workItem from="1750452515458" duration="11888000" />
       <workItem from="1750951784678" duration="2360000" />
       <workItem from="1751217741424" duration="88000" />
-      <workItem from="1751366504591" duration="1694000" />
+      <workItem from="1751366504591" duration="3587000" />
+      <workItem from="1751449028476" duration="9000" />
     </task>
     <servers />
   </component>

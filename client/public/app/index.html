@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>POC– Prévisualisation d’œuvre d’art</title>
+        <link rel="stylesheet" href="styles.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    </head>
+    <body>
+        <h1>POC– Visualiser une œuvre dans votre pièce</h1>
+
+        <!-- Zone de chargement et paramètres -->
+        <div class="controls">
+            <label>Photo de la pièce:
+                <input type="file" id="roomInput" accept="image/*">
+            </label>
+
+            <label>Image de l’œuvre:
+                <input type="file" id="artInput" accept="image/*">
+            </label>
+
+            <br><br>
+
+            <label>Largeur réelle de l’œuvre (mm):
+                <input type="number" id="artRealWidth" style="width:90px;">
+            </label>
+
+            <br><br>
+
+            <p>
+                1. Dans la photo de la pièce, placez un objet de référence (ex : pièce) dont le diamètre est connu.<br>
+                2. Cliquez <strong>deux fois</strong> sur les bords opposés de cet objet.<br>
+                3. Entrez son diamètre réel puis cliquez sur « Définir l’échelle ».
+            </p>
+
+            <label>Diamètre réel référence (mm) :
+                <input type="number" id="refSize" style="width:90px;" value="23.25">
+            </label>
+
+            <button id="setScale">Définir l’échelle</button>
+        </div>
+
+        <!-- Zone de travail mise à l’échelle / zoomable -->
+        <div id="workspace">
+            <canvas id="canvas"></canvas>
+            <img id="artworkPreview" alt="Œuvre placée">
+        </div>
+
+        <!-- Barre d’outils fixe pour le zoom -->
+        <div id="zoomToolbar">
+            <button id="zoomIn"  title="Zoom + (Z)">+</button>
+            <button id="zoomOut" title="Zoom –">−</button>
+            <button id="zoomReset" title="Réinitialiser le zoom (Échap)">Reset</button>
+        </div>
+
+        <!-- OpenCV.js (async) puis logique dynamique -->
+        <script async src="https://docs.opencv.org/4.x/opencv.js"></script>
+        <script src="script.js"></script>
+    </body>
+</html>
