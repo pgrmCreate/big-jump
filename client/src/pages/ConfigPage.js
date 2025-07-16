@@ -163,8 +163,8 @@ export default function ConfigPage() {
     }
 
     function addGroupeZone() {
-        if (config.config.setup.zones.length > 30)
-            return;
+        /*if (config.config.setup.zones.length > 30)
+            return;*/
 
         setZoneGroupName({...zoneGroupName, [zoneGroup.length]: 'zone #' + zoneGroup.length});
         setZoneGroupColor({...zoneGroupColor, [zoneGroup.length]: '#FFCC00'});
