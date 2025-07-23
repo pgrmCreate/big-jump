@@ -8,6 +8,10 @@
 /.pnp
 .pnp.js
 .env
+/client/public/app/localhost-key.pem
+/client/public/app/localhost.pem
+/client/public/app/192.168.1.20-key.pem
+/client/public/app/192.168.1.20.pem
 
 # testing
 /coverage
