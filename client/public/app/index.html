@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Galerie AR</title>
+
+        <!-- import map three.js -->
+        <script type="importmap">
+            {
+              "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/"
+              }
+            }
+        </script>
+
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <!-- barre sélection pleine largeur -->
+        <header>
+            <select id="artSelect"></select>
+        </header>
+
+        <!-- feedback -->
+        <div id="feedback">
+            Pointez la caméra vers un mur et bougez l’appareil pour détecter la surface.
+        </div>
+
+        <!-- panneau d’ajustement -->
+        <div id="toolPanel">
+            <div class="row">
+                <button class="mode-btn active" data-mode="translate">Déplacer</button>
+                <button class="mode-btn"        data-mode="rotate">Tourner</button>
+            </div>
+
+            <div class="row axes">
+                <button class="axis-btn active" data-axis="x">X</button>
+                <button class="axis-btn"        data-axis="y">Y</button>
+                <button class="axis-btn"        data-axis="z">Z</button>
+            </div>
+
+            <input type="range" id="adjustSlider" value="0">
+
+            <div class="values">
+                Pos&nbsp;: <span id="posVal">0 ,0 ,0</span><br>
+                Rot&nbsp;: <span id="rotVal">0 ,0 ,0</span>
+            </div>
+
+            <div class="row bottom">
+                <button id="snapBtn">Redresser mur</button>
+                <button id="resetGizmo" title="Réinitialiser ajustements">↻</button>
+            </div>
+        </div>
+
+        <!-- icônes flottantes -->
+        <button id="gizmoBtn" hidden title="Ajustements">📐</button>
+        <button id="resetBtn"  title="Réinitialiser placement">↺</button>
+
+        <!-- conteneur ARButton centré -->
+        <div id="arButtonContainer"></div>
+
+        <script type="module" src="script.js"></script>
+    </body>
+</html>
