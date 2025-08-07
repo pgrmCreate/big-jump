@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
     <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Galerie AR</title>
-        <!-- import map three.js -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>AR Art Viewer</title>
+
+        <!-- Import map : indique au navigateur où se trouvent les modules -->
         <script type="importmap">
             {
               "imports": {
@@ -14,52 +15,58 @@
             }
         </script>
 
-        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="styles.css">
     </head>
+
     <body>
-        <!-- barre sélection pleine largeur -->
+        <!-- Sélecteur d’œuvre -->
         <header>
             <select id="artSelect"></select>
         </header>
 
-        <!-- feedback -->
-        <div id="feedback">
-            Pointez la caméra vers un mur et bougez l’appareil pour détecter la surface.
-        </div>
+        <!-- Bouton AR -->
+        <div id="arButtonContainer"></div>
 
-        <!-- panneau d’ajustement -->
+        <!-- Feedback -->
+        <div id="feedback"></div>
+
+        <!-- FABs -->
+        <button id="resetBtn">🎯</button>
+        <button id="gizmoBtn" hidden>⚙️</button>
+        <button id="depthBtn" hidden>↕︎</button>
+
+        <!-- Panneau gizmo -->
         <div id="toolPanel">
-            <div class="row">
-                <button class="mode-btn active" data-mode="translate">Déplacer</button>
-                <button class="mode-btn"        data-mode="rotate">Tourner</button>
+            <div class="row top">
+                <span id="posVal">0,0,0</span>
+                <span id="rotVal">0,0,0</span>
+            </div>
+
+            <div class="row mode">
+                <button class="mode-btn active" data-mode="translate">Trans</button>
+                <button class="mode-btn" data-mode="rotate">Rot</button>
             </div>
 
             <div class="row axes">
                 <button class="axis-btn active" data-axis="x">X</button>
-                <button class="axis-btn"        data-axis="y">Y</button>
-                <button class="axis-btn"        data-axis="z">Z</button>
+                <button class="axis-btn" data-axis="y">Y</button>
+                <button class="axis-btn" data-axis="z">Z</button>
             </div>
 
-            <input type="range" id="adjustSlider" value="0">
-
-            <div class="values">
-                Pos&nbsp;: <span id="posVal">0 ,0 ,0</span><br>
-                Rot&nbsp;: <span id="rotVal">0 ,0 ,0</span>
-            </div>
+            <input id="adjustSlider" type="range" min="-3" max="3" step="0.01" value="0">
 
             <div class="row bottom">
-                <button id="snapBtn">Redresser mur</button>
-                <button id="resetGizmo" title="Réinitialiser ajustements">↻</button>
+                <button id="snapBtn">Snap</button>
+                <button id="resetGizmo">Reset</button>
             </div>
         </div>
 
-        <!-- icônes flottantes -->
-        <button id="gizmoBtn" hidden title="Ajustements">📐</button>
-        <button id="resetBtn"  title="Réinitialiser placement">↺</button>
+        <!-- Slider vertical profondeur -->
+        <div id="depthSliderCont">
+            <input id="depthSlider" type="range" min="-3" max="3" step="0.1" value="0">
+        </div>
 
-        <!-- conteneur ARButton centré -->
-        <div id="arButtonContainer"></div>
-
+        <!-- Code principal -->
         <script type="module" src="script.js"></script>
     </body>
 </html>
