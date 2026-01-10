@@ -25,6 +25,10 @@ export const Map = forwardRef((props, ref) => {
     }
     const [listRect, setListRect] = useState(initDataRect());
 
+    useEffect(() => {
+        setListRect(initDataRect());
+    }, [props.config]);
+
     const handleMouseClick = useCallback((e) => {
         if (!props.modeEditor) {
             return;
@@ -148,6 +152,9 @@ export const Map = forwardRef((props, ref) => {
 
     function initDataRect() {
         const targetRect = [];
+        const zoneKeys = new Set(
+            (setupConfig.zones || []).map((zone) => `${zone.x}:${zone.y}`)
+        );
 
         for (let i = 0; i < setupConfig.width; i++) {
             for (let j = 0; j !== setupConfig.height; j++) {
@@ -156,7 +163,7 @@ export const Map = forwardRef((props, ref) => {
                     y: params.basePosition + j * params.sizeGrid + 1,
                     w: params.sizeGrid - 2,
                     h: params.sizeGrid - 2,
-                    isSelected: false
+                    isSelected: zoneKeys.has(`${i}:${j}`)
                 });
             }
         }

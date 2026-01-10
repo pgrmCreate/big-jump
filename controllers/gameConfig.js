@@ -1,5 +1,16 @@
-const jwt = require('jsonwebtoken');
 const GameConfig = require('../db/models/GameConfigSchema');
+
+function parseUserCookie(req) {
+    const rawCookie = req.cookies ? req.cookies.user : null;
+    if (!rawCookie) return null;
+    if (typeof rawCookie === 'object') return rawCookie;
+
+    try {
+        return JSON.parse(rawCookie);
+    } catch (error) {
+        return null;
+    }
+}
 
 exports.getAll = (req, res, next) => {
     GameConfig.find({}).then((data) => {
@@ -35,12 +46,14 @@ exports.update = (req, res, next) => {
 
 exports.create = (req, res, next) => {
     const newConfigData = req.body;
-    const targetCookieUser = req.cookies.user;
-
     const newGameConfig = new GameConfig(newConfigData);
 
     newGameConfig.createdAt = new Date();
-    newGameConfig.idAuthor = targetCookieUser.userId;
+    const cookieUser = parseUserCookie(req);
+    const authorId = (req.auth && req.auth.userId) || (cookieUser ? cookieUser.userId : null);
+    if (authorId) {
+        newGameConfig.idAuthor = authorId;
+    }
 
     newGameConfig.save()
         .then((addedGameConfig) => {

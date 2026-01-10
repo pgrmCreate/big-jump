@@ -20,8 +20,8 @@ exports.create = (req, res, next) => {
     const newHistory = new HistoryGame(req.body);
 
     newHistory.save().then((data) => {
-        res.status(204).json({data});
-    })
+        res.status(201).json({data});
+    }).catch((error) => res.status(500).json({error}));
 }
 
 exports.delete = (req, res, next) => {

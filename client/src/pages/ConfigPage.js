@@ -119,20 +119,88 @@ export default function ConfigPage() {
         const currentHeight = config.config.setup.height - 2;
         const currentWidth = config.config.setup.width - 2;
 
-        let needChangeGroup = false;
-        config.config.setup.zones = config.config.setup.zones.filter(zone => {
+        const groupSizesBefore = zoneGroup.map((group) => group.length);
+        const removedZoneIds = new Set();
+        const keptZones = [];
+
+        config.config.setup.zones.forEach((zone) => {
             const isZoneInGrid = zone.x <= currentWidth && zone.y <= currentHeight;
 
-            if(!isZoneInGrid)
-                needChangeGroup = true;
-
-            return isZoneInGrid;
+            if (isZoneInGrid) {
+                keptZones.push(zone);
+            } else {
+                removedZoneIds.add(zone.id);
+            }
         });
 
-        if(needChangeGroup) {
-            makeZoneGroup();
-            updateConfig();
+        if (removedZoneIds.size === 0) {
+            return;
         }
+
+        config.config.setup.zones = keptZones;
+
+        const filteredZoneGroups = zoneGroup.map((group) =>
+            group.filter((zoneId) => !removedZoneIds.has(zoneId))
+        );
+
+        const removedGroupIndexes = new Set();
+        filteredZoneGroups.forEach((group, index) => {
+            if (groupSizesBefore[index] > 0 && group.length === 0) {
+                removedGroupIndexes.add(index);
+            }
+        });
+
+        let nextZoneGroup = filteredZoneGroups;
+
+        if (removedGroupIndexes.size > 0) {
+            const newZoneGroup = [];
+            const newZoneGroupName = {};
+            const newZoneGroupColor = {};
+            const groupIndexMap = {};
+
+            let nextIndex = 0;
+            for (let i = 0; i < filteredZoneGroups.length; i++) {
+                if (removedGroupIndexes.has(i)) continue;
+
+                groupIndexMap[i] = nextIndex;
+                newZoneGroup[nextIndex] = filteredZoneGroups[i];
+
+                if (zoneGroupName[i] !== undefined) {
+                    newZoneGroupName[nextIndex] = zoneGroupName[i];
+                }
+                if (zoneGroupColor[i] !== undefined) {
+                    newZoneGroupColor[nextIndex] = zoneGroupColor[i];
+                }
+
+                nextIndex++;
+            }
+
+            config.config.setup.zones.forEach((zone) => {
+                zone.targetGroupZone = groupIndexMap[zone.targetGroupZone];
+            });
+
+            if (pickedZoneGroup !== null) {
+                const mappedPicked = groupIndexMap[pickedZoneGroup];
+                setPickedZoneGroup(mappedPicked !== undefined ? mappedPicked : null);
+            }
+
+            setZoneGroupName(newZoneGroupName);
+            setZoneGroupColor(newZoneGroupColor);
+            nextZoneGroup = newZoneGroup;
+        }
+
+        setZoneGroup(nextZoneGroup);
+
+        config.config.setup.lots.forEach((lot) => {
+            lot.exploration.applyZones = lot.exploration.applyZones.filter(
+                (zoneId) => !removedZoneIds.has(zoneId)
+            );
+            lot.exploitation.applyZones = lot.exploitation.applyZones.filter(
+                (zoneId) => !removedZoneIds.has(zoneId)
+            );
+        });
+
+        updateConfig();
     }
 
     function haveExistingCase(zones, x, y, excludeGroup = null) {
@@ -148,12 +216,16 @@ export default function ConfigPage() {
         });
     }
 
+    function hasEmptyZoneGroup() {
+        return zoneGroup.some((group) => group.length === 0);
+    }
+
     function getValidConfigStep1() {
         if (!config.config.setup.height || !config.config.setup.width ||
             config.config.setup.zones.length === 0)
             return true;
 
-        return (config.config.setup.name === '' || zoneGroup.length === 0
+        return (config.config.setup.name === '' || zoneGroup.length === 0 || hasEmptyZoneGroup()
             || config.config.setup.width < 4 || config.config.setup.height < 4 || config.config.setup.height > 102
             || config.config.setup.width > 102);
     }
@@ -344,10 +416,33 @@ export default function ConfigPage() {
         return config.config.setup.zones.find(i => zoneList.indexOf(i.id) > -1);
     }
 
-    function getZoneAttributFromGroup(targetZones, targetKey) {
+    function getZoneAttributFromGroup(targetZones, targetKey, targetIndex = null) {
         if (zoneGroup.length === 0) return 'Pas de zone';
 
         const firstZoneType = getZoneFromId(targetZones);
+
+        if (!firstZoneType) {
+            if (targetKey === 'name') {
+                if (targetIndex !== null && zoneGroupName[targetIndex]) {
+                    return zoneGroupName[targetIndex];
+                }
+                return '';
+            }
+
+            if (targetKey === 'isVisible') {
+                return false;
+            }
+
+            if (targetKey === 'empty') {
+                return 100;
+            }
+
+            if (targetKey === 'win' || targetKey === 'loose') {
+                return 0;
+            }
+
+            return '';
+        }
 
         if (targetKey === 'empty') {
             return (1 - (firstZoneType.percentWin + firstZoneType.percentLoose)) * 100;
@@ -817,6 +912,11 @@ export default function ConfigPage() {
                                                             </button>
                                                         </div>
                                                     </div>
+                                                    {item.length === 0 && (
+                                                        <p className="text-danger small mb-0">
+                                                            Aucune case selectionnee
+                                                        </p>
+                                                    )}
                                                 </div>
                                             ))}
                                         </div>
@@ -890,28 +990,28 @@ export default function ConfigPage() {
                                     <tbody>
                                         {zoneGroup.map((currentZoneGroup, currentIndex) => (
                                             <tr key={currentIndex}>
-                                                <th>{getZoneAttributFromGroup(currentZoneGroup, 'name')}</th>
+                                                <th>{getZoneAttributFromGroup(currentZoneGroup, 'name', currentIndex)}</th>
                                                 <td>
-                                                    {!getZoneAttributFromGroup(currentZoneGroup, 'isVisible') && (
+                                                    {!getZoneAttributFromGroup(currentZoneGroup, 'isVisible', currentIndex) && (
                                                         <i className="fa-solid fa-square"
                                                            onClick={() => changeZoneConfig(currentZoneGroup, 'isVisible', true)}/>
                                                     )}
 
-                                                    {getZoneAttributFromGroup(currentZoneGroup, 'isVisible') && (
+                                                    {getZoneAttributFromGroup(currentZoneGroup, 'isVisible', currentIndex) && (
                                                         <i className="fa-solid fa-square-check"
                                                            onClick={() => changeZoneConfig(currentZoneGroup, 'isVisible', false)}/>
                                                     )}
                                                 </td>
-                                                <td>{getZoneAttributFromGroup(currentZoneGroup, 'empty')}%</td>
+                                                <td>{getZoneAttributFromGroup(currentZoneGroup, 'empty', currentIndex)}%</td>
                                                 <td>
                                                     <NumericInput type="text" className="form-control" allowDecimal
                                                            onChange={(e) => changeZoneConfig(currentZoneGroup, 'percentWin', e.target.value, true)}
-                                                           value={getZoneAttributFromGroup(currentZoneGroup, 'win') * 100}/>
+                                                           value={getZoneAttributFromGroup(currentZoneGroup, 'win', currentIndex) * 100}/>
                                                 </td>
                                                 <td>
                                                     <NumericInput type="text" className="form-control" allowDecimal
                                                            onChange={(e) => changeZoneConfig(currentZoneGroup, 'percentLoose', e.target.value, true)}
-                                                           value={getZoneAttributFromGroup(currentZoneGroup, 'loose') * 100}/>
+                                                           value={getZoneAttributFromGroup(currentZoneGroup, 'loose', currentIndex) * 100}/>
                                                 </td>
                                             </tr>
                                         ))}
@@ -1196,7 +1296,7 @@ export default function ConfigPage() {
                                                 <p>
                                                     <i className="fa-solid fa-square mx-2 checkbox"
                                                        onClick={() => zoneApplyChange(index, 'exploration')}/>
-                                                    {getZoneAttributFromGroup(item, 'name')}
+                                                    {getZoneAttributFromGroup(item, 'name', index)}
                                                 </p>
                                             )}
 
@@ -1204,7 +1304,7 @@ export default function ConfigPage() {
                                                 <p>
                                                     <i className="fa-solid fa-square-check mx-2 checkbox"
                                                        onClick={() => zoneApplyChange(index, 'exploration')}/>
-                                                    {getZoneAttributFromGroup(item, 'name')}
+                                                    {getZoneAttributFromGroup(item, 'name', index)}
                                                 </p>
                                             )}
                                         </div>
@@ -1264,7 +1364,7 @@ export default function ConfigPage() {
                                                 <p>
                                                     <i className="fa-solid fa-square mx-2 checkbox"
                                                        onClick={() => zoneApplyChange(index, 'exploitation')}/>
-                                                    {getZoneAttributFromGroup(item, 'name')}
+                                                    {getZoneAttributFromGroup(item, 'name', index)}
                                                 </p>
                                             )}
 
@@ -1272,7 +1372,7 @@ export default function ConfigPage() {
                                                 <p>
                                                     <i className="fa-solid fa-square-check mx-2 checkbox"
                                                        onClick={() => zoneApplyChange(index, 'exploitation')}/>
-                                                    {getZoneAttributFromGroup(item, 'name')}
+                                                    {getZoneAttributFromGroup(item, 'name', index)}
                                                 </p>
                                             )}
                                         </div>
@@ -1397,7 +1497,7 @@ export default function ConfigPage() {
                                                 <p>
                                                     <i className="fa-solid fa-square mx-2 checkbox"
                                                        onClick={() => zoneApplyChange(index, 'exploration')}/>
-                                                    {getZoneAttributFromGroup(item, 'name')}
+                                                    {getZoneAttributFromGroup(item, 'name', index)}
                                                 </p>
                                             )}
 
@@ -1405,7 +1505,7 @@ export default function ConfigPage() {
                                                 <p>
                                                     <i className="fa-solid fa-square-check mx-2 checkbox"
                                                        onClick={() => zoneApplyChange(index, 'exploration')}/>
-                                                    {getZoneAttributFromGroup(item, 'name')}
+                                                    {getZoneAttributFromGroup(item, 'name', index)}
                                                 </p>
                                             )}
                                         </div>
@@ -1465,7 +1565,7 @@ export default function ConfigPage() {
                                                 <p>
                                                     <i className="fa-solid fa-square mx-2 checkbox"
                                                        onClick={() => zoneApplyChange(index, 'exploitation')}/>
-                                                    {getZoneAttributFromGroup(item, 'name')}
+                                                    {getZoneAttributFromGroup(item, 'name', index)}
                                                 </p>
                                             )}
 
@@ -1473,7 +1573,7 @@ export default function ConfigPage() {
                                                 <p>
                                                     <i className="fa-solid fa-square-check mx-2 checkbox"
                                                        onClick={() => zoneApplyChange(index, 'exploitation')}/>
-                                                    {getZoneAttributFromGroup(item, 'name')}
+                                                    {getZoneAttributFromGroup(item, 'name', index)}
                                                 </p>
                                             )}
                                         </div>

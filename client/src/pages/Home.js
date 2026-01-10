@@ -120,7 +120,11 @@ export default function Home() {
     function displayDate(date) {
         const dateOut = new Date(date);
 
-        return `${dateOut.getDay()}/${dateOut.getMonth()}/${dateOut.getFullYear()}`;
+        const day = dateOut.getDate();
+        const month = dateOut.getMonth() + 1;
+        const year = dateOut.getFullYear();
+
+        return `${day}/${month}/${year}`;
     }
 
     function handleGetLink(xp) {

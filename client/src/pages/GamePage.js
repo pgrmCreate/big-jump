@@ -121,9 +121,21 @@ export function GamePage() {
         initGame(true);
     }
 
+    function getUserIdFromCookie() {
+        if (!cookies.user) return null;
+        if (typeof cookies.user === 'string') {
+            try {
+                return JSON.parse(cookies.user).userId || null;
+            } catch (error) {
+                return null;
+            }
+        }
+        return cookies.user.userId || null;
+    }
+
     function endSession() {
         const targetNewHistory = {
-            userId : cookies.user.userId,
+            userId : getUserIdFromCookie(),
             sessions : historySession,
             infosParticipant : enteringParticipantInfo ?? [],
             configId: config.config.setup._id,
@@ -153,7 +165,10 @@ export function GamePage() {
     }
 
     function move(direction) {
-        const targetObject = {...player};
+        const targetObject = {
+            ...player,
+            position: {...player.position}
+        };
 
         if (direction === 'up') {
             if(targetObject.position.y < 2)
@@ -180,14 +195,15 @@ export function GamePage() {
         }
 
         setPlayer(targetObject);
-        userOpenAction(direction, 'exploration');
+        userOpenAction(direction, 'exploration', targetObject.position);
         setGameRoundLeft(roundLeft => roundLeft - 1);
     }
 
-    function userOpenAction(direction = 'top', typeAction = "exploration") {
+    function userOpenAction(direction = 'top', typeAction = "exploration", targetPosition = null) {
+        const currentPosition = targetPosition || player.position;
         let foundZone = false;
         GameManager.get().gameConfig.setup.zones.forEach((currentZone) => {
-            if (currentZone.x === player.position.x && currentZone.y === player.position.y) {
+            if (currentZone.x === currentPosition.x && currentZone.y === currentPosition.y) {
                 setHistoryRows([...historyRows, openZone(currentZone, typeAction, direction)]);
                 foundZone = true;
             }
@@ -196,8 +212,8 @@ export function GamePage() {
         if(!foundZone && typeAction === 'exploration') {
             setHistoryRows([...historyRows, {
                 typeAction : typeAction,
-                positionX : player.position.x,
-                positionY : player.position.y,
+                positionX : currentPosition.x,
+                positionY : currentPosition.y,
                 direction : direction,
                 score: GameManager.get().player.score,
                 eventType: 'null',
@@ -219,7 +235,7 @@ export function GamePage() {
             positionX : zone.x,
             positionY : zone.y,
             direction : direction,
-            score: GameManager.get().player.score,
+            score: player.score,
             eventType: 'null',
             actionPointsLeft: gameRoundLeft
         };
@@ -290,14 +306,16 @@ export function GamePage() {
 
         if (!targetLot[typeAction].isWin) targetPoint = targetPoint * -1;
 
-        const targetNewPlayer = {...player};
-        targetNewPlayer.score += targetPoint;
+        const nextScore = player.score + targetPoint;
         addEarn(targetPoint);
-        setPlayer(targetNewPlayer);
+        setPlayer((prevPlayer) => ({
+            ...prevPlayer,
+            score: prevPlayer.score + targetPoint
+        }));
 
         targetHistory.amountValue = targetPoint;
         targetHistory.eventType = targetLot[typeAction].isWin ? 'Gain' : 'Threat';
-        targetHistory.score = targetNewPlayer.score;
+        targetHistory.score = nextScore;
 
         const finalDisplayEvents = [...textsEvent];
         setup.textsEvent
@@ -432,7 +450,7 @@ export function GamePage() {
                         <div className="row">
                             <div className="col-3 col-xl-2 game-messages-container">
                                 {
-                                    textsEvent.reverse().map((messageGame, index) => (
+                                    textsEvent.slice().reverse().map((messageGame, index) => (
                                         <div key={index}>
                                             <p>{messageGame.label}</p>
                                         </div>

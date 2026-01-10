@@ -2,11 +2,29 @@ const User = require('../db/models/UserSchema');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const tokenSecret = process.env.TOKEN_AUTH;
+
+function parseUserCookie(req) {
+    const rawCookie = req.cookies ? req.cookies.user : null;
+    if (!rawCookie) return null;
+    if (typeof rawCookie === 'object') return rawCookie;
+
+    try {
+        return JSON.parse(rawCookie);
+    } catch (error) {
+        return null;
+    }
+}
+
 exports.login = (req, res, next) => {
     User.findOne({ email: req.body.email }).then((user) => {
         if (user === null) {
             res.status(401).json({ error: 'bad login' });
         } else {
+            if (!tokenSecret) {
+                return res.status(500).json({ error: 'missing token secret' });
+            }
+
             bcrypt
                 .compare(req.body.password, user.password)
                 .then((valid) => {
@@ -18,7 +36,7 @@ exports.login = (req, res, next) => {
                             email: user.email,
                             token: jwt.sign(
                                 { userId: user.id },
-                                'Dz99z5a9q6d5z9464fes98fd4sefse6ef9se465fDDRAMD_4dqz',
+                                tokenSecret,
                                 { expiresIn: '24h' }
                             ),
                         });
@@ -32,18 +50,20 @@ exports.login = (req, res, next) => {
 };
 
 exports.reconnect = (req, res, next) => {
-    let targetCookieUser = req.cookies.user;
-
-    if (targetCookieUser === '') {
-        res.status(400).json({ error: 'no token' });
+    if (!tokenSecret) {
+        return res.status(500).json({ error: 'missing token secret' });
     }
 
-    targetCookieUser = JSON.parse(targetCookieUser);
+    const targetCookieUser = parseUserCookie(req);
+
+    if (!targetCookieUser || !targetCookieUser.token) {
+        return res.status(400).json({ error: 'no token' });
+    }
 
     try {
         const decodedToken = jwt.verify(
             targetCookieUser.token,
-            'Dz99z5a9q6d5z9464fes98fd4sefse6ef9se465fDDRAMD_4dqz'
+            tokenSecret
         );
 
         res.status(200).json(decodedToken);
