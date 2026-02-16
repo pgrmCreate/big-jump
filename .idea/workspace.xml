@@ -6,14 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="df89ccb8-fdbc-4a54-823c-7ccd03a98237" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/public/app/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/client/public/app/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/components/Map.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/components/Map.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/pages/ConfigPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/ConfigPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/pages/GamePage.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/GamePage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/pages/Home.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/Home.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controllers/gameConfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/gameConfig.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controllers/historyGame.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/historyGame.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controllers/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/user.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/App.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/App.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,7 +53,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/projects/big-jump&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/client/chateau-de-la-gaude/NowArt-vanilla&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -225,7 +219,12 @@
       <workItem from="1754976735807" duration="1756000" />
       <workItem from="1755509248881" duration="990000" />
       <workItem from="1767948598371" duration="659000" />
-      <workItem from="1767969714459" duration="1100000" />
+      <workItem from="1767969714459" duration="5012000" />
+      <workItem from="1768211098722" duration="618000" />
+      <workItem from="1768393459886" duration="592000" />
+      <workItem from="1768464724494" duration="3000" />
+      <workItem from="1768568391100" duration="1133000" />
+      <workItem from="1768837520493" duration="1223000" />
     </task>
     <servers />
   </component>

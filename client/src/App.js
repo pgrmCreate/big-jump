@@ -59,6 +59,8 @@ function App() {
                     </BrowserRouter>
                 </ConfigContext.Provider>
             </UserContext.Provider>
+
+            <p className="app-version">v0.6</p>
         </div>
     );
 }
