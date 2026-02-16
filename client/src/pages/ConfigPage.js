@@ -445,7 +445,8 @@ export default function ConfigPage() {
         }
 
         if (targetKey === 'empty') {
-            return (1 - (firstZoneType.percentWin + firstZoneType.percentLoose)) * 100;
+            const emptyPercent = (1 - (firstZoneType.percentWin + firstZoneType.percentLoose)) * 100;
+            return around2Decimales(emptyPercent);
         }
 
         if (targetKey === 'win') {
@@ -466,7 +467,8 @@ export default function ConfigPage() {
     }
 
     function around2Decimales(value) {
-        return Math.round(value * 100) / 100
+        const rounded = Math.round(value * 100) / 100;
+        return Object.is(rounded, -0) ? 0 : rounded;
     }
 
     function changeZoneConfig(targetZoneGroup, key, value) {
@@ -494,7 +496,7 @@ export default function ConfigPage() {
                     }
 
                     // Contrôle si la somme dépasse 1
-                    if (item.percentWin + item.percentLoose > 1) {
+                    if (item.percentWin + item.percentLoose > 1 + Number.EPSILON) {
                         isBadConfigZone = true;
                     }
                 } else {
