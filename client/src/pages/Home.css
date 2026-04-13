@@ -57,3 +57,49 @@
     color: #555;
     cursor: pointer;
 }
+
+.history-delete-list {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid #EEE;
+    padding: 10px;
+}
+
+.history-delete-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #EEE;
+    background: #FFF;
+    text-align: left;
+}
+
+.history-delete-row-active {
+    border-color: #0d6efd;
+    background: #eef4ff;
+}
+
+.history-delete-main {
+    flex: 1;
+}
+
+.history-delete-title {
+    margin-bottom: 4px;
+    font-weight: 700;
+    color: #222;
+}
+
+.history-delete-meta {
+    margin-bottom: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.history-delete-row i {
+    margin-left: 20px;
+    font-size: 24px;
+    color: #555;
+}

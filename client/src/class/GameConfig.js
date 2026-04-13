@@ -5,6 +5,61 @@ export class GameConfig {
     static sizeCellGrid = 35;
     static basePosition = 10;
 
+    static deepCopy(value) {
+        return JSON.parse(JSON.stringify(value));
+    }
+
+    static syncCounters(setup = {}) {
+        const maxZoneId = Array.isArray(setup.zones)
+            ? setup.zones.reduce((max, zone) => Math.max(max, zone.id ?? -1), -1)
+            : -1;
+        const maxLotId = Array.isArray(setup.lots)
+            ? setup.lots.reduce((max, lot) => {
+                const explorationId = lot?.exploration?.id ?? -1;
+                const exploitationId = lot?.exploitation?.id ?? -1;
+                return Math.max(max, explorationId, exploitationId);
+            }, -1)
+            : -1;
+
+        GameConfig.indexZone = Math.max(GameConfig.indexZone, maxZoneId + 1);
+        GameConfig.indexLot = Math.max(GameConfig.indexLot, maxLotId + 1);
+    }
+
+    static createFromSetup(rawSetup = {}) {
+        const gameConfig = new GameConfig();
+        const clonedSetup = GameConfig.deepCopy(rawSetup || {});
+
+        gameConfig.setup = {
+            ...gameConfig.setup,
+            ...clonedSetup,
+            participantInfo: Array.isArray(clonedSetup.participantInfo) ? clonedSetup.participantInfo : [],
+            textsEvent: Array.isArray(clonedSetup.textsEvent) ? clonedSetup.textsEvent : [],
+            zones: Array.isArray(clonedSetup.zones) ? clonedSetup.zones : [],
+            lots: Array.isArray(clonedSetup.lots) ? clonedSetup.lots : [],
+            gameInterfacePage: {
+                ...gameConfig.setup.gameInterfacePage,
+                ...(clonedSetup.gameInterfacePage || {})
+            },
+            lotWinConfig: {
+                randomAmount: {
+                    exploration: [...(clonedSetup?.lotWinConfig?.randomAmount?.exploration || [])],
+                    exploitation: [...(clonedSetup?.lotWinConfig?.randomAmount?.exploitation || [])],
+                }
+            },
+            lotLooseConfig: {
+                randomAmount: {
+                    exploration: [...(clonedSetup?.lotLooseConfig?.randomAmount?.exploration || [])],
+                    exploitation: [...(clonedSetup?.lotLooseConfig?.randomAmount?.exploitation || [])],
+                }
+            }
+        };
+
+        gameConfig._id = gameConfig.setup._id;
+        GameConfig.syncCounters(gameConfig.setup);
+
+        return gameConfig;
+    }
+
     // TYPE DRAW
     //      1. SEQUENTIAL
     //      2. RANDOM
@@ -119,5 +174,9 @@ export class GameConfig {
 
     cleanAllLot() {
         this.setup.lots = [];
+    }
+
+    clone() {
+        return GameConfig.createFromSetup(this.setup);
     }
 }

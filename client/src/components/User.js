@@ -1,6 +1,6 @@
 import './User.css';
 import {Requester} from "../class/Requester";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useState} from "react";
 import {UserContext} from "../utils/UserContext";
 import {useCookies} from "react-cookie";
 
@@ -15,10 +15,6 @@ export default function User() {
     const [, setCookie, removeCookies] = useCookies(['cookie-name']);
     const [isLoadingConnect, setIsLoadingConnect] = useState(false);
 
-    function signup() {
-        Requester.post('/api/user/signup', {email : 'dd@dd.com', password : 'passpass'})
-    }
-
     function handleChangeLoginInput(key, value) {
         setLoginInput({...loginInput, [key] : value});
     }
@@ -27,12 +23,16 @@ export default function User() {
         e.preventDefault();
 
         setIsLoadingConnect(true);
+        setErrorLogin(false);
 
         Requester.post('/api/user/login', {email : loginInput.email, password : loginInput.password}, true)
-            .then(res => res.json())
-            .then((data = {}) => {
-                if(data.error) {
+            .then(async (res) => {
+                const data = await res.json();
+
+                if(!res.ok || data.error) {
                     setErrorLogin(true);
+                    setIsLoadingConnect(false);
+                    removeCookies('user');
                     return;
                 }
 
@@ -79,11 +79,13 @@ export default function User() {
                     </span>
                     {!isLoadingConnect && (
                         <form>
-                            <input type="text" className="form-control mb-2" placeholder="email"
+                            <input type="email" className="form-control mb-2" placeholder="email"
+                                   autoComplete="username"
                                    value={loginInput.email}
                                    onChange={(e) => handleChangeLoginInput('email', e.target.value)}/>
 
                             <input type="password" className="form-control mb-4" placeholder="mot de passe"
+                                   autoComplete="current-password"
                                    value={loginInput.password}
                                    onChange={(e) => handleChangeLoginInput('password', e.target.value)}/>
 

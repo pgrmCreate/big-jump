@@ -9,6 +9,7 @@ import {BrowserRouter, Routes, Route} from "react-router-dom";
 import Home from "./pages/Home";
 import {ConfigEditHomePage} from "./pages/ConfigEditHomePage";
 import ConfigSessionPage from "./pages/ConfigSessionPage";
+import ThankYouPage from "./pages/ThankYouPage";
 import {UserContext} from "./utils/UserContext";
 import {Requester} from "./class/Requester";
 import {useCookies} from "react-cookie";
@@ -52,6 +53,7 @@ function App() {
                         <Routes>
                             <Route path="/" index element={<Home/>}/>
                             <Route path="/game/:id" element={<GamePage/>}/>
+                            <Route path="/thank-you" element={<ThankYouPage/>}/>
                             <Route path="/config" element={<ConfigPage/>}/>
                             <Route path="/edit-config/:id" element={<ConfigPage/>}/>
                             <Route path="/edit-session/:id" element={<ConfigSessionPage/>}/>

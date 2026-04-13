@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useEffect, useState} from "react";
+import React, {useCallback, useContext, useEffect, useRef, useState} from "react";
 
 import {Map} from "../components/Map";
 import {ConfigContext} from "../utils/ConfigContext";
@@ -19,14 +19,22 @@ export function GamePage() {
     const [isStart, setIsStart] = useState(false);
     const [isGettingParticipantInfo, setIsGettingParticipantInfo] = useState(true);
     const [historyRows, setHistoryRows] = useState([]);
-    const [historySession, setHistorySession] = useState([]);
+    const [, setHistorySession] = useState([]);
     const [cookies,, ] = useCookies(['cookie-name']);
 
     const [gameRoundLeft, setGameRoundLeft] = useState(0);
     const [gameSessionLeft, setGameSessionLeft] = useState(0);
     const [enteringParticipantInfo, setEnteringParticipantInfo] = useState([]);
     const [textsEvent, setTextsEvent] = useState([]);
-    const [startDate, setStartDate] = useState(null);
+    const [isLoadingConfig, setIsLoadingConfig] = useState(true);
+    const [configLoadError, setConfigLoadError] = useState(false);
+    const [isSavingHistory, setIsSavingHistory] = useState(false);
+
+    const historyRowsRef = useRef([]);
+    const historySessionRef = useRef([]);
+    const isStartRef = useRef(false);
+    const hasPostedHistoryRef = useRef(false);
+    const startedAtRef = useRef(null);
 
     const handleKeyUp = useCallback((e) => {
         if(gameRoundLeft === 0) {
@@ -44,9 +52,8 @@ export function GamePage() {
     }, [player, gameRoundLeft]);
 
     useEffect(() => {
-        setStartDate(Date.now());
         loadConfig();
-    }, []);
+    }, [params.id]);
 
     useEffect(() => {
         window.addEventListener("keyup", handleKeyUp);
@@ -58,47 +65,71 @@ export function GamePage() {
 
     useEffect(() => {
         if(gameRoundLeft === 0 && historyRows.length > 0) {
-            setHistorySession([...historySession, {
+            const completedSession = {
                 rows: [...historyRows],
                 stats: {
                     score: player.score
                 }
-            }]);
-            setHistoryRows([]);
-            setGameSessionLeft(gameSessionLeft - 1);
-        } else {
+            };
+            const nextHistorySession = [...historySessionRef.current, completedSession];
 
+            historySessionRef.current = nextHistorySession;
+            setHistorySession(nextHistorySession);
+
+            historyRowsRef.current = [];
+            setHistoryRows([]);
+            setGameSessionLeft((currentSessionLeft) => {
+                const nextSessionLeft = currentSessionLeft - 1;
+
+                if(nextSessionLeft === 0 && isStartRef.current) {
+                    endSession(nextHistorySession);
+                }
+
+                return nextSessionLeft;
+            });
         }
     }, [gameRoundLeft]);
-
-    useEffect(() => {
-        if(gameSessionLeft === 0 && isStart) {
-            endSession();
-        }
-    }, [gameSessionLeft]);
 
     useEffect(() => {
         if(config.config) {
             initGame();
         }
-    }, [config])
+    }, [config.config]);
+
+    useEffect(() => {
+        isStartRef.current = isStart;
+    }, [isStart]);
 
     function loadConfig() {
         const targetId = params.id;
+        setIsLoadingConfig(true);
+        setConfigLoadError(false);
 
         Requester.get('/api/gameconfig/' + targetId).then(res => res.json())
             .then((result) => {
-                const newGameConfig = new GameConfig();
-                newGameConfig.setup = result;
-                setConfig({list: config.list, config : newGameConfig});
-            }).catch((error) => console.log(error));
+                const newGameConfig = GameConfig.createFromSetup(result);
+                setConfig((currentConfig) => ({list: currentConfig.list, config : newGameConfig}));
+                setIsLoadingConfig(false);
+            }).catch((error) => {
+                console.log(error);
+                setConfigLoadError(true);
+                setIsLoadingConfig(false);
+            });
     }
 
     function initGame(newSession = false) {
         config.config.initRound();
         setTextsEvent([]);
         GameManager.get().settingConfig(config.config);
-        player.score = config.config.setup.startPoint;
+        setPlayer({
+            score: config.config.setup.startPoint,
+            position: {
+                x: config.config.setup.initPositionX,
+                y: config.config.setup.initPositionY
+            }
+        });
+        historyRowsRef.current = [];
+        setHistoryRows([]);
 
         setGameRoundLeft(GameManager.get().gameConfig.setup.roundLeft);
 
@@ -114,6 +145,10 @@ export function GamePage() {
             setEnteringParticipantInfo(newEnteringParticipantInfo);
 
             setGameSessionLeft(GameManager.get().gameConfig.setup.tryAmount);
+            historySessionRef.current = [];
+            setHistorySession([]);
+            hasPostedHistoryRef.current = false;
+            startedAtRef.current = null;
         }
     }
 
@@ -133,18 +168,31 @@ export function GamePage() {
         return cookies.user.userId || null;
     }
 
-    function endSession() {
+    function endSession(sessionsToSave = historySessionRef.current) {
+        if (hasPostedHistoryRef.current) {
+            return;
+        }
+
+        hasPostedHistoryRef.current = true;
+        setIsSavingHistory(true);
+
         const targetNewHistory = {
             userId : getUserIdFromCookie(),
-            sessions : historySession,
+            sessions : sessionsToSave,
             infosParticipant : enteringParticipantInfo ?? [],
             configId: config.config.setup._id,
-            spentTime: (Date.now() - startDate) / 1000
+            startedAt: startedAtRef.current,
+            spentTime: startedAtRef.current ? (Date.now() - new Date(startedAtRef.current).getTime()) / 1000 : 0
         };
 
-        Requester.post('/api/history', targetNewHistory).then(res => res.json())
+        Requester.post('/api/history', targetNewHistory, true).then(res => res.json())
             .then((result) => {
-            }).catch((error) => console.log(error));
+                setIsSavingHistory(false);
+            }).catch((error) => {
+                hasPostedHistoryRef.current = false;
+                setIsSavingHistory(false);
+                console.log(error);
+            });
     }
 
     function getIndexEnteringInfo(label) {
@@ -165,6 +213,10 @@ export function GamePage() {
     }
 
     function move(direction) {
+        if (!config.config) {
+            return;
+        }
+
         const targetObject = {
             ...player,
             position: {...player.position}
@@ -204,13 +256,18 @@ export function GamePage() {
         let foundZone = false;
         GameManager.get().gameConfig.setup.zones.forEach((currentZone) => {
             if (currentZone.x === currentPosition.x && currentZone.y === currentPosition.y) {
-                setHistoryRows([...historyRows, openZone(currentZone, typeAction, direction)]);
+                const nextRow = openZone(currentZone, typeAction, direction);
+                setHistoryRows((currentRows) => {
+                    const nextRows = [...currentRows, nextRow];
+                    historyRowsRef.current = nextRows;
+                    return nextRows;
+                });
                 foundZone = true;
             }
         });
 
         if(!foundZone && typeAction === 'exploration') {
-            setHistoryRows([...historyRows, {
+            const nextRow = {
                 typeAction : typeAction,
                 positionX : currentPosition.x,
                 positionY : currentPosition.y,
@@ -218,7 +275,12 @@ export function GamePage() {
                 score: GameManager.get().player.score,
                 eventType: 'null',
                 actionPointsLeft: gameRoundLeft
-            }]);
+            };
+            setHistoryRows((currentRows) => {
+                const nextRows = [...currentRows, nextRow];
+                historyRowsRef.current = nextRows;
+                return nextRows;
+            });
         }
 
         if(typeAction === 'exploitation') {
@@ -317,16 +379,13 @@ export function GamePage() {
         targetHistory.eventType = targetLot[typeAction].isWin ? 'Gain' : 'Threat';
         targetHistory.score = nextScore;
 
-        const finalDisplayEvents = [...textsEvent];
-        setup.textsEvent
+        const nextDisplayEvents = setup.textsEvent
             .filter((currentEvent) => haveTextEvent(currentEvent, targetLot[typeAction].isWin, targetLot[typeAction], zone.targetGroupZone, typeAction))
-            .forEach((currentEvent) => {
-                finalDisplayEvents.push({
-                    id: 0,
-                    label : currentEvent.label
-                })
-            })
-        setTextsEvent(finalDisplayEvents);
+            .map((currentEvent) => ({
+                id: 0,
+                label : currentEvent.label
+            }));
+        setTextsEvent((currentTextsEvent) => [...currentTextsEvent, ...nextDisplayEvents]);
 
         return targetHistory;
     }
@@ -350,14 +409,42 @@ export function GamePage() {
     }
 
     function addEarn(targetPoints) {
-        const targetNewId = earnPoints.length === 0 ? 0 : earnPoints[earnPoints.length - 1].id + 1;
-
-        setEarnPoints([...earnPoints, {id: targetNewId, points: targetPoints}]);
+        setEarnPoints((currentEarnPoints) => {
+            const targetNewId = currentEarnPoints.length === 0 ? 0 : currentEarnPoints[currentEarnPoints.length - 1].id + 1;
+            return [...currentEarnPoints, {id: targetNewId, points: targetPoints}];
+        });
     }
 
     function handleStopGame() {
         //setGameSessionLeft(gameSessionLeft - 1);
         setGameRoundLeft(0);
+    }
+
+    function handleStartGame() {
+        if (!startedAtRef.current) {
+            const now = new Date().toISOString();
+            startedAtRef.current = now;
+        }
+
+        setIsStart(true);
+    }
+
+    if (isLoadingConfig || !config.config) {
+        return (
+            <div className="container">
+                <div className="row vh-100 align-items-center">
+                    <div className="col-12 text-center">
+                        {!configLoadError && (
+                            <p>Loading experience...</p>
+                        )}
+
+                        {configLoadError && (
+                            <p className="alert alert-danger">Unable to load this experience.</p>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -416,7 +503,7 @@ export function GamePage() {
                         { config.config.setup.instructionPage }
                     </p>
 
-                    <button className="btn btn-primary" onClick={() => setIsStart(true)}>Start</button>
+                    <button className="btn btn-primary" onClick={handleStartGame}>Start</button>
                 </div>
             </div>
             )}
@@ -485,9 +572,9 @@ export function GamePage() {
                                             Next session
                                         </button>
                                     ) : (
-                                        <Link to="/" className="btn btn-primary mx-2">
+                                        <Link to="/thank-you" className={"btn btn-primary mx-2" + (isSavingHistory ? ' disabled' : '')}>
                                             <i className="fa-solid fa-bars mx-2"/>
-                                            End session
+                                            {isSavingHistory ? 'Saving...' : 'Finish'}
                                         </Link>
                                     )}
 

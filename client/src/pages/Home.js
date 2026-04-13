@@ -14,7 +14,11 @@ export default function Home() {
     const [userContext, setUserContext] = useContext(UserContext);
     const [targetXpLink, setTargetXpLink] = useState(false);
     const [isMenuExportOpen, setIsMenuExportOpen] = useState(false);
+    const [isHistoryDeleteOpen, setIsHistoryDeleteOpen] = useState(false);
     const [historyGames, setHistoryGames] = useState([]);
+    const [historyDeleteConfig, setHistoryDeleteConfig] = useState(null);
+    const [selectedHistoryIds, setSelectedHistoryIds] = useState([]);
+    const [isDeletingHistory, setIsDeletingHistory] = useState(false);
     const [exportDataConfig, setExportDataConfig] = useState({
         position: true,
         typeAction: true,
@@ -22,6 +26,7 @@ export default function Home() {
         pointsEvent: true,
         score: true,
         actionPoints: true,
+        startedAt: true,
         spentTotalTime: true,
         infosParticipant: true,
         targetConfig: null,
@@ -35,7 +40,7 @@ export default function Home() {
             right: 'auto',
             bottom: 'auto',
             width: '800px',
-            height: '410px',
+            height: '460px',
             marginRight: '-50%',
             transform: 'translate(-50%, -50%)',
         },
@@ -52,19 +57,7 @@ export default function Home() {
     function loadConfigs() {
         Requester.get('/api/gameconfig').then((res => res.json()))
             .then((data) => {
-                const listConfig = [];
-
-                data.map((i) => {
-                    const newGameConfig = new GameConfig();
-                    const newObject = {
-                        ...newGameConfig.setup,
-                        ...i
-                    }
-
-                    newGameConfig.setup = newObject;
-                    newGameConfig._id = newObject._id;
-                    listConfig.push(newGameConfig);
-                })
+                const listConfig = data.map((item) => GameConfig.createFromSetup(item));
 
                 setGlobalConfig({list: listConfig, config: null});
             });
@@ -100,21 +93,66 @@ export default function Home() {
             }).catch((error) => console.error({error}))
     }
 
-    function handleClearHistory(targetSetup, isDisabled) {
-        if (isDisabled === 'true')
+    function getHistoryByConfig(targetConfig) {
+        const configId = targetConfig.setup ? targetConfig.setup._id : targetConfig._id;
+        return historyGames.filter((historyGame) => historyGame.configId === configId);
+    }
+
+    function handleOpenClearHistory(targetConfig) {
+        const targetHistoryGames = getHistoryByConfig(targetConfig);
+        if (targetHistoryGames.length === 0) {
             return;
+        }
 
-        targetSetup.loading = true;
-        setGlobalConfig({
-            list: globalConfig.list, config: globalConfig.list.find(i => i.setup._id === targetSetup._id)
+        setHistoryDeleteConfig(targetConfig);
+        setSelectedHistoryIds([]);
+        setIsHistoryDeleteOpen(true);
+    }
+
+    function handleCloseClearHistory() {
+        if (isDeletingHistory) {
+            return;
+        }
+
+        setHistoryDeleteConfig(null);
+        setSelectedHistoryIds([]);
+        setIsHistoryDeleteOpen(false);
+    }
+
+    function toggleHistorySelection(targetHistoryId) {
+        setSelectedHistoryIds((currentIds) => {
+            if (currentIds.includes(targetHistoryId)) {
+                return currentIds.filter((historyId) => historyId !== targetHistoryId);
+            }
+
+            return [...currentIds, targetHistoryId];
         });
+    }
 
-        Requester.delete(`/api/history/gameconfig/${targetSetup._id}`)
-            .then(res => res.json())
+    function deleteSelectedHistory() {
+        if (selectedHistoryIds.length === 0) {
+            return;
+        }
+
+        setIsDeletingHistory(true);
+
+        Promise.all(selectedHistoryIds.map((historyId) =>
+            Requester.delete(`/api/history/${historyId}`).then((res) => {
+                if (!res.ok) {
+                    throw new Error(`Unable to delete history ${historyId}`);
+                }
+                return res;
+            })
+        ))
             .then(() => {
-                targetSetup.loading = false;
+                setIsDeletingHistory(false);
+                handleCloseClearHistory();
                 loadConfigs();
-            }).catch((error) => console.error({error}))
+            })
+            .catch((error) => {
+                console.error({error});
+                setIsDeletingHistory(false);
+            });
     }
 
     function displayDate(date) {
@@ -125,6 +163,28 @@ export default function Home() {
         const year = dateOut.getFullYear();
 
         return `${day}/${month}/${year}`;
+    }
+
+    function displayDateTime(date) {
+        if (!date) {
+            return 'Date unavailable';
+        }
+
+        const dateOut = new Date(date);
+        return dateOut.toLocaleString();
+    }
+
+    function getHistoryLabel(historyGame, index) {
+        const participantInfos = Array.isArray(historyGame.infosParticipant) ? historyGame.infosParticipant : [];
+        const filledInfos = participantInfos
+            .filter((info) => info && info.value)
+            .map((info) => `${info.label}: ${info.value}`);
+
+        if (filledInfos.length > 0) {
+            return filledInfos.join(' | ');
+        }
+
+        return `Participant ${index + 1}`;
     }
 
     function handleGetLink(xp) {
@@ -175,7 +235,7 @@ export default function Home() {
     }
 
     function haveNotHistoryInConfig(targetConfig) {
-        return (historyGames.filter(i => i.configId === targetConfig._id).length === 0)
+        return (getHistoryByConfig(targetConfig).length === 0)
     }
 
     return (<div className="container-fluid">
@@ -255,8 +315,8 @@ export default function Home() {
                                                     </button>
 
                                                     <button className={"btn btn-sm btn-warning me-2"}
-                                                            data-disabled={haveNotHistoryInConfig(item)}
-                                                            onClick={(e) => handleClearHistory(item.setup, e.target.dataset.disabled)}>
+                                                            disabled={haveNotHistoryInConfig(item)}
+                                                            onClick={() => handleOpenClearHistory(item)}>
                                                         <i className="fa-solid fa-trash mx-2"/>
                                                         Clear story
                                                     </button>
@@ -354,6 +414,12 @@ export default function Home() {
                             </div>
 
                             <div className="export-data-row">
+                                Date and time started
+                                <i className={"fa-solid fa-square" + (exportDataConfig.startedAt ? '-check' : '')}
+                                   data-key="startedAt" onClick={handleChangeExportData}/>
+                            </div>
+
+                            <div className="export-data-row">
                                 Total spent time
                                 <i className={"fa-solid fa-square" + (exportDataConfig.spentTotalTime ? '-check' : '')}
                                    data-key="spentTotalTime" onClick={handleChangeExportData}/>
@@ -367,6 +433,54 @@ export default function Home() {
                             </button>
 
                             <button className="btn btn-primary" onClick={() => setIsMenuExportOpen(false)}>
+                                <i className="fa-regular fa-circle-xmark mx-2"/>
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </Modal>
+
+                <Modal style={customStylesModal} isOpen={isHistoryDeleteOpen} contentLabel="Delete history sessions">
+                    <div className="d-flex flex-column h-100">
+                        <h2 className="text-center mb-3">Select sessions to delete</h2>
+
+                        {historyDeleteConfig && (
+                            <p className="text-center mb-3">
+                                {historyDeleteConfig.setup.name}
+                            </p>
+                        )}
+
+                        <div className="history-delete-list">
+                            {historyDeleteConfig && getHistoryByConfig(historyDeleteConfig).map((historyGame, index) => (
+                                <button
+                                    type="button"
+                                    key={historyGame._id}
+                                    className={"history-delete-row" + (selectedHistoryIds.includes(historyGame._id) ? ' history-delete-row-active' : '')}
+                                    onClick={() => toggleHistorySelection(historyGame._id)}
+                                >
+                                    <div className="history-delete-main">
+                                        <p className="history-delete-title">{getHistoryLabel(historyGame, index)}</p>
+                                        <p className="history-delete-meta">
+                                            {displayDateTime(historyGame.startedAt)} | {historyGame.sessions ? historyGame.sessions.length : 0} session(s)
+                                        </p>
+                                    </div>
+
+                                    <i className={"fa-solid fa-square" + (selectedHistoryIds.includes(historyGame._id) ? '-check' : '')}></i>
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="d-flex justify-content-end mt-3">
+                            <button
+                                className="btn btn-danger mx-3"
+                                disabled={selectedHistoryIds.length === 0 || isDeletingHistory}
+                                onClick={deleteSelectedHistory}
+                            >
+                                <i className="fa-solid fa-trash mx-2"/>
+                                {isDeletingHistory ? 'Deleting...' : 'Delete selected'}
+                            </button>
+
+                            <button className="btn btn-primary" disabled={isDeletingHistory} onClick={handleCloseClearHistory}>
                                 <i className="fa-regular fa-circle-xmark mx-2"/>
                                 Close
                             </button>

@@ -31,34 +31,76 @@ export default function ConfigPage() {
     const [lastColorAdded, setLastColorAdded] = useState('#FFCC00');
     const [isErrorDrawAmount, setIsErrorDrawAmount] = useState(false);
     const [isConfirmGenerateMap, setIsConfirmGenerateMap] = useState(false);
+    const [isLoadingConfig, setIsLoadingConfig] = useState(!!params.id);
+    const [configLoadError, setConfigLoadError] = useState(false);
+
+    function hasSameExploitSetup(targetConfig) {
+        return targetConfig.setup.lots.every((lot) => {
+            const exploration = lot.exploration;
+            const exploitation = lot.exploitation;
+
+            if (!exploration || !exploitation) {
+                return false;
+            }
+
+            return exploration.isWin === exploitation.isWin
+                && exploration.level === exploitation.level
+                && exploration.maxDraw === exploitation.maxDraw
+                && exploration.earnPointMin === exploitation.earnPointMin
+                && exploration.earnPointMax === exploitation.earnPointMax
+                && JSON.stringify(exploration.applyZones || []) === JSON.stringify(exploitation.applyZones || []);
+        });
+    }
+
+    function applyLoadedConfig(targetConfig) {
+        const editableConfig = targetConfig.clone ? targetConfig.clone() : GameConfig.createFromSetup(targetConfig.setup || targetConfig);
+        const newGroupMade = makeZoneGroup(editableConfig);
+
+        const colorBuilder = {};
+        newGroupMade.forEach((group, index) => {
+            colorBuilder[index] = editableConfig.setup.zones.find(i => i.id === group[0]).color;
+        });
+        setZoneGroupColor(colorBuilder);
+
+        const nameBuilder = {};
+        newGroupMade.forEach((group, index) => {
+            nameBuilder[index] = editableConfig.setup.zones.find(i => i.id === group[0]).name;
+        });
+        setZoneGroupName(nameBuilder);
+
+        setConfig({config: editableConfig});
+        setSameConfigExploit(hasSameExploitSetup(editableConfig));
+        setIsLevelNeedEdit(false);
+        setConfigStep(1);
+        setIsLoadingConfig(false);
+    }
 
     useEffect(() => {
         if (params.id) {
             const currentConfig = globalConfig.list.find(i => i.setup._id === params.id);
+            setConfigLoadError(false);
 
-            const newGroupMade = makeZoneGroup(currentConfig);
+            if (currentConfig) {
+                applyLoadedConfig(currentConfig);
+                return;
+            }
 
-            const colorBuilder = {};
-            newGroupMade.forEach((group, index) => {
-                colorBuilder[index] = currentConfig.setup.zones.find(i => i.id === group[0]).color;
-            });
-            setZoneGroupColor(colorBuilder);
-
-            const nameBuilder = {};
-            newGroupMade.forEach((group, index) => {
-                nameBuilder[index] = currentConfig.setup.zones.find(i => i.id === group[0]).name;
-            });
-            setZoneGroupName(nameBuilder);
-
-            setConfig({config: currentConfig});
-
-            setIsLevelNeedEdit(false);
-            setConfigStep(1)
+            Requester.get('/api/gameconfig/' + params.id).then((res) => res.json())
+                .then((data) => {
+                    applyLoadedConfig(GameConfig.createFromSetup(data));
+                })
+                .catch((error) => {
+                    console.error(error);
+                    setConfigLoadError(true);
+                    setIsLoadingConfig(false);
+                });
         } else {
             const newConfig = new GameConfig();
             makeZoneGroup(newConfig);
             setConfig({'config': newConfig});
+            setSameConfigExploit(true);
             setConfigStep(1)
+            setIsLoadingConfig(false);
         }
     }, []);
 
@@ -231,7 +273,7 @@ export default function ConfigPage() {
     }
 
     function updateConfig() {
-        setConfig({config: config.config});
+        setConfig({config: config.config.clone()});
     }
 
     function addGroupeZone() {
@@ -578,7 +620,7 @@ export default function ConfigPage() {
         const targetDrawIndex = parseInt(event.target.dataset.drawIndex);
         let targetValue = isNaN(parseInt(event.target.value)) ? 0 : parseInt(event.target.value);
 
-        const targetTypeLot = [type === 'gain' ? 'lotWinConfig' : 'lotLooseConfig']
+        const targetTypeLot = type === 'gain' ? 'lotWinConfig' : 'lotLooseConfig';
         const targetRefArray = config.config.setup[targetTypeLot].randomAmount[action];
         targetRefArray[targetDrawIndex] = targetValue;
 
@@ -586,7 +628,7 @@ export default function ConfigPage() {
         // Check if total is >100
         let total = targetRefArray.reduce((c, i) => c += i, 0);
 
-        const typeCurrentDraw = type = 'gain' ? config.config.setup.drawTypeGain : config.config.setup.drawTypeThreat;
+        const typeCurrentDraw = type === 'gain' ? config.config.setup.drawTypeGain : config.config.setup.drawTypeThreat;
         if (total !== 100 && typeCurrentDraw === 'semi-random') {
             setIsErrorDrawAmount(true);
         } else {
@@ -614,7 +656,7 @@ export default function ConfigPage() {
             value = parseInt(value);
         }
 
-        if (!isNaN(value) && value === '') {
+        if (value === '' || Number.isNaN(value)) {
             value = 0;
         }
 
@@ -660,10 +702,19 @@ export default function ConfigPage() {
 
     function saveMap(e, nextStepNavigate = null) {
         saveConfigSever(!!params.id).then(res => res.json()).then((data) => {
-            const newConfig = new GameConfig();
-            newConfig.setup = data;
-            newConfig._id = data._id;
-            setGlobalConfig({list: [...globalConfig.list, config.config], config: newConfig});
+            const newConfig = GameConfig.createFromSetup(data);
+            setGlobalConfig((currentGlobalConfig) => {
+                const targetIndex = currentGlobalConfig.list.findIndex((item) => item.setup._id === newConfig.setup._id);
+                const nextList = [...currentGlobalConfig.list];
+
+                if (targetIndex === -1) {
+                    nextList.push(newConfig);
+                } else {
+                    nextList[targetIndex] = newConfig;
+                }
+
+                return {list: nextList, config: newConfig};
+            });
             if(nextStepNavigate === null)
                 navigate('/edit-session/' + data._id);
             else
@@ -676,7 +727,7 @@ export default function ConfigPage() {
     }
 
     function saveConfigSever(isUpdate = false) {
-        const dataConfig = {...config.config.setup};
+        const dataConfig = GameConfig.deepCopy(config.config.setup);
         delete dataConfig.id;
 
         if (isUpdate) {
@@ -721,6 +772,24 @@ export default function ConfigPage() {
         config.config.deleteLastLotOfType(typeLevel);
 
         updateConfig();
+    }
+
+    if (isLoadingConfig || !config) {
+        return (
+            <div className="container">
+                <div className="row vh-100 align-items-center">
+                    <div className="col-12 text-center">
+                        {!configLoadError && (
+                            <p>Loading configuration...</p>
+                        )}
+
+                        {configLoadError && (
+                            <p className="alert alert-danger">Unable to load this configuration.</p>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     return (

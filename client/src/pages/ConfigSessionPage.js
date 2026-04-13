@@ -80,10 +80,9 @@ export default function ConfigSessionPage() {
     function loadConfig() {
         Requester.get('/api/gameconfig/' + params.id).then((res => res.json()))
             .then((data) => {
-                const currentConfigTemp = new GameConfig();
-                currentConfigTemp.setup = data;
+                const currentConfigTemp = GameConfig.createFromSetup(data);
 
-                setGlobalConfig({list: [], config: currentConfigTemp});
+                setGlobalConfig((currentGlobalConfig) => ({list: currentGlobalConfig.list, config: currentConfigTemp}));
             })
     }
 
@@ -129,27 +128,24 @@ export default function ConfigSessionPage() {
     }
 
     function saveMap(isWithNavigate = true) {
-        currentConfig.setup.participantInfo = participantInfo;
-        currentConfig.setup.instructionPage = instructionPage;
-        currentConfig.setup.endPage = endPage;
-        currentConfig.setup.textsEvent = textsEvent;
-        currentConfig.setup.gameInterfacePage = {
+        const nextConfig = currentConfig.clone();
+        nextConfig.setup.participantInfo = [...participantInfo];
+        nextConfig.setup.instructionPage = instructionPage;
+        nextConfig.setup.endPage = endPage;
+        nextConfig.setup.textsEvent = GameConfig.deepCopy(textsEvent);
+        nextConfig.setup.gameInterfacePage = {
             actionPoints: gameInterfaceLabel.actionPoints,
             score: gameInterfaceLabel.score,
             exploite: gameInterfaceLabel.exploite,
             explore: gameInterfaceLabel.explore,
         };
 
-        const targetIndex = globalConfig.list.findIndex(i => i.id === currentConfig.id);
-        const targetArray = [...globalConfig.list];
-
-        targetArray[targetIndex] = currentConfig;
-
-        updateConfigServer(isWithNavigate);
+        setCurrentConfig(nextConfig);
+        updateConfigServer(nextConfig, isWithNavigate);
     }
 
-    function updateConfigServer(isWithNavigate = true) {
-        const dataConfig = {...currentConfig.setup};
+    function updateConfigServer(targetConfig, isWithNavigate = true) {
+        const dataConfig = {...targetConfig.setup};
         delete dataConfig.roundLeftMax;
         delete dataConfig.id;
 
