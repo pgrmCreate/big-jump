@@ -64,6 +64,8 @@ export function GamePage() {
     }, [handleKeyUp]);
 
     useEffect(() => {
+        // Quand un round se termine, on fige les actions courantes dans une session
+        // avant d'éventuellement envoyer tout l'historique à la fin de l'expérience.
         if(gameRoundLeft === 0 && historyRows.length > 0) {
             const completedSession = {
                 rows: [...historyRows],
@@ -169,6 +171,8 @@ export function GamePage() {
     }
 
     function endSession(sessionsToSave = historySessionRef.current) {
+        // La fin de partie peut être déclenchée plusieurs fois très vite
+        // via les effets React ; ce verrou évite un double POST d'historique.
         if (hasPostedHistoryRef.current) {
             return;
         }
@@ -340,7 +344,8 @@ export function GamePage() {
         } else if(GameManager.get().gameConfig.setup[targetTypeDraw] === 'random') {
             targetLot = listLotAvailable[Math.getRandom(0, listLotAvailable.length - 1)];
         }else if(GameManager.get().gameConfig.setup[targetTypeDraw] === 'semi-random') {
-
+            // En mode semi-random, on parcourt une distribution cumulée configurée
+            // plutôt qu'un tirage uniforme parmi les lots encore disponibles.
             const randomDraw = Math.floor(Math.random() * 100);
             let currentRowDraw = 0;
             const targetDrawConfig = config.config.setup[targetWinLot ? 'lotWinConfig' : 'lotLooseConfig'].randomAmount[typeAction];

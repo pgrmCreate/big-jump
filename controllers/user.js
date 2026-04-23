@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 
 const tokenSecret = process.env.TOKEN_AUTH;
 
+// Selon le flux, le cookie "user" peut déjà être parsé par Express
+// ou encore être stocké comme une chaîne JSON.
 function parseUserCookie(req) {
     const rawCookie = req.cookies ? req.cookies.user : null;
     if (!rawCookie) return null;

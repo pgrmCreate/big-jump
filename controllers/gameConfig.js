@@ -1,5 +1,7 @@
 const GameConfig = require('../db/models/GameConfigSchema');
 
+// Même comportement que côté user : le cookie peut arriver parsé
+// ou sous forme de JSON sérialisé selon la façon dont il a été posé.
 function parseUserCookie(req) {
     const rawCookie = req.cookies ? req.cookies.user : null;
     if (!rawCookie) return null;
@@ -50,6 +52,8 @@ exports.create = (req, res, next) => {
 
     newGameConfig.createdAt = new Date();
     const cookieUser = parseUserCookie(req);
+    // On privilégie l'utilisateur authentifié, mais on garde le cookie
+    // comme repli pour les créations lancées après reconnexion client.
     const authorId = (req.auth && req.auth.userId) || (cookieUser ? cookieUser.userId : null);
     if (authorId) {
         newGameConfig.idAuthor = authorId;

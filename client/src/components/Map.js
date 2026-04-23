@@ -6,6 +6,8 @@ import {GameConfig} from "../class/GameConfig";
 
 
 export const Map = forwardRef((props, ref) => {
+    // Le canvas est dessiné de façon impérative ; on expose donc un redraw
+    // aux pages parentes quand elles changent l'affichage sans remonter le composant.
     useImperativeHandle(ref, () => ({
         generateMap() {
             updateGenerateMap();
@@ -151,6 +153,8 @@ export const Map = forwardRef((props, ref) => {
     }
 
     function initDataRect() {
+        // Ces rectangles servent d'hitboxes pour l'éditeur de carte :
+        // on les reconstruit à partir de la grille et des zones déjà enregistrées.
         const targetRect = [];
         const zoneKeys = new Set(
             (setupConfig.zones || []).map((zone) => `${zone.x}:${zone.y}`)

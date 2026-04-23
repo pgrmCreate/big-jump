@@ -9,6 +9,8 @@ export class GameConfig {
         return JSON.parse(JSON.stringify(value));
     }
 
+    // Après chargement d'une config existante, on réaligne les compteurs statiques
+    // pour éviter de réutiliser des ids déjà présents dans les zones ou lots.
     static syncCounters(setup = {}) {
         const maxZoneId = Array.isArray(setup.zones)
             ? setup.zones.reduce((max, zone) => Math.max(max, zone.id ?? -1), -1)
@@ -25,6 +27,8 @@ export class GameConfig {
         GameConfig.indexLot = Math.max(GameConfig.indexLot, maxLotId + 1);
     }
 
+    // Le payload venant de l'API n'a pas toujours toute la structure attendue côté front :
+    // on le fusionne avec les valeurs par défaut pour garder un objet éditable complet.
     static createFromSetup(rawSetup = {}) {
         const gameConfig = new GameConfig();
         const clonedSetup = GameConfig.deepCopy(rawSetup || {});
